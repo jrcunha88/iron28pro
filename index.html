@@ -219,14 +219,14 @@ const PROTO_BASE = {
 let PROTOCOLO = PROTO_BASE;
 /* Biblioteca: u = unidade, inc = menor aumento (null = 1 placa), lado = um lado por vez */
 const EXS = {
-  supino_guiado:{anim:"supino",okTag:"Barra no meio do peito · peito",badTag:"Quadril sai do banco · quica",n:"Supino reto na barra guiada",m:"Peito",e:"Barra guiada",u:"kg",inc:4,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
+  supino_guiado:{anim:"supino",okTag:"Barra no meio do peito · peito",badTag:"Quadril sai do banco · quica",n:"Supino reto na Smith (barra guiada)",m:"Peito",e:"Barra guiada",u:"kg",inc:4,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
   puxada_aberta:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta pela frente, pegada aberta",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Puxe com os cotovelos para baixo e para trás","Barra até a parte de cima do peito","Suba controlando até esticar os braços"],bad:["Jogar o tronco para trás para roubar","Puxar atrás da nuca","Encolher os ombros"]},
-  supino_incl_guiado:{anim:"supino_incl",okTag:"Banco a 30° · parte de cima do peito",badTag:"Banco em pé demais · vira ombro",n:"Supino inclinado na barra guiada (~30°)",m:"Peito",e:"Barra guiada + banco",u:"kg",inc:4,ok:["Banco a cerca de 30°","Barra desce na parte de cima do peito","Escápulas firmes no banco"],bad:["Banco muito inclinado (vira ombro)","Descer sem controle","Arquear demais a lombar"]},
+  supino_incl_guiado:{anim:"supino_incl",okTag:"Banco a 30° · parte de cima do peito",badTag:"Banco em pé demais · vira ombro",n:"Supino inclinado na Smith (~30°)",m:"Peito",e:"Barra guiada + banco",u:"kg",inc:4,ok:["Banco a cerca de 30°","Barra desce na parte de cima do peito","Escápulas firmes no banco"],bad:["Banco muito inclinado (vira ombro)","Descer sem controle","Arquear demais a lombar"]},
   remada_baixa:{anim:"remada_baixa",okTag:"Tronco firme · costas",badTag:"Balança o tronco · coluna curva",n:"Remada baixa com triângulo",m:"Costas",e:"Remada baixa",u:"placa",inc:null,ok:["Tronco firme, peito aberto","Leve o triângulo até a barriga","Junte as escápulas no fim"],bad:["Balançar o tronco para frente e para trás","Arredondar as costas","Puxar só com os braços"]},
   lateral_cabo:{anim:"lateral_cabo",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · balança o corpo",n:"Elevação lateral no cabo, um braço",m:"Ombro lateral",e:"Polia baixa",u:"placa",inc:null,lado:true,ok:["Suba só até a altura do ombro","Cotovelo levemente dobrado","Movimento lento, sem impulso"],bad:["Subir acima do ombro","Balançar o corpo","Encolher o ombro junto"]},
   triceps_v:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na polia com barra V",m:"Tríceps",e:"Polia alta",u:"placa",inc:null,ok:["Cotovelos colados ao corpo","Estique totalmente embaixo","Volte devagar"],bad:["Cotovelos indo para frente","Inclinar o corpo para empurrar","Movimento curto"]},
   rosca_w:{anim:"rosca",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca com barra W",m:"Bíceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos parados ao lado do corpo","Suba e desça controlando","Punhos firmes"],bad:["Balançar o tronco","Cotovelos indo para frente","Soltar o peso na descida"]},
-  agachamento_guiado:{anim:"squat",okTag:"Coluna reta · quadríceps",badTag:"Costas arredondadas · calcanhar sobe",n:"Agachamento na barra guiada",m:"Frente da coxa",e:"Barra guiada",u:"kg",inc:4,ok:["Abdômen firme antes de descer","Joelhos na direção dos pés","Desça até onde a lombar fica neutra"],bad:["Joelhos caindo para dentro","Arredondar a lombar embaixo","Tirar os calcanhares do chão"]},
+  agachamento_guiado:{anim:"squat",okTag:"Coluna reta · quadríceps",badTag:"Costas arredondadas · calcanhar sobe",n:"Agachamento na Smith (barra guiada)",m:"Frente da coxa",e:"Barra guiada",u:"kg",inc:4,ok:["Abdômen firme antes de descer","Joelhos na direção dos pés","Desça até onde a lombar fica neutra"],bad:["Joelhos caindo para dentro","Arredondar a lombar embaixo","Tirar os calcanhares do chão"]},
   leg_press:{anim:"leg_press",okTag:"Quadril apoiado · frente da coxa",badTag:"Quadril descola do banco",n:"Leg press 45°",m:"Frente da coxa",e:"Leg press",u:"kg",inc:4,ok:["Lombar e quadril apoiados o tempo todo","Joelhos alinhados com os pés","Travas de segurança à mão"],bad:["Quadril descolando do banco embaixo","Travar os joelhos em cima","Prender o ar por muito tempo"]},
   leg_press_alto:{anim:"leg_press_alto",okTag:"Empurra com o calcanhar · glúteo",badTag:"Quadril descola do banco",n:"Leg press 45° (pés altos)",m:"Posterior e glúteos",e:"Leg press",u:"kg",inc:4,ok:["Pés na parte alta da plataforma","Empurre pelos calcanhares","Lombar apoiada"],bad:["Quadril descolando","Joelhos para dentro","Amplitude curta demais"]},
   extensora:{anim:"extensora",okTag:"Estica até o fim · frente da coxa",badTag:"Chuta e tira o quadril",n:"Cadeira extensora",m:"Frente da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo do aparelho","Estique até o fim e segure 1 s","Desça devagar"],bad:["Chutar o peso","Tirar o quadril do banco","Descer soltando"]},
@@ -248,7 +248,7 @@ const EXS = {
   elevacao_pelvica:{anim:"hip_thrust",okTag:"Quadril alinhado · glúteo",badTag:"Arqueia a lombar",n:"Elevação pélvica com barra",m:"Glúteos",e:"Barra + banco",u:"kg",inc:4,ok:["Costas apoiadas no banco","Suba até o quadril alinhar","Segure 1 s em cima"],bad:["Arquear a lombar em cima","Empurrar com a ponta dos pés"]},
   prancha:{anim:"prancha",okTag:"Corpo em linha reta · abdômen",badTag:"Quadril cai ou sobe demais",n:"Prancha no chão",m:"Abdômen",e:"Chão",u:"seg",inc:0,ok:["Corpo em linha reta","Abdômen e glúteos firmes"],bad:["Quadril caindo","Quadril muito alto"]},
   face_pull:{anim:"face_pull",okTag:"Cotovelos altos · ombro de trás",badTag:"Joga o corpo para trás",n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"placa",inc:null,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
-  encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento de ombros",m:"Trapézio",e:"Barra guiada (Smith) ou halteres",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
+  encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento na Smith (ou halteres)",m:"Trapézio",e:"Barra guiada (Smith) ou halteres",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
   triceps_testa:{anim:"triceps_testa",okTag:"Cotovelo parado · tríceps",badTag:"Cotovelo se mexe",n:"Tríceps testa com barra W",m:"Tríceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos apontando para o teto","Desça devagar"],bad:["Abrir os cotovelos","Mexer os ombros"]},
   rosca_polia:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"placa",inc:null,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
   triceps_corda:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"placa",inc:null,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
@@ -328,7 +328,13 @@ function gerarPlano(p){
   pl.versao = "Gerado: "+dias+" dias · "+(idoso?"60+":NIVEIS[p.nivel]||"")+(lim.length?" · com limitação":"");
   return pl;
 }
-function aplicarPlano(pl){ S.plano=pl; PROTOCOLO=pl||PROTO_BASE; S.trocas={}; S.primeiro=PROTOCOLO.primeiro; save(); }
+function aplicarPlano(pl, semGuardar){
+  if(!semGuardar && S.perfil && S._planoAplicado) S.planoAnterior={plano:S.plano??null,trocas:{...(S.trocas||{})},objetivo:S._objPlano,nome:(S.plano||PROTO_BASE).versao};
+  S.plano=pl; PROTOCOLO=pl||PROTO_BASE; S.trocas={}; S.primeiro=PROTOCOLO.primeiro; S._planoAplicado=true; S._objPlano=S.perfil&&S.perfil.objetivo;
+  if(S.planoOriginal===undefined) S.planoOriginal=pl??null;
+  save(); }
+function voltarPlano(p){ const atual={plano:S.plano??null,trocas:{...(S.trocas||{})},objetivo:S._objPlano,nome:PROTOCOLO.versao};
+  S.plano=p.plano; PROTOCOLO=S.plano||PROTO_BASE; S.trocas={...(p.trocas||{})}; if(!PROTOCOLO.sequencia.includes(S.primeiro)) S.primeiro=PROTOCOLO.primeiro; S._objPlano=p.objetivo; S.planoAnterior=atual; save(); }
 function precisaLiberacao(p){ return p && ((+p.idade||0)>=60 || (p.lim||[]).length>0); }
 const avisoMedico = () => precisaLiberacao(S.perfil) ? `<div class="cue bad"><b>!</b><span><span style="font-weight:700;color:var(--fg)">Antes de começar, peça liberação ao seu médico.</span> Pare se sentir dor forte, falta de ar ou tontura.</span></div>` : "";
 const primeiroNome = () => ((S.perfil&&S.perfil.nome)||"").trim().split(/\s+/)[0] || "";
@@ -424,8 +430,87 @@ function cardPerfil(){
     ${avisoMedico()}
     <div class="small muted">Treino: <b style="color:var(--fg)">${esc(PROTOCOLO.versao)}</b>${S.plano?"":" (protocolo IRON 28 aprovado)"}</div>
     <button class="btn btn-ghost" data-act="cadEditar">✏️ Editar cadastro</button>
+    ${S.planoAnterior?`<button class="btn btn-ghost" data-act="planoVolta">↩️ Voltar ao treino anterior <span class="small muted">(${esc(S.planoAnterior.nome||"")})</span></button>`:""}
+    ${S._planoAplicado && JSON.stringify(S.plano??null)!==JSON.stringify(S.planoOriginal??null)?`<button class="btn btn-ghost" data-act="planoOrig">📌 Usar o plano original <span class="small muted">(${esc((S.planoOriginal||PROTO_BASE).versao)})</span></button>`:""}
+    <div class="small muted">🎯 Perder gordura: a musculação muda pouco. O que muda é o cardio (meta ${metaCardio()[0]}–${metaCardio()[1]}x por semana) e a alimentação.</div>
   </div>`;
 }
+/* ===================== CARDIO / DESCANSO ATIVO ===================== */
+const CARDIO_META = {emag:[3,4],recomp:[2,3],hiper:[1,2],saude:[3,4]};
+const metaCardio = () => CARDIO_META[(S.perfil&&S.perfil.objetivo)||"recomp"]||[2,3];
+const cardioSemana = () => (S.cardio||[]).filter(x=>x.t>=Date.now()-7*864e5);
+function cardCardio(){
+  const [mi,ma]=metaCardio(), sem=cardioSemana(), feitoHoje=S.sessoes.some(s=>s.status==="feito"&&new Date(s.inicio).toDateString()===hoje()), ch=(S.cardio||[]).find(x=>new Date(x.t).toDateString()===hoje());
+  return `<div class="card stack" style="gap:10px">
+    <div class="row between"><div><div class="lbl">🚶 Descanso ativo · cardio</div><div class="small muted" style="margin-top:2px">${feitoHoje?"Treinou hoje. Se quiser, 20–30 min leves depois.":"Dia sem treino? Caminhada, esteira ou bike leve, 25 a 40 min."}</div></div><span class="pill ${sem.length>=mi?"green":""}">${sem.length}/${mi}–${ma} na semana</span></div>
+    ${ch?`<div class="small">✅ Hoje: <b>${esc(ch.tipo)} · ${ch.min} min</b></div>`:`<button class="btn btn-ghost" data-act="cardio">➕ Registrar cardio</button>`}
+    <div class="small muted">Leve: dá para conversar. Evite cardio forte antes do treino de pernas. Folga total também conta como descanso.</div>
+  </div>`;
+}
+function sheetCardio(){
+  window._cd={tipo:"Caminhada",min:30};
+  const b=(grp,v,l,on)=>`<button class="${on?"on":""}" data-act="cdSel" data-g="${grp}" data-v="${v}">${l}</button>`;
+  openSheet(`<div class="stack"><div class="row between"><h2>Registrar cardio</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="lbl">Tipo</div><div class="seg">${["Caminhada","Esteira","Bike","Escada","Outro"].map((t,i)=>b("tipo",t,t,!i)).join("")}</div>
+    <div class="lbl">Minutos</div><div class="seg">${[20,30,40,50].map(m=>b("min",m,m,m===30)).join("")}</div>
+    <button class="btn btn-red" data-act="cardioSalvar">Salvar</button></div>`);
+}
+/* ===================== RELATÓRIO ===================== */
+const DIAS_SEM=["dom","seg","ter","qua","qui","sex","sáb"];
+function relatorio(dias){
+  const ini = dias ? Date.now()-dias*864e5 : 0, fim=Date.now();
+  const ses = S.sessoes.filter(s=>s.status==="feito" && s.inicio>=ini).sort((a,b)=>a.inicio-b.inicio);
+  const durs = ses.filter(s=>s.fim).map(s=>s.fim-s.inicio);
+  const tMed = durs.length ? durs.reduce((a,b)=>a+b,0)/durs.length : 0;
+  const span = Math.max(7, (fim-Math.max(ini, ses[0]?.inicio||fim))/864e5);
+  const porMusc={}, sob=[]; let series=0, volKg=0;
+  const evo={};
+  for(const s of ses) for(const [id,r] of Object.entries(s.log)){ const x=EXS[id]; if(!x) continue;
+    const fs=(r.sets||[]).filter(z=>z.feito); if(!fs.length) continue;
+    porMusc[x.m]=(porMusc[x.m]||0)+fs.length; series+=fs.length;
+    fs.forEach(z=>{ if(z.sob!=null) sob.push(+z.sob); if((x.u==="kg"||x.u==="kg/halter")&&z.kg&&z.reps) volKg+=z.kg*z.reps*(x.u==="kg/halter"?2:1); });
+    if(x.u!=="rep"&&x.u!=="seg"){ const best=fs.reduce((b,z)=>(!b||z.kg>b.kg||(z.kg===b.kg&&z.reps>b.reps))?z:b,null); (evo[id]=evo[id]||[]).push({d:s.inicio,kg:best.kg,reps:best.reps}); }
+  }
+  const sono=(S.sono||[]).filter(x=>x.t>=ini).map(x=>x.h), pesos=(S.corpo||[]).filter(x=>x.d>=ini&&x.peso).sort((a,b)=>a.d-b.d);
+  const card=(S.cardio||[]).filter(x=>x.t>=ini);
+  return {ses,tMed,freq:ses.length/span*7,porMusc,series,volKg,evo,sob,sono,pesos,card,dias};
+}
+function sheetRelatorio(dias){
+  dias = dias===undefined ? 28 : dias;
+  const R=relatorio(dias), md=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
+  const unid=id=>EXS[id].u==="placa"?" placa":EXS[id].u==="kg/halter"?" kg/halt.":" kg";
+  const evoL=Object.entries(R.evo).map(([id,v])=>{const a=v[0],b=v[v.length-1],up=b.kg>a.kg||(b.kg===a.kg&&b.reps>a.reps),dn=b.kg<a.kg; return {id,a,b,up,dn,n:v.length};}).sort((x,y)=>y.up-x.up);
+  const sm=md(R.sono), so=md(R.sob), p0=R.pesos[0], p1=R.pesos[R.pesos.length-1];
+  const linhas=[`📊 IRON 28 PRO · Relatório ${dias?`últimos ${dias} dias`:"desde o início"}${S.perfil&&S.perfil.nome?" · "+S.perfil.nome:""}`,
+    `🏋️ Treinos feitos: ${R.ses.length} (${R.freq.toFixed(1)} por semana)`,
+    `⏱ Tempo médio: ${R.tMed?durTxt(R.tMed):"—"}`,
+    `💪 Séries: ${R.series}${R.volKg?` · volume ${Math.round(R.volKg).toLocaleString("pt-BR")} kg`:""}`,
+    `🎯 Séries por músculo: ${Object.entries(R.porMusc).map(([m,n])=>m+" "+n).join(", ")||"—"}`,
+    `📈 Cargas que subiram: ${evoL.filter(e=>e.up&&e.n>1).map(e=>EXS[e.id].n+" "+e.a.kg+"→"+e.b.kg+unid(e.id)).join("; ")||"ainda sem comparação"}`,
+    `🚶 Cardio: ${R.card.length}x · ${R.card.reduce((a,c)=>a+c.min,0)} min`,
+    `😴 Sono médio: ${sm?sm.toFixed(1)+" h":"—"}`,
+    `⚖️ Peso: ${p0?p0.peso+" kg"+(p1!==p0?" → "+p1.peso+" kg":""):"—"}`];
+  window._relTxt=linhas.join("\n");
+  const chip=(v,l)=>`<button class="${dias===v?"on":""}" data-act="relPer" data-v="${v}">${l}</button>`;
+  const maxM=Math.max(1,...Object.values(R.porMusc));
+  openSheet(`<div class="stack"><div class="row between"><h2>📊 Relatório</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="seg">${chip(7,"7 dias")}${chip(28,"28 dias")}${chip(0,"Tudo")}</div>
+    <div class="grid2">
+      <div class="card stat"><div class="lbl">Treinos</div><div class="v num">${R.ses.length}</div><div class="small muted">${R.freq.toFixed(1)} por semana</div></div>
+      <div class="card stat"><div class="lbl">Tempo médio</div><div class="v num">${R.tMed?durTxt(R.tMed):"—"}</div><div class="small muted">por treino</div></div>
+      <div class="card stat"><div class="lbl">Séries</div><div class="v num">${R.series}</div><div class="small muted">${R.volKg?Math.round(R.volKg).toLocaleString("pt-BR")+" kg de volume":"feitas"}</div></div>
+      <div class="card stat"><div class="lbl">Esforço</div><div class="v num">${so!=null?"+"+so.toFixed(1):"—"}</div><div class="small muted">reps sobrando (média)</div></div>
+      <div class="card stat"><div class="lbl">Cardio</div><div class="v num">${R.card.length}x</div><div class="small muted">${R.card.reduce((a,c)=>a+c.min,0)} min</div></div>
+      <div class="card stat"><div class="lbl">Sono</div><div class="v num">${sm?sm.toFixed(1)+" h":"—"}</div><div class="small muted">média</div></div>
+    </div>
+    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
+    <div class="card stack" style="gap:8px"><h3>Séries por músculo</h3>${Object.entries(R.porMusc).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<div class="small"><div class="row between"><span>${esc(m)}</span><b class="num">${n}</b></div><div class="bar"><i style="width:${n/maxM*100}%"></i></div></div>`).join("")||`<p class="muted small" style="margin:0">—</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>Evolução de carga</h3>${evoL.length?evoL.map(e=>`<div class="li small num"><span class="grow ellip">${esc(EXS[e.id].n)}</span><span class="muted">${e.a.kg}×${e.a.reps}</span><b style="color:${e.up?"var(--green)":e.dn?"var(--red-hi)":"var(--fg)"}">→ ${e.b.kg}×${e.b.reps} ${e.up?"▲":e.dn?"▼":"="}</b></div>`).join(""):`<p class="muted small" style="margin:0">Aparece depois dos treinos.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>Peso</h3><div class="small">${p0?`${p0.peso} kg${p1!==p0?` → <b>${p1.peso} kg</b> (${(p1.peso-p0.peso>0?"+":"")+(p1.peso-p0.peso).toFixed(1)})`:""}`:`<span class="muted">Registre o peso em Evolução.</span>`}</div></div>
+    <div class="grid2"><button class="btn btn-red" data-act="relShare">📤 Compartilhar</button><button class="btn btn-ghost" data-act="relCopy">📋 Copiar</button></div>
+  </div>`);
+}
+
 /* ===================== TROCAR EXERCÍCIO ===================== */
 function baseDe(id){ for(const [t,T] of Object.entries(PROTOCOLO.treinos)) for(const a of T.ex){ if(((S.trocas||{})[a[0]]||a[0])===id) return {t,base:a[0]}; } return null; }
 function sheetTrocar(base,t){
@@ -457,13 +542,13 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "1.9";
+const APP_VERSAO = "2.0";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
 let _tinhaDados=false;
 try{ const raw = localStorage.getItem(KEY); if(raw){ S = Object.assign(blank(), JSON.parse(raw)); _tinhaDados=true; } }catch(e){}
-function aposCarregar(){ S.trocas=S.trocas||{}; if(S.perfil===undefined && _tinhaDados) S.perfil={...PERFIL_PADRAO};
+function aposCarregar(){ S.trocas=S.trocas||{}; S.cardio=S.cardio||[]; if(_tinhaDados && S.planoOriginal===undefined){ S.planoOriginal=S.plano??null; S._planoAplicado=true; } if(S.perfil===undefined && _tinhaDados) S.perfil={...PERFIL_PADRAO};
   try{ const h=location.hash; if(h.startsWith("#perfil=")){ const p=JSON.parse(decodeURIComponent(escape(atob(h.slice(8))))); S.perfil={...PERFIL_PADRAO,...(S.perfil||{}),...p}; S.trocas=S.trocas||{}; history.replaceState(null,"",location.pathname+location.search); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} } }catch(e){} PROTOCOLO=S.plano||PROTO_BASE; if(!PROTOCOLO.sequencia.includes(S.primeiro)) S.primeiro=PROTOCOLO.primeiro; }
 aposCarregar();
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -565,6 +650,7 @@ function vInicio(){
       
     </div>
     ${!a&&PROTOCOLO.treinos.E&&!PROTOCOLO.sequencia.includes("E")?(()=>{const lib=liberaE(); return `<button class="card li" style="border-top:1px solid var(--line);${lib.ok?"":"opacity:.55"}" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · 11 séries</b><div class="small muted">${lib.ok?"Liberado hoje · não muda a sequência":lib.motivo}</div></div></button>`;})():""}
+    ${cardCardio()}
     <div class="card stack" style="gap:10px">
       <div class="row between"><div><div class="lbl">😴 Quanto dormiu esta noite?</div><div class="small muted" style="margin-top:2px">Não muda seu treino. Só libera o treino extra E.</div></div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
       <div class="seg">${[4,5,6,7,8].map(h=>`<button class="${sonoHoje()?.h===h?"on":""}" data-act="sono" data-v="${h}">${h===8?"8+":h}</button>`).join("")}</div>
@@ -724,6 +810,7 @@ function vEvolucao(){
   const media7 = (() => { const lim=Date.now()-7*864e5; const v=pesos.filter(x=>x.d>=lim).map(x=>x.peso); return v.length? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):null; })();
   return `<div class="top"><div class="brand">Evolução</div></div>
   <div class="stack">
+    <button class="btn btn-red" data-act="relatorio">📊 Ver relatório (28 dias ou tudo)</button>
     <div class="grid2">
       <div class="card stat"><div class="lbl">Peso (média 7 dias)</div><div class="v num" style="margin-top:6px">${media7??"—"}<small> kg</small></div></div>
       <div class="card stat"><div class="lbl">Sono (média 7 dias)</div>${(()=>{const v=(S.sono||[]).filter(x=>x.t>=Date.now()-7*864e5).map(x=>x.h); return v.length?`<div class="v num" style="margin-top:6px;color:${v.reduce((a,b)=>a+b,0)/v.length>=6?"var(--green)":"var(--red-hi)"}">${(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)}<small> h</small></div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted">Anote no Início</div>`;})()}</div>
@@ -1340,9 +1427,19 @@ document.addEventListener("click",ev=>{
     case "segSel": el.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===el)); break;
     case "cadSalvar": salvarCadastro(!!d.primeira); break;
     case "cadEditar": openSheet(formCadastro(S.perfil,false)); break;
-    case "regerar": if(ativa()){ closeSheet(); return toast("Termine o treino em andamento antes"); } aplicarPlano(gerarPlano(S.perfil)); closeSheet(); go("inicio"); toast("Treino novo montado 💪"); break;
+    case "regerar": if(ativa()){ closeSheet(); return toast("Termine o treino em andamento antes"); } { const nv=gerarPlano(S.perfil); if(JSON.stringify(nv??null)===JSON.stringify(S.plano??null)){ S._objPlano=S.perfil.objetivo; save(); closeSheet(); go("inicio"); toast("Os exercícios continuam iguais. Mudou a meta de cardio."); break; } aplicarPlano(nv); closeSheet(); go("inicio"); toast("Treino novo montado 💪"); } break;
     case "fecharRender": closeSheet(); render(); toast("Cadastro salvo"); break;
     case "trocar": sheetTrocar(d.base,d.t); break;
+    case "planoVolta": if(ativa()) return toast("Termine o treino em andamento antes"); voltarPlano(S.planoAnterior); render(); toast("Treino anterior restaurado"); break;
+    case "planoOrig": if(ativa()) return toast("Termine o treino em andamento antes"); confirmar("Usar o plano original?","O treino atual fica guardado em “Voltar ao treino anterior”. O histórico não muda.",`<button class="btn btn-red" data-act="planoOrigSim">Sim, usar o original</button>`); break;
+    case "planoOrigSim": voltarPlano({plano:S.planoOriginal??null,trocas:{},objetivo:S.perfil&&S.perfil.objetivo}); closeSheet(); render(); toast("Plano original restaurado"); break;
+    case "cardio": sheetCardio(); break;
+    case "cdSel": el.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===el)); window._cd[d.g]=d.g==="min"?+d.v:d.v; break;
+    case "cardioSalvar": (S.cardio=S.cardio||[]).push({t:Date.now(),tipo:window._cd.tipo,min:window._cd.min}); save(); closeSheet(); render(); toast("Cardio salvo 🚶"); break;
+    case "relatorio": sheetRelatorio(28); break;
+    case "relPer": sheetRelatorio(+d.v); break;
+    case "relShare": if(navigator.share) navigator.share({title:"Relatório IRON 28 PRO",text:window._relTxt}).catch(()=>{}); else { navigator.clipboard?.writeText(window._relTxt); toast("Relatório copiado"); } break;
+    case "relCopy": try{ navigator.clipboard.writeText(window._relTxt).then(()=>toast("Relatório copiado")); }catch(e){ toast("Não deu para copiar"); } break;
     case "trocaMot": sheetAlternativas(d.base,d.t,d.v); break;
     case "trocaSel": trocar(d.base,d.v,d.mot); break;
     case "zerarSim": S=blank(); PROTOCOLO=PROTO_BASE; save(); closeSheet(); toast("Dados apagados"); go("inicio"); break;
