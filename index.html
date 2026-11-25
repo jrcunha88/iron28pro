@@ -218,45 +218,45 @@ const PROTOCOLO = {
 
 /* Biblioteca: u = unidade, inc = menor aumento (null = 1 placa), lado = um lado por vez */
 const EXS = {
-  supino_guiado:{n:"Supino reto na barra guiada",m:"Peito",e:"Barra guiada",u:"kg",inc:4,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
-  puxada_aberta:{n:"Puxada alta pela frente, pegada aberta",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Puxe com os cotovelos para baixo e para trás","Barra até a parte de cima do peito","Suba controlando até esticar os braços"],bad:["Jogar o tronco para trás para roubar","Puxar atrás da nuca","Encolher os ombros"]},
-  supino_incl_guiado:{n:"Supino inclinado na barra guiada (~30°)",m:"Peito",e:"Barra guiada + banco",u:"kg",inc:4,ok:["Banco a cerca de 30°","Barra desce na parte de cima do peito","Escápulas firmes no banco"],bad:["Banco muito inclinado (vira ombro)","Descer sem controle","Arquear demais a lombar"]},
-  remada_baixa:{n:"Remada baixa com triângulo",m:"Costas",e:"Remada baixa",u:"placa",inc:null,ok:["Tronco firme, peito aberto","Leve o triângulo até a barriga","Junte as escápulas no fim"],bad:["Balançar o tronco para frente e para trás","Arredondar as costas","Puxar só com os braços"]},
-  lateral_cabo:{n:"Elevação lateral no cabo, um braço",m:"Ombro lateral",e:"Polia baixa",u:"placa",inc:null,lado:true,ok:["Suba só até a altura do ombro","Cotovelo levemente dobrado","Movimento lento, sem impulso"],bad:["Subir acima do ombro","Balançar o corpo","Encolher o ombro junto"]},
-  triceps_v:{n:"Tríceps na polia com barra V",m:"Tríceps",e:"Polia alta",u:"placa",inc:null,ok:["Cotovelos colados ao corpo","Estique totalmente embaixo","Volte devagar"],bad:["Cotovelos indo para frente","Inclinar o corpo para empurrar","Movimento curto"]},
-  rosca_w:{n:"Rosca com barra W",m:"Bíceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos parados ao lado do corpo","Suba e desça controlando","Punhos firmes"],bad:["Balançar o tronco","Cotovelos indo para frente","Soltar o peso na descida"]},
+  supino_guiado:{anim:"supino",okTag:"Barra no meio do peito · peito",badTag:"Quadril sai do banco · quica",n:"Supino reto na barra guiada",m:"Peito",e:"Barra guiada",u:"kg",inc:4,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
+  puxada_aberta:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta pela frente, pegada aberta",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Puxe com os cotovelos para baixo e para trás","Barra até a parte de cima do peito","Suba controlando até esticar os braços"],bad:["Jogar o tronco para trás para roubar","Puxar atrás da nuca","Encolher os ombros"]},
+  supino_incl_guiado:{anim:"supino_incl",okTag:"Banco a 30° · parte de cima do peito",badTag:"Banco em pé demais · vira ombro",n:"Supino inclinado na barra guiada (~30°)",m:"Peito",e:"Barra guiada + banco",u:"kg",inc:4,ok:["Banco a cerca de 30°","Barra desce na parte de cima do peito","Escápulas firmes no banco"],bad:["Banco muito inclinado (vira ombro)","Descer sem controle","Arquear demais a lombar"]},
+  remada_baixa:{anim:"remada_baixa",okTag:"Tronco firme · costas",badTag:"Balança o tronco · coluna curva",n:"Remada baixa com triângulo",m:"Costas",e:"Remada baixa",u:"placa",inc:null,ok:["Tronco firme, peito aberto","Leve o triângulo até a barriga","Junte as escápulas no fim"],bad:["Balançar o tronco para frente e para trás","Arredondar as costas","Puxar só com os braços"]},
+  lateral_cabo:{anim:"lateral_cabo",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · balança o corpo",n:"Elevação lateral no cabo, um braço",m:"Ombro lateral",e:"Polia baixa",u:"placa",inc:null,lado:true,ok:["Suba só até a altura do ombro","Cotovelo levemente dobrado","Movimento lento, sem impulso"],bad:["Subir acima do ombro","Balançar o corpo","Encolher o ombro junto"]},
+  triceps_v:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na polia com barra V",m:"Tríceps",e:"Polia alta",u:"placa",inc:null,ok:["Cotovelos colados ao corpo","Estique totalmente embaixo","Volte devagar"],bad:["Cotovelos indo para frente","Inclinar o corpo para empurrar","Movimento curto"]},
+  rosca_w:{anim:"rosca",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca com barra W",m:"Bíceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos parados ao lado do corpo","Suba e desça controlando","Punhos firmes"],bad:["Balançar o tronco","Cotovelos indo para frente","Soltar o peso na descida"]},
   agachamento_guiado:{anim:"squat",okTag:"Coluna reta · quadríceps",badTag:"Costas arredondadas · calcanhar sobe",n:"Agachamento na barra guiada",m:"Frente da coxa",e:"Barra guiada",u:"kg",inc:4,ok:["Abdômen firme antes de descer","Joelhos na direção dos pés","Desça até onde a lombar fica neutra"],bad:["Joelhos caindo para dentro","Arredondar a lombar embaixo","Tirar os calcanhares do chão"]},
-  leg_press:{n:"Leg press 45°",m:"Frente da coxa",e:"Leg press",u:"kg",inc:4,ok:["Lombar e quadril apoiados o tempo todo","Joelhos alinhados com os pés","Travas de segurança à mão"],bad:["Quadril descolando do banco embaixo","Travar os joelhos em cima","Prender o ar por muito tempo"]},
-  leg_press_alto:{n:"Leg press 45° (pés altos)",m:"Posterior e glúteos",e:"Leg press",u:"kg",inc:4,ok:["Pés na parte alta da plataforma","Empurre pelos calcanhares","Lombar apoiada"],bad:["Quadril descolando","Joelhos para dentro","Amplitude curta demais"]},
-  extensora:{n:"Cadeira extensora",m:"Frente da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo do aparelho","Estique até o fim e segure 1 s","Desça devagar"],bad:["Chutar o peso","Tirar o quadril do banco","Descer soltando"]},
-  flexora:{n:"Cadeira flexora",m:"Posterior da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo","Dobre até o fim","Volte controlando"],bad:["Levantar o quadril","Movimento curto","Usar impulso"]},
-  adutora:{n:"Adutora (fechar as pernas)",m:"Adutores",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Feche controlando","Abra devagar"],bad:["Bater as almofadas","Abrir rápido demais"]},
-  abdutora:{n:"Abdutora (abrir as pernas)",m:"Glúteos",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Abra e segure 1 s","Volte devagar"],bad:["Usar impulso","Sair do banco"]},
-  panturrilha_lp:{n:"Panturrilha no leg press",m:"Panturrilha",e:"Leg press",u:"kg",inc:4,ok:["Só a ponta dos pés na plataforma","Desça alongando bem","Suba até o máximo e segure 1 s"],bad:["Dobrar os joelhos","Quicar embaixo","Fazer sem as travas"]},
-  abd_reverso:{n:"Abdominal reverso no chão",m:"Abdômen",e:"Chão",u:"rep",inc:0,ok:["Lombar colada no chão","Leve os joelhos ao peito tirando o quadril","Desça devagar"],bad:["Balançar as pernas","Puxar pelo pescoço"]},
-  remada_unilateral:{n:"Remada com halter montado, um braço",m:"Costas",e:"Halter montado + banco",u:"kg",inc:4,lado:true,ok:["Mão e joelho apoiados no banco","Puxe o cotovelo em direção ao quadril","Costas retas"],bad:["Girar o tronco","Puxar com o bíceps","Arredondar as costas"]},
-  supino_halter:{n:"Supino reto com halteres montados",m:"Peito",e:"Halteres montados",u:"kg/halter",inc:4,ok:["Escápulas juntas","Desça até a linha do peito","Suba aproximando os halteres"],bad:["Cotovelos muito abertos","Bater os halteres em cima","Descer sem controle"]},
-  puxada_triangulo:{n:"Puxada alta com triângulo",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Peito alto","Puxe até a parte de cima do peito","Suba controlando"],bad:["Jogar o tronco para trás","Encolher os ombros"]},
-  crucifixo_voador:{n:"Crucifixo no voador",m:"Peito",e:"Voador",u:"placa",inc:null,ok:["Cotovelos levemente dobrados","Feche pela força do peito","Abra devagar"],bad:["Abrir além do conforto do ombro","Empurrar com os braços"]},
-  voador_inverso:{n:"Voador inverso (ombro de trás)",m:"Ombro de trás",e:"Voador",u:"placa",inc:null,ok:["Peito no apoio","Abra os braços para trás","Movimento curto e controlado"],bad:["Juntar as escápulas com força","Usar impulso"]},
-  lateral_halter:{n:"Elevação lateral (halter de 8 kg ou cabo)",m:"Ombro lateral",e:"Halter de plástico",u:"kg",inc:0,ok:["Suba só até o ombro","Sem impulso"],bad:["Balançar o corpo","Subir acima do ombro"]},
-  martelo_corda:{n:"Rosca martelo na corda (polia baixa)",m:"Bíceps",e:"Polia baixa + corda",u:"placa",inc:null,ok:["Palmas viradas uma para a outra","Cotovelos parados"],bad:["Balançar o tronco"]},
-  triceps_cabeca:{n:"Tríceps acima da cabeça na corda",m:"Tríceps",e:"Polia + corda",u:"placa",inc:null,ok:["Cotovelos apontando para frente","Estique totalmente"],bad:["Abrir os cotovelos","Arquear a lombar"]},
-  stiff:{n:"Stiff com barra longa",m:"Posterior e glúteos",e:"Barra longa",u:"kg",inc:4,ok:["Quadril para trás, joelhos levemente dobrados","Barra próxima das pernas","Coluna neutra"],bad:["Arredondar a coluna","Barra longe do corpo","Descer além da sua amplitude"]},
-  elevacao_pelvica:{n:"Elevação pélvica com barra",m:"Glúteos",e:"Barra + banco",u:"kg",inc:4,ok:["Costas apoiadas no banco","Suba até o quadril alinhar","Segure 1 s em cima"],bad:["Arquear a lombar em cima","Empurrar com a ponta dos pés"]},
-  prancha:{n:"Prancha no chão",m:"Abdômen",e:"Chão",u:"seg",inc:0,ok:["Corpo em linha reta","Abdômen e glúteos firmes"],bad:["Quadril caindo","Quadril muito alto"]},
-  face_pull:{n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"placa",inc:null,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
-  encolhimento:{n:"Encolhimento de ombros",m:"Trapézio",e:"Barra ou anilhas",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
-  triceps_testa:{n:"Tríceps testa com barra W",m:"Tríceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos apontando para o teto","Desça devagar"],bad:["Abrir os cotovelos","Mexer os ombros"]},
-  rosca_polia:{n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"placa",inc:null,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
-  triceps_corda:{n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"placa",inc:null,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
+  leg_press:{anim:"leg_press",okTag:"Quadril apoiado · frente da coxa",badTag:"Quadril descola do banco",n:"Leg press 45°",m:"Frente da coxa",e:"Leg press",u:"kg",inc:4,ok:["Lombar e quadril apoiados o tempo todo","Joelhos alinhados com os pés","Travas de segurança à mão"],bad:["Quadril descolando do banco embaixo","Travar os joelhos em cima","Prender o ar por muito tempo"]},
+  leg_press_alto:{anim:"leg_press_alto",okTag:"Empurra com o calcanhar · glúteo",badTag:"Quadril descola do banco",n:"Leg press 45° (pés altos)",m:"Posterior e glúteos",e:"Leg press",u:"kg",inc:4,ok:["Pés na parte alta da plataforma","Empurre pelos calcanhares","Lombar apoiada"],bad:["Quadril descolando","Joelhos para dentro","Amplitude curta demais"]},
+  extensora:{anim:"extensora",okTag:"Estica até o fim · frente da coxa",badTag:"Chuta e tira o quadril",n:"Cadeira extensora",m:"Frente da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo do aparelho","Estique até o fim e segure 1 s","Desça devagar"],bad:["Chutar o peso","Tirar o quadril do banco","Descer soltando"]},
+  flexora:{anim:"flexora",okTag:"Dobra até o fim · posterior",badTag:"Levanta o quadril",n:"Cadeira flexora",m:"Posterior da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo","Dobre até o fim","Volte controlando"],bad:["Levantar o quadril","Movimento curto","Usar impulso"]},
+  adutora:{anim:"adutora",okTag:"Fecha controlando · parte de dentro",badTag:"Bate as almofadas",n:"Adutora (fechar as pernas)",m:"Adutores",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Feche controlando","Abra devagar"],bad:["Bater as almofadas","Abrir rápido demais"]},
+  abdutora:{anim:"abdutora",okTag:"Abre e segura · glúteo",badTag:"Balança o tronco",n:"Abdutora (abrir as pernas)",m:"Glúteos",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Abra e segure 1 s","Volte devagar"],bad:["Usar impulso","Sair do banco"]},
+  panturrilha_lp:{anim:"panturrilha",okTag:"Joelho reto · panturrilha",badTag:"Dobra os joelhos",n:"Panturrilha no leg press",m:"Panturrilha",e:"Leg press",u:"kg",inc:4,ok:["Só a ponta dos pés na plataforma","Desça alongando bem","Suba até o máximo e segure 1 s"],bad:["Dobrar os joelhos","Quicar embaixo","Fazer sem as travas"]},
+  abd_reverso:{anim:"abd_rev",okTag:"Lombar no chão · abdômen",badTag:"Balança as pernas · puxa o pescoço",n:"Abdominal reverso no chão",m:"Abdômen",e:"Chão",u:"rep",inc:0,ok:["Lombar colada no chão","Leve os joelhos ao peito tirando o quadril","Desça devagar"],bad:["Balançar as pernas","Puxar pelo pescoço"]},
+  remada_unilateral:{anim:"remada_uni",okTag:"Costas retas · cotovelo ao quadril",badTag:"Gira e arredonda as costas",n:"Remada com halter montado, um braço",m:"Costas",e:"Halter montado + banco",u:"kg",inc:4,lado:true,ok:["Mão e joelho apoiados no banco","Puxe o cotovelo em direção ao quadril","Costas retas"],bad:["Girar o tronco","Puxar com o bíceps","Arredondar as costas"]},
+  supino_halter:{anim:"supino_halter",okTag:"Desce até a linha do peito",badTag:"Desce demais · ombro sofre",n:"Supino reto com halteres montados",m:"Peito",e:"Halteres montados",u:"kg/halter",inc:4,ok:["Escápulas juntas","Desça até a linha do peito","Suba aproximando os halteres"],bad:["Cotovelos muito abertos","Bater os halteres em cima","Descer sem controle"]},
+  puxada_triangulo:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta com triângulo",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Peito alto","Puxe até a parte de cima do peito","Suba controlando"],bad:["Jogar o tronco para trás","Encolher os ombros"]},
+  crucifixo_voador:{anim:"crucifixo",okTag:"Fecha com a força do peito",badTag:"Ombro sobe · empurra com o braço",n:"Crucifixo no voador",m:"Peito",e:"Voador",u:"placa",inc:null,ok:["Cotovelos levemente dobrados","Feche pela força do peito","Abra devagar"],bad:["Abrir além do conforto do ombro","Empurrar com os braços"]},
+  voador_inverso:{anim:"voador_inv",okTag:"Abre até a linha do corpo",badTag:"Aperta as escápulas com força",n:"Voador inverso (ombro de trás)",m:"Ombro de trás",e:"Voador",u:"placa",inc:null,ok:["Peito no apoio","Abra os braços para trás","Movimento curto e controlado"],bad:["Juntar as escápulas com força","Usar impulso"]},
+  lateral_halter:{anim:"lateral_halter",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · encolhe e balança",n:"Elevação lateral com halteres",m:"Ombro lateral",e:"Halteres (montados ou de plástico)",u:"kg/halter",inc:2,ok:["Suba só até o ombro","Sem impulso"],bad:["Balançar o corpo","Subir acima do ombro"]},
+  martelo_corda:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca martelo na corda (polia baixa)",m:"Bíceps",e:"Polia baixa + corda",u:"placa",inc:null,ok:["Palmas viradas uma para a outra","Cotovelos parados"],bad:["Balançar o tronco"]},
+  triceps_cabeca:{anim:"triceps_cabeca",okTag:"Cotovelo parado · estica tudo",badTag:"Arqueia a lombar",n:"Tríceps acima da cabeça na corda",m:"Tríceps",e:"Polia + corda",u:"placa",inc:null,ok:["Cotovelos apontando para frente","Estique totalmente"],bad:["Abrir os cotovelos","Arquear a lombar"]},
+  stiff:{anim:"stiff",okTag:"Quadril para trás · coluna reta",badTag:"Coluna curva · barra longe",n:"Stiff com barra longa",m:"Posterior e glúteos",e:"Barra longa",u:"kg",inc:4,ok:["Quadril para trás, joelhos levemente dobrados","Barra próxima das pernas","Coluna neutra"],bad:["Arredondar a coluna","Barra longe do corpo","Descer além da sua amplitude"]},
+  elevacao_pelvica:{anim:"hip_thrust",okTag:"Quadril alinhado · glúteo",badTag:"Arqueia a lombar",n:"Elevação pélvica com barra",m:"Glúteos",e:"Barra + banco",u:"kg",inc:4,ok:["Costas apoiadas no banco","Suba até o quadril alinhar","Segure 1 s em cima"],bad:["Arquear a lombar em cima","Empurrar com a ponta dos pés"]},
+  prancha:{anim:"prancha",okTag:"Corpo em linha reta · abdômen",badTag:"Quadril cai ou sobe demais",n:"Prancha no chão",m:"Abdômen",e:"Chão",u:"seg",inc:0,ok:["Corpo em linha reta","Abdômen e glúteos firmes"],bad:["Quadril caindo","Quadril muito alto"]},
+  face_pull:{anim:"face_pull",okTag:"Cotovelos altos · ombro de trás",badTag:"Joga o corpo para trás",n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"placa",inc:null,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
+  encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento de ombros",m:"Trapézio",e:"Barra ou anilhas",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
+  triceps_testa:{anim:"triceps_testa",okTag:"Cotovelo parado · tríceps",badTag:"Cotovelo se mexe",n:"Tríceps testa com barra W",m:"Tríceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos apontando para o teto","Desça devagar"],bad:["Abrir os cotovelos","Mexer os ombros"]},
+  rosca_polia:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"placa",inc:null,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
+  triceps_corda:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"placa",inc:null,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
 };
 
 /* Vídeo real de referência: página exata do exercício no MuscleWiki (só link, nada é copiado) */
 const MW = {"supino_guiado": "smith-machine-bench-press", "puxada_aberta": "machine-pulldown", "supino_incl_guiado": "smith-machine-incline-bench-press", "remada_baixa": "machine-seated-cable-row", "lateral_cabo": "cable-low-single-arm-lateral-raise", "triceps_v": "cable-bar-pushdown", "rosca_w": "ez-bar-curl", "agachamento_guiado": "smith-machine-squat", "leg_press": "machine-leg-press", "extensora": "machine-leg-extension", "flexora": "machine-seated-leg-curl", "adutora": "machine-hip-adduction", "abdutora": "machine-hip-abduction", "panturrilha_lp": "calf-raises", "abd_reverso": "reverse-crunch", "remada_unilateral": "dumbbell-row-unilateral", "supino_halter": "dumbbell-bench-press", "puxada_triangulo": "machine-pulldown", "crucifixo_voador": "machine-pec-fly", "voador_inverso": "machine-reverse-fly", "lateral_halter": "dumbbell-lateral-raise", "martelo_corda": "cable-rope-hammer-curl", "triceps_cabeca": "cable-rope-overhead-tricep-extension", "stiff": "barbell-romanian-deadlift", "elevacao_pelvica": "barbell-hip-thrust", "leg_press_alto": "machine-leg-press", "prancha": "forearm-plank", "encolhimento": "barbell-shrug", "triceps_testa": "barbell-skullcrusher", "rosca_polia": "cable-bar-curl", "triceps_corda": "cable-rope-pushdown"};
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "1.4";
+const APP_VERSAO = "1.5";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -409,6 +409,7 @@ function reservaVis(sob){
   return `<div class="dots" aria-hidden="true">${h}</div>`;
 }
 function exConcluido(a,e){ const r=a.log[e.id]; return r && (r.pulou || r.sets.filter(x=>x.feito).length>=e.series); }
+function semCargaEx(lib){ return lib.u==="rep"||lib.u==="seg"; }
 function cardEx(a,e,i,cur){
   const lib = EXS[e.id], r = a.log[e.id] || {sets:[]}, done = exConcluido(a,e);
   const aberto = S.abertos[a.id+e.id] ?? (cur || false);
@@ -423,7 +424,7 @@ function cardEx(a,e,i,cur){
     rows += `<tr class="${st.feito?"ok":""}">
       <td class="sn">${k+1}</td>
       <td class="prev num">${p&&p.feito? (semCarga? p.reps+" "+repsL : `${p.kg}×${p.reps}`) : "—"}${sg?`<em class="${sg.up?"up":sg.down?"down":""}">${sg.txt}</em>`:""}</td>
-      ${semCarga?`<td></td>`:`<td><input inputmode="decimal" aria-label="Carga série ${k+1}" data-f="kg" data-ex="${e.id}" data-k="${k}" value="${st.kg??""}" placeholder="${sg?sg.kg:(p?p.kg:unid)}"></td>`}
+      ${semCarga?`<td></td>`:`<td><input inputmode="decimal" aria-label="Carga série ${k+1}" data-f="kg" data-ex="${e.id}" data-k="${k}" value="${st.kg??""}" placeholder="${sg?sg.kg:(p?p.kg:"?")}"></td>`}
       <td><input inputmode="numeric" aria-label="Repetições série ${k+1}" data-f="reps" data-ex="${e.id}" data-k="${k}" value="${st.reps??""}" placeholder="${sg?sg.reps:e.max}"></td>
       <td><button class="chk ${st.feito?"on":""}" aria-label="Concluir série ${k+1}" data-act="serie" data-ex="${e.id}" data-k="${k}">${I.check}</button></td>
     </tr>
@@ -436,9 +437,10 @@ function cardEx(a,e,i,cur){
       <div class="rx num">${e.series} × ${e.min}–${e.max}${lib.lado?" cada lado":""} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div>
     </button>
     ${aberto?`<div class="ex-b">
-      <button class="media" data-act="lib" data-ex="${e.id}"><div class="thumb">${I.play}</div><div class="grow small"><b>Ver execução</b><div class="muted">${esc(lib.m)} · ${esc(lib.e)}</div></div></button>
+      <button class="media" data-act="lib" data-ex="${e.id}"><div class="thumb" style="overflow:hidden">${animThumb(e.id)}</div><div class="grow small"><b>Ver execução 🟢🔴</b><div class="muted">${esc(lib.m)} · ${esc(lib.e)}</div></div></button>
       ${par?`<div class="tip" style="margin-bottom:10px">🔁 Dupla com <b>${esc(par)}</b></div>`:""}
       ${e.sobrar!=="—"?`<div class="stop">${reservaVis(e.sobrar)}<div><b>Pare quando ainda aguentar ${e.sobrar==="0"?"0 (até o limite)":"+"+e.sobrar.replace("–"," a +")}</b><span>repetições</span></div></div>`:""}
+      ${!prev&&!semCargaEx(lib)?`<div class="tip" style="margin-bottom:10px">✍️ <b>1º treino: escolha sua carga.</b> Toque no campo e digite. Use um peso que dê as repetições com boa execução.</div>`:""}
       <table class="sets"><thead><tr><th></th><th>Anterior</th>${lib.u==="rep"||lib.u==="seg"?"<th></th>":`<th>${lib.u==="placa"?"Placa":lib.u==="kg/halter"?"kg/halter":"kg"}</th>`}<th>${repsL}</th><th></th></tr></thead><tbody>${rows}</tbody></table>
       <div class="links">${r.pulou?`<button data-act="despular" data-ex="${e.id}">Desfazer pulo</button>`:`<button data-act="pular" data-ex="${e.id}">Pular exercício</button>`}</div>
     </div>`:""}
@@ -452,7 +454,7 @@ function vBiblioteca(){
   return `<div class="top"><div class="brand">Biblioteca</div><span class="pill">${Object.keys(EXS).length} exercícios</span></div>
   <div class="stack">
     <div class="filter">${["Todos",...grupos].map(g=>`<button class="${g===f?"on":""}" data-act="fil" data-v="${esc(g)}">${esc(g)}</button>`).join("")}</div>
-    <div class="card list">${itens.map(([id,x])=>`<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:48px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none">${I.play}</div><div class="grow"><div class="ellip"><b>${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div></div></button>`).join("")}</div>
+    <div class="card list">${itens.map(([id,x])=>`<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(id)}</div><div class="grow"><div class="ellip"><b>${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div></div></button>`).join("")}</div>
     
   </div>`;
 }
@@ -702,6 +704,328 @@ const ANIM = {
     return g;
   }
 };
+/* ===== Motor de animação genérico (vista lateral e frontal) ===== */
+const FIG = (()=>{
+  const G="#22c55e", Rd="#e5262e", BO="#c9ccd2", DIM="#5b5e66", EQ="#45464d", EQ2="#2a2a2e";
+  const PI=Math.PI, rad=d=>d*PI/180, v=a=>[Math.sin(rad(a)),Math.cos(rad(a))];
+  const add=(p,a,l)=>{const d=v(a);return[p[0]+d[0]*l,p[1]+d[1]*l]};
+  const ang=(p,q)=>Math.atan2(q[0]-p[0],q[1]-p[1])*180/PI;
+  const mix=(x,y,t)=>Array.isArray(x)?x.map((xi,i)=>xi+(y[i]-xi)*t):(typeof x==="number"&&typeof y==="number")?x+(y-x)*t:(t<.5?x:y);
+  const r1=n=>Math.round(n*10)/10, P=p=>`${r1(p[0])} ${r1(p[1])}`;
+  const ik=(p0,p2,l1,l2,s)=>{const dx=p2[0]-p0[0],dy=p2[1]-p0[1],D=Math.hypot(dx,dy)||1,ux=dx/D,uy=dy/D;
+    const d=Math.max(Math.abs(l1-l2)+.01,Math.min(D,l1+l2-.01)),a=(l1*l1-l2*l2+d*d)/(2*d),h=Math.sqrt(Math.max(0,l1*l1-a*a));
+    const j=[p0[0]+ux*a-s*uy*h,p0[1]+uy*a+s*ux*h]; const e=add(j,ang(j,p2),l2); return [j,e];};
+  /* desenho */
+  const L=(a,b,c,w)=>`<line x1="${r1(a[0])}" y1="${r1(a[1])}" x2="${r1(b[0])}" y2="${r1(b[1])}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const glow=(pt,c,r)=>`<circle cx="${r1(pt[0])}" cy="${r1(pt[1])}" r="${r}" fill="${c}" opacity=".22"/><circle cx="${r1(pt[0])}" cy="${r1(pt[1])}" r="${r}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="4 3"/>`;
+  const h = {
+    L, G, Rd, EQ, EQ2, add, ang,
+    rect:(x,y,w,hh,c=EQ2,rx=3)=>`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(hh)}" rx="${rx}" fill="${c}"/>`,
+    poly:(pts,c=EQ2)=>`<polygon points="${pts.map(P).join(" ")}" fill="${c}"/>`,
+    plate:(pt,r=15)=>`<circle cx="${r1(pt[0])}" cy="${r1(pt[1])}" r="${r}" fill="#1a1a1d" stroke="${DIM}" stroke-width="4"/><circle cx="${r1(pt[0])}" cy="${r1(pt[1])}" r="3.5" fill="${DIM}"/>`,
+    db:(pt,horiz)=>horiz?`<rect x="${r1(pt[0]-13)}" y="${r1(pt[1]-4)}" width="26" height="8" rx="2" fill="${DIM}"/><rect x="${r1(pt[0]-16)}" y="${r1(pt[1]-8)}" width="7" height="16" rx="2" fill="#77797f"/><rect x="${r1(pt[0]+9)}" y="${r1(pt[1]-8)}" width="7" height="16" rx="2" fill="#77797f"/>`
+                         :`<rect x="${r1(pt[0]-8)}" y="${r1(pt[1]-8)}" width="16" height="16" rx="4" fill="#77797f" stroke="#1a1a1d" stroke-width="2"/>`,
+    cab:(a,b)=>L(a,b,"#8a8c93",1.6)+`<circle cx="${r1(b[0])}" cy="${r1(b[1])}" r="5" fill="none" stroke="${EQ}" stroke-width="3"/>`,
+    rail:x=>L([x,14],[x,234],"#2a2a2e",5),
+    pad:(pt,r=8)=>`<circle cx="${r1(pt[0])}" cy="${r1(pt[1])}" r="${r}" fill="#2f3036" stroke="${EQ}" stroke-width="2"/>`
+  };
+  const floor=`<line x1="12" y1="236" x2="188" y2="236" stroke="#2c2c30" stroke-width="3"/>`;
+
+  /* ---------- vista lateral (de perfil, olhando para a direita) ---------- */
+  function joints(o){
+    const k=o.k||1, Lt=70*k, Lth=54*k, Lsh=52*k, Lu=38*k, Lf=34*k;
+    const H=o.H; let S=o.S?o.S:add(H,o.tr,Lt); const tr=ang(H,S);
+    let K,A; if(o.A){[K,A]=ik(H,o.A,Lth,Lsh,o.kb??-1);} else {K=add(H,o.th,Lth);A=add(K,o.sh,Lsh);}
+    let E,W; if(o.W){[E,W]=ik(S,o.W,Lu,Lf,o.eb??1);} else {E=add(S,o.ua,Lu);W=add(E,o.fa,Lf);}
+    const T=add(A,o.ft??90,16*k), Hd=add(S,tr+(o.hd||0),21*k);
+    const d=v(tr), pp=[d[1],-d[0]];                     // pp = lado das costas
+    const M=[(H[0]+S[0])/2,(H[1]+S[1])/2], cv=o.cv||0, Q=[M[0]+pp[0]*cv*2,M[1]+pp[1]*cv*2];
+    const qb=t=>[(1-t)*(1-t)*H[0]+2*(1-t)*t*Q[0]+t*t*S[0],(1-t)*(1-t)*H[1]+2*(1-t)*t*Q[1]+t*t*S[1]];
+    const C=qb(.74).map((x,i)=>x-pp[i]*7), B=qb(.6).map((x,i)=>x+pp[i]*9), Ab=qb(.32).map((x,i)=>x-pp[i]*6), Lo=qb(.3).map((x,i)=>x+pp[i]*4);
+    const mid=(a,b,t=.5)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+    return {k,H,S,K,A,E,W,T,Hd,Q,qb,C,B,Ab,Lo,tr,pp,Th:mid(H,K,.55),Sh:mid(K,A,.4),Ua:mid(S,E,.55),Fa:mid(E,W,.4)};
+  }
+  function body(J,col){
+    const k=J.k, seg=(a,b,key,w)=>L(a,b,col[key]||BO,w*k);
+    const curve=(t0,t1,c,w)=>{let s="";for(let i=0;i<=8;i++){const p=J.qb(t0+(t1-t0)*i/8);s+=(i?"L":"M")+P(p);}return `<path d="${s}" stroke="${c}" stroke-width="${w*k}" fill="none" stroke-linecap="round"/>`;};
+    let g = `<path d="M${P(J.A)} L${P(J.T)}" stroke="${col.ft||BO}" stroke-width="${8*k}" stroke-linecap="round"/>`;
+    g += seg(J.A,J.K,"sh",12) + seg(J.K,J.H,"th",15);
+    g += curve(0,1,col.tr||BO,16);
+    if(col.trU) g += curve(.5,1,col.trU,16);
+    if(col.trL) g += curve(0,.5,col.trL,16);
+    g += `<circle cx="${r1(J.Hd[0])}" cy="${r1(J.Hd[1])}" r="${11.5*k}" fill="${col.hd||BO}"/>`;
+    g += seg(J.S,J.E,"ua",11) + seg(J.E,J.W,"fa",10);
+    return g;
+  }
+  function side(D,p,mode){
+    const bad=mode==="bad";
+    const A0=bad?{...D.a,...(D.ba||{})}:D.a, B0=bad?{...D.a,...D.b,...(D.ba||{}),...(D.bb||{})}:{...D.a,...D.b};
+    const o={}; for(const key of new Set([...Object.keys(A0),...Object.keys(B0)])) o[key]=mix(A0[key]??B0[key],B0[key]??A0[key],p);
+    const J=joints(o), col={};
+    const on=bad?(D.bm||[]):(D.hl||[]), c=bad?Rd:G;
+    on.forEach(key=>col[key]=c);
+    let g=floor + (D.eq?D.eq(J,h,p,bad):"");
+    if(!bad && D.ln) g += `<path d="M${P(J.H.map((x,i)=>x+J.pp[i]*14))} L${P(J.S.map((x,i)=>x+J.pp[i]*14))}" stroke="${G}" stroke-width="2" stroke-dasharray="5 4"/>`;
+    g += body(J,col);
+    if(D.fr) g += D.fr(J,h,p,bad);
+    const gl=bad?(D.bg||[]):(D.gl||[]);
+    gl.forEach(x=>{const [n,r=13]=[].concat(x); const pt=typeof n==="function"?n(J):J[n]; if(pt) g+=glow(pt,c,r);});
+    return g;
+  }
+
+  /* ---------- vista frontal ---------- */
+  // o: sy (encolher), tl (inclinar tronco), sit (sentado), kx (abertura dos joelhos sentado)
+  // braços: R/L {a: ângulo do braço (0 = para baixo, 90 = para o lado), f: antebraço} ou {hz: abertura horizontal 0..90}
+  function front(o,col,eq,fr,gl,c){
+    const hip=[100,o.sit?150:138], tl=o.tl||0, sy=o.sy||0, sx=o.sx||0;
+    const rot=(pt)=>{const r=rad(tl),dx=pt[0]-hip[0],dy=pt[1]-hip[1];return[hip[0]+dx*Math.cos(r)-dy*Math.sin(r),hip[1]+dx*Math.sin(r)+dy*Math.cos(r)];};
+    const neck=rot([100,hip[1]-66]), Hd=rot([100,hip[1]-86]);
+    const SR=rot([121+sx,hip[1]-62-sy]), SL=rot([79-sx,hip[1]-62-sy]);
+    const arm=(S,a,s)=>{ if(a.hz!=null){ const e=[S[0]+s*38*Math.sin(rad(a.hz)),S[1]+6], w=[S[0]+s*70*Math.sin(rad(a.hz)),S[1]+4]; return [e,w]; }
+      const ta=a.a+(s>0?tl:-tl)*0; const E=[S[0]+s*38*Math.sin(rad(ta)),S[1]+38*Math.cos(rad(ta))]; const f=a.f??ta; return [E,[E[0]+s*34*Math.sin(rad(f)),E[1]+34*Math.cos(rad(f))]]; };
+    const [ER,WR]=arm(SR,o.R||{a:6},1), [EL,WL]=arm(SL,o.L||o.R||{a:6},-1);
+    const HR=[112,hip[1]], HL=[88,hip[1]];
+    let KR,KL,AR,AL;
+    if(o.sit){ const kx=o.kx??16; KR=[100+kx,hip[1]+24]; KL=[100-kx,hip[1]+24]; AR=[100+kx*.9+4,226]; AL=[100-kx*.9-4,226]; }
+    else { KR=[113,hip[1]+46]; KL=[87,hip[1]+46]; AR=[114,226]; AL=[86,226]; }
+    const J={Hd,neck,SR,SL,ER,EL,WR,WL,HR,HL,KR,KL,AR,AL,hip,TR:[(neck[0]+SR[0])/2,neck[1]-1],TL:[(neck[0]+SL[0])/2,neck[1]-1]};
+    const cc=k=>col[k]||BO;
+    let g=floor+(eq?eq(J,h):"");
+    g+=L(AR,[AR[0]+5,232],BO,8)+L(AL,[AL[0]-5,232],BO,8);
+    g+=L(AR,KR,cc("sh"),12)+L(AL,KL,cc("sh"),12)+L(KR,HR,cc("thR")||cc("th"),15)+L(KL,HL,cc("thL")||cc("th"),15);
+    if(col.thIn){ g+=L(KR.map((x,i)=>i?x:x-4),HR.map((x,i)=>i?x:x-4),col.thIn,6)+L(KL.map((x,i)=>i?x:x+4),HL.map((x,i)=>i?x:x+4),col.thIn,6); }
+    g+=L(HR,HL,cc("hp"),15)+L([100,hip[1]],neck,cc("tr"),18)+L(SR,SL,cc("sl"),13);
+    if(col.trap) g+=L(neck,SR,col.trap,9)+L(neck,SL,col.trap,9);
+    g+=`<circle cx="${r1(Hd[0])}" cy="${r1(Hd[1])}" r="12" fill="${cc("hd")}"/>`;
+    g+=L(SR,ER,col.uaR||cc("ua"),11)+L(ER,WR,cc("fa"),10)+L(SL,EL,col.uaL||cc("ua"),11)+L(EL,WL,cc("fa"),10);
+    if(col.dl){ g+=`<circle cx="${r1(SR[0]+3)}" cy="${r1(SR[1]+2)}" r="8" fill="${col.dl}"/>`; if(!o.one) g+=`<circle cx="${r1(SL[0]-3)}" cy="${r1(SL[1]+2)}" r="8" fill="${col.dl}"/>`; }
+    if(fr) g+=fr(J,h);
+    (gl||[]).forEach(x=>{const [n,r=13]=[].concat(x); const pt=typeof n==="function"?n(J):J[n]; if(pt) g+=glow(pt,c,r);});
+    return g;
+  }
+  function frontAnim(D,p,mode){
+    const bad=mode==="bad";
+    const A0=bad?{...D.a,...(D.ba||{})}:D.a, B0=bad?{...D.a,...D.b,...(D.ba||{}),...(D.bb||{})}:{...D.a,...D.b};
+    const o={}; for(const key of new Set([...Object.keys(A0),...Object.keys(B0)])){ const x=A0[key]??B0[key], y=B0[key]??A0[key];
+      o[key]=(x&&typeof x==="object"&&!Array.isArray(x))?Object.fromEntries(Object.keys({...x,...y}).map(kk=>[kk,mix(x[kk]??y[kk],y[kk]??x[kk],p)])):mix(x,y,p); }
+    if(D.osc&&bad) D.osc(o,p);
+    const col={}; (bad?(D.bm||[]):(D.hl||[])).forEach(k=>col[k]=bad?Rd:G);
+    return front(o,col,D.eq,D.fr,bad?D.bg:D.gl,bad?Rd:G);
+  }
+  return { side, frontAnim, h };
+})();
+
+/* Definições: a = começo, b = fim (certo); ba/bb = mudanças no errado.
+   hl = músculo verde · gl = círculos verdes · bm = parte vermelha · bg = círculos vermelhos */
+const BENCH = (y,x0=26,x1=150)=>(J,h)=>h.rect(x0,y,x1-x0,9,"#2f3036")+h.rect(x0+12,y+9,6,236-y-9)+h.rect(x1-18,y+9,6,236-y-9);
+const SEAT = (x,y,w=46,back=true,bx=null,by=60)=>(J,h)=>h.rect(x,y,w,9,"#2f3036")+h.rect(x+w/2-3,y+9,6,236-y-9)+(back?h.rect(bx??x-4,by,9,y-by+4,"#2f3036"):"");
+const SIDE_DEF = {
+  supino:{
+    a:{H:[128,160],S:[58,160],A:[160,226],W:[88,92],eb:1},
+    b:{W:[88,142]},
+    bb:{H:[128,138],W:[88,150]},
+    hl:["trU"], gl:["C"], bm:["trL"], bg:["H"],
+    eq:(J,h)=>BENCH(168)(J,h)+h.rail(88), fr:(J,h)=>h.plate(J.W,14)
+  },
+  supino_halter:{
+    a:{H:[128,160],S:[58,160],A:[160,226],W:[66,92],eb:1},
+    b:{W:[78,138]},
+    bb:{W:[80,170]},
+    hl:["trU"], gl:["C"], bm:["ua"], bg:["S"],
+    eq:BENCH(168), fr:(J,h)=>h.db(J.W,true)
+  },
+  supino_incl:{
+    a:{H:[122,176],tr:238,A:[162,226],W:[82,84],eb:1},
+    b:{W:[82,128]},
+    ba:{tr:210,W:[98,58]}, bb:{W:[98,102]},
+    hl:["trU"], gl:["C"], bm:["tr"], bg:["S"],
+    eq:(J,h)=>h.poly([[J.H[0]+6,J.H[1]+10],J.S.map((x,i)=>x+(i?14:4)),J.S.map((x,i)=>x+(i?4:-10)),[J.H[0]+8,J.H[1]]],"#2f3036")+h.rect(J.H[0]-24,J.H[1]+6,40,8,"#2f3036")+h.rect(J.H[0]-6,J.H[1]+14,6,236-J.H[1]-14)+h.rail(82),
+    fr:(J,h)=>h.plate(J.W,14)
+  },
+  puxada:{
+    a:{H:[86,182],tr:186,th:90,sh:0,W:[98,42],eb:-1},
+    b:{W:[96,112]},
+    ba:{}, bb:{tr:222,W:[110,112]},
+    hl:["ua"], gl:["B"], bm:["tr"], bg:["Lo"],
+    eq:(J,h)=>SEAT(64,190,46,false)(J,h)+h.pad([J.K[0]-2,J.K[1]-12],8),
+    fr:(J,h)=>h.cab(J.W,[100,14])+h.L([J.W[0]-14,J.W[1]],[J.W[0]+14,J.W[1]],"#8a8c93",4)
+  },
+  remada_baixa:{
+    a:{H:[64,204],tr:166,A:[164,206],kb:1,ft:180,W:[150,136],eb:1},
+    b:{tr:188,W:[92,168]},
+    ba:{tr:140,cv:7}, bb:{tr:212,cv:0},
+    hl:["ua"], gl:["B"], bm:["tr"], bg:["Lo"], ln:true,
+    eq:(J,h)=>h.rect(30,212,70,8,"#2f3036")+h.rect(176,150,10,80,"#2f3036")+h.rect(168,180,10,40,"#2f3036"),
+    fr:(J,h)=>h.cab(J.W,[180,190])
+  },
+  remada_uni:{
+    a:{H:[60,132],tr:92,A:[58,226],kb:-1,W:[126,206],eb:-1},
+    b:{W:[104,148]},
+    ba:{cv:5}, bb:{tr:128,cv:9},
+    hl:["ua"], gl:["B"], bm:["tr"], bg:["B"], ln:true,
+    eq:(J,h)=>h.rect(70,170,110,9,"#2f3036")+h.rect(80,179,6,57)+h.rect(165,179,6,57)+h.L(J.S,[J.S[0]+18,170],"#7c7f86",9),
+    fr:(J,h)=>h.db(J.W)
+  },
+  triceps_polia:{
+    a:{H:[92,126],tr:174,A:[96,226],ua:4,fa:165},
+    b:{fa:2},
+    ba:{ua:40,fa:175}, bb:{tr:152,ua:-6,fa:0},
+    hl:["ua"], gl:["Ua"], bm:["ua"], bg:["E"],
+    eq:(J,h)=>h.rect(176,10,10,226,"#2a2a2e"), fr:(J,h)=>h.cab(J.W,[176,22])
+  },
+  triceps_cabeca:{
+    a:{H:[88,126],tr:158,A:[92,226],ua:178,fa:330},
+    b:{fa:172},
+    bb:{tr:196,cv:-6,ua:140},
+    hl:["ua"], gl:["Ua"], bm:["trL"], bg:["Lo"],
+    eq:(J,h)=>h.rect(14,10,10,226,"#2a2a2e"), fr:(J,h)=>h.cab(J.W,[24,40])
+  },
+  rosca:{
+    a:{H:[92,126],tr:180,A:[94,226],ua:2,fa:4},
+    b:{fa:150},
+    bb:{tr:208,ua:36},
+    hl:["ua"], gl:["Ua"], bm:["tr"], bg:["Lo"],
+    fr:(J,h)=>h.plate(J.W,6)+h.L([J.W[0]-3,J.W[1]-8],[J.W[0]+3,J.W[1]+8],"#8a8c93",4)
+  },
+  rosca_polia:{
+    a:{H:[88,126],tr:180,A:[90,226],ua:2,fa:12},
+    b:{fa:150},
+    bb:{tr:208,ua:36},
+    hl:["ua"], gl:["Ua"], bm:["tr"], bg:["Lo"],
+    eq:(J,h)=>h.rect(174,190,14,46,"#2a2a2e"), fr:(J,h)=>h.cab(J.W,[176,214])
+  },
+  agach:null,
+  leg_press:{
+    a:{H:[90,200],tr:232,A:[154,140],kb:-1,ft:226,W:[96,196],eb:1,k:.85},
+    b:{A:[126,166]},
+    bb:{H:[98,188],A:[120,168],cv:8},
+    hl:["th"], gl:["Th"], bm:["trL"], bg:["H"],
+    eq:(J,h)=>h.poly([J.H.map((x,i)=>x+(i?12:8)),J.S.map((x,i)=>x+(i?14:-2)),J.S.map((x,i)=>x+(i?4:-10)),J.H.map((x,i)=>x+(i?2:0))],"#2f3036")+h.rect(J.H[0]-20,J.H[1]+10,40,236-J.H[1]-10,"#222225")+h.L([112,210],[192,130],"#2a2a2e",6)+h.L([J.A[0]-22,J.A[1]-22],[J.A[0]+12,J.A[1]+12],"#5b5e66",7)
+  },
+  leg_press_alto:{
+    a:{H:[90,200],tr:232,A:[150,134],kb:-1,ft:226,W:[96,196],eb:1,k:.85},
+    b:{A:[124,158]},
+    bb:{H:[98,188],A:[118,160],cv:8},
+    hl:["th"], gl:["H","Th"], bm:["trL"], bg:["H"],
+    eq:(J,h)=>h.poly([J.H.map((x,i)=>x+(i?12:8)),J.S.map((x,i)=>x+(i?14:-2)),J.S.map((x,i)=>x+(i?4:-10)),J.H.map((x,i)=>x+(i?2:0))],"#2f3036")+h.rect(J.H[0]-20,J.H[1]+10,40,236-J.H[1]-10,"#222225")+h.L([112,210],[192,130],"#2a2a2e",6)+h.L([J.T[0]-6,J.T[1]-6],[J.A[0]+16,J.A[1]+16],"#5b5e66",7)
+  },
+  panturrilha:{
+    a:{H:[90,200],tr:232,A:[152,136],kb:-1,ft:232,W:[96,196],eb:1,k:.85},
+    b:{ft:172},
+    ba:{A:[140,148]}, bb:{A:[124,160],ft:200},
+    hl:["sh"], gl:["Sh"], bm:["th"], bg:["K"],
+    eq:(J,h)=>h.poly([J.H.map((x,i)=>x+(i?12:8)),J.S.map((x,i)=>x+(i?14:-2)),J.S.map((x,i)=>x+(i?4:-10)),J.H.map((x,i)=>x+(i?2:0))],"#2f3036")+h.rect(J.H[0]-20,J.H[1]+10,40,236-J.H[1]-10,"#222225")+h.L([112,210],[192,130],"#2a2a2e",6)+h.L(J.T.map((x,i)=>x-(i?18:18)),J.T.map((x,i)=>x+(i?14:14)),"#5b5e66",7)
+  },
+  extensora:{
+    a:{H:[66,172],tr:190,th:90,sh:352,W:[74,178]},
+    b:{sh:86},
+    bb:{H:[70,158],th:80},
+    hl:["th"], gl:["Th"], bm:["trL"], bg:["H"],
+    eq:SEAT(46,180,52,true,40,96), fr:(J,h)=>h.pad(J.A.map((x,i)=>x+(i?0:6)-(i?8:0)),7)+h.L(J.K,[J.K[0],236],"#2a2a2e",4)
+  },
+  flexora:{
+    a:{H:[66,172],tr:190,th:90,sh:84,W:[74,178]},
+    b:{sh:330},
+    bb:{H:[70,160],th:78,tr:204},
+    hl:["th"], gl:["Th"], bm:["trL"], bg:["H"],
+    eq:SEAT(46,180,52,true,40,96), fr:(J,h)=>h.pad([J.Th[0],J.Th[1]-12],7)+h.pad(J.A.map((x,i)=>x+(i?6:-4)),7)
+  },
+  stiff:{
+    a:{H:[96,128],tr:180,A:[98,226],kb:-1,W:[100,128],eb:1},
+    b:{H:[66,130],tr:104,W:[114,176]},
+    bb:{tr:92,cv:10,W:[150,196]},
+    hl:["th"], gl:["H","Th"], bm:["tr"], bg:["B"], ln:true,
+    fr:(J,h)=>h.plate(J.W,16)
+  },
+  hip_thrust:{
+    a:{H:[100,214],S:[48,166],A:[160,226],kb:-1,W:[100,198],eb:1},
+    b:{H:[116,160],W:[116,146]},
+    bb:{H:[118,146],cv:-9},
+    hl:[], gl:[["H",15]], bm:["trL"], bg:["Lo"],
+    eq:(J,h)=>h.rect(14,170,40,66,"#2f3036"), fr:(J,h)=>h.plate([J.H[0],J.H[1]-14],15)
+  },
+  abd_rev:{
+    a:{H:[116,224],S:[48,226],th:160,sh:86,ua:84,fa:92,ft:180},
+    b:{H:[106,212],th:214,sh:134},
+    ba:{th:120,sh:110,hd:-24}, bb:{th:200,sh:150,hd:-30},
+    hl:["trL"], gl:["Ab"], bm:["th"], bg:["Hd"]
+  },
+  prancha:{
+    a:{H:[100,202],S:[40,200],A:[189,218],kb:1,ua:0,fa:90,k:.84,ft:8},
+    b:{H:[100,199]},
+    ba:{H:[100,216]}, bb:{H:[104,178]},
+    hl:["trL"], gl:["Ab"], bm:["trL"], bg:["H"], ln:true
+  },
+  triceps_testa:{
+    a:{H:[128,160],S:[58,160],A:[160,226],ua:200,fa:200},
+    b:{fa:282},
+    ba:{ua:200}, bb:{ua:140,fa:250},
+    hl:["ua"], gl:["Ua"], bm:["ua"], bg:["S"],
+    eq:BENCH(168), fr:(J,h)=>h.plate(J.W,6)
+  },
+  face_pull:{
+    a:{H:[80,126],tr:186,A:[84,226],W:[150,62],eb:-1},
+    b:{W:[100,38]},
+    bb:{tr:212,W:[110,80],eb:1},
+    hl:["ua"], gl:["S"], bm:["tr"], bg:["Lo"],
+    eq:(J,h)=>h.rect(176,10,10,226,"#2a2a2e"), fr:(J,h)=>h.cab(J.W,[176,40])
+  }
+};
+const FRONT_DEF = {
+  lateral_halter:{
+    a:{R:{a:10,f:8}}, b:{R:{a:84,f:76}},
+    bb:{R:{a:118,f:112},sy:9,tl:6},
+    hl:["dl","ua"], gl:[["SR",12],["SL",12]], bm:["trap"], bg:[["TR",10]],
+    fr:(J,h)=>h.db(J.WR)+h.db(J.WL)
+  },
+  lateral_cabo:{
+    a:{one:1,R:{a:12,f:10},L:{a:14,f:12}}, b:{R:{a:84,f:78}},
+    bb:{R:{a:120,f:112},sy:8,tl:-8},
+    hl:["uaR"], gl:[["SR",12]], bm:["trap","tr"], bg:[["TR",10]],
+    eq:(J,h)=>h.rect(14,150,12,86,"#2a2a2e"), fr:(J,h)=>h.cab(J.WR,[26,222])+h.L([J.WL[0],J.WL[1]-6],[J.WL[0],J.WL[1]+6],"#8a8c93",3)
+  },
+  crucifixo:{
+    a:{sit:1,R:{hz:84},kx:16}, b:{R:{hz:14}},
+    bb:{R:{hz:4},sy:6}, ba:{R:{hz:100}},
+    hl:["tr","sl"], gl:[[J=>[100,J.neck[1]+16],16]], bm:["ua"], bg:[["SR",12],["SL",12]],
+    eq:(J,h)=>h.rect(72,60,56,96,"#1d1d20",8)+h.rect(76,158,48,8,"#2f3036"),
+    fr:(J,h)=>h.L([J.WR[0],J.WR[1]-14],[J.WR[0],J.WR[1]+14],"#5b5e66",6)+h.L([J.WL[0],J.WL[1]-14],[J.WL[0],J.WL[1]+14],"#5b5e66",6)
+  },
+  voador_inv:{
+    a:{sit:1,R:{hz:12},kx:16}, b:{R:{hz:80}},
+    bb:{R:{hz:100},sx:-6,tl:0},
+    hl:["ua"], gl:[["SR",12],["SL",12]], bm:["sl"], bg:[[J=>[100,J.neck[1]+12],12]],
+    eq:(J,h)=>h.rect(84,64,32,90,"#1d1d20",8)+h.rect(76,158,48,8,"#2f3036"),
+    fr:(J,h)=>h.L([J.WR[0],J.WR[1]-14],[J.WR[0],J.WR[1]+14],"#5b5e66",6)+h.L([J.WL[0],J.WL[1]-14],[J.WL[0],J.WL[1]+14],"#5b5e66",6)
+  },
+  encolhimento:{
+    a:{R:{a:8,f:6},sy:0}, b:{sy:14},
+    bb:{R:{a:20,f:70},sy:8},
+    osc:(o,p)=>{o.sx=Math.sin(p*Math.PI*2)*7; o.sy+=Math.cos(p*Math.PI*2)*4;},
+    hl:["trap"], gl:[["TR",10],["TL",10]], bm:["fa"], bg:[["ER",10],["EL",10]],
+    fr:(J,h)=>h.L([J.WL[0]-14,J.WL[1]],[J.WR[0]+14,J.WR[1]],"#8a8c93",5)+h.plate([J.WL[0]-18,J.WL[1]],10)+h.plate([J.WR[0]+18,J.WR[1]],10)
+  },
+  adutora:{
+    a:{sit:1,R:{a:24,f:20},kx:40}, b:{kx:10},
+    ba:{kx:46}, bb:{kx:4},
+    hl:["thIn"], gl:[[J=>[J.KR[0]-6,J.KR[1]-12],10],[J=>[J.KL[0]+6,J.KL[1]-12],10]], bm:["th"], bg:[[J=>[100,J.KR[1]],12]],
+    eq:(J,h)=>h.rect(72,60,56,96,"#1d1d20",8)+h.rect(66,158,68,8,"#2f3036"),
+    fr:(J,h)=>h.pad([J.KR[0]-8,J.KR[1]],6)+h.pad([J.KL[0]+8,J.KL[1]],6)
+  },
+  abdutora:{
+    a:{sit:1,R:{a:24,f:20},kx:12}, b:{kx:42},
+    bb:{tl:0,kx:44},
+    osc:(o,p)=>{o.tl=Math.sin(p*Math.PI*2)*10;},
+    hl:["thR","thL","hp"], gl:[["HR",11],["HL",11]], bm:["tr"], bg:[[J=>J.neck,12]],
+    eq:(J,h)=>h.rect(72,60,56,96,"#1d1d20",8)+h.rect(66,158,68,8,"#2f3036"),
+    fr:(J,h)=>h.pad([J.KR[0]+8,J.KR[1]],6)+h.pad([J.KL[0]-8,J.KL[1]],6)
+  }
+};
+/* liga cada animação ao motor */
+for(const [n,D] of Object.entries(SIDE_DEF)) if(D) ANIM[n]=(p,m)=>FIG.side(D,p,m);
+for(const [n,D] of Object.entries(FRONT_DEF)) ANIM[n]=(p,m)=>FIG.frontAnim(D,p,m);
+
+function animThumb(id){ const x=EXS[id]; return x&&x.anim&&ANIM[x.anim]?`<svg viewBox="0 0 200 260" style="width:100%;height:100%;display:block" aria-hidden="true">${ANIM[x.anim](0.85,"ok")}</svg>`:I.play; }
 let animT0=performance.now();
 (function loop(now){
   const els=document.querySelectorAll("svg[data-anim]");
