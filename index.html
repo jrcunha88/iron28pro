@@ -487,6 +487,7 @@ function sheetRelatorio(dias){
     `💪 Séries: ${R.series}${R.volKg?` · volume ${Math.round(R.volKg).toLocaleString("pt-BR")} kg`:""}`,
     `🎯 Séries por músculo: ${Object.entries(R.porMusc).map(([m,n])=>m+" "+n).join(", ")||"—"}`,
     `📈 Cargas que subiram: ${evoL.filter(e=>e.up&&e.n>1).map(e=>EXS[e.id].n+" "+e.a.kg+"→"+e.b.kg+unid(e.id)).join("; ")||"ainda sem comparação"}`,
+    `✅ Check-ins: ${R.ses.filter(s=>s.checkin).length} (ajustados: ${R.ses.filter(s=>s.checkin&&s.checkin.ajustes.length).length})`,
     `🗓️ Treinos em semana ajustada: ${R.ses.filter(s=>s.semana).length}`,
     `🚶 Cardio: ${R.card.length}x · ${R.card.reduce((a,c)=>a+c.min,0)} min`,
     `😴 Sono médio: ${sm?sm.toFixed(1)+" h":"—"}`,
@@ -504,7 +505,7 @@ function sheetRelatorio(dias){
       <div class="card stat"><div class="lbl">Cardio</div><div class="v num">${R.card.length}x</div><div class="small muted">${R.card.reduce((a,c)=>a+c.min,0)} min</div></div>
       <div class="card stat"><div class="lbl">Sono</div><div class="v num">${sm?sm.toFixed(1)+" h":"—"}</div><div class="small muted">média</div></div>
     </div>
-    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}${s.checkin?`<div class="small muted" style="font-weight:400">⏱${s.checkin.tempo}′ · 😴${s.checkin.sono??"?"}h · ${{baixa:"😫",ok:"😐",alta:"💪"}[s.checkin.energia]||""}${s.checkin.ajustes.length?" · "+esc(s.checkin.ajustes.join(", ")):""}</div>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
     <div class="card stack" style="gap:8px"><h3>Séries por músculo</h3>${Object.entries(R.porMusc).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<div class="small"><div class="row between"><span>${esc(m)}</span><b class="num">${n}</b></div><div class="bar"><i style="width:${n/maxM*100}%"></i></div></div>`).join("")||`<p class="muted small" style="margin:0">—</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Evolução de carga</h3>${evoL.length?evoL.map(e=>`<div class="li small num"><span class="grow ellip">${esc(EXS[e.id].n)}</span><span class="muted">${e.a.kg}×${e.a.reps}</span><b style="color:${e.up?"var(--green)":e.dn?"var(--red-hi)":"var(--fg)"}">→ ${e.b.kg}×${e.b.reps} ${e.up?"▲":e.dn?"▼":"="}</b></div>`).join(""):`<p class="muted small" style="margin:0">Aparece depois dos treinos.</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Peso</h3><div class="small">${p0?`${p0.peso} kg${p1!==p0?` → <b>${p1.peso} kg</b> (${(p1.peso-p0.peso>0?"+":"")+(p1.peso-p0.peso).toFixed(1)})`:""}`:`<span class="muted">Registre o peso em Evolução.</span>`}</div></div>
@@ -580,6 +581,51 @@ function cardSemana(){
     <button class="btn ${venceu?"btn-red":"btn-ghost"}" data-act="semanaSair">↩ Voltar ao meu treino (${esc((S.plano||PROTO_BASE).versao)})</button></div>`;
 }
 
+/* ===================== CHECK-IN ANTES DO TREINO ===================== */
+const exSess = a => (a && a.ex) ? a.ex : exOf(a.treino);
+const tup = e => [e.id,e.series,e.min,e.max,e.desc,e.sobrar,e.par||undefined];
+const obj = (a,base) => ({id:a[0],base:base||a[0],series:a[1],min:a[2],max:a[3],desc:a[4],sobrar:a[5],par:a[6]||null});
+function balanco(t, c){
+  const orig=exOf(t), baseDe={}; orig.forEach(e=>baseDe[e.id]=e.base);
+  const T={ex:orig.map(tup)}, est=estMin(T), tags=[];
+  if(c.sono!=null && c.sono<5 || c.energia==="baixa"){ T.ex.forEach(a=>{ if(a[5]!=="—") a[1]=Math.max(1,a[1]-1); }); tags.push("−1 série ("+(c.energia==="baixa"?"energia":"sono")+")"); }
+  if(c.tempo < estMin(T)){ cortarTempo(T,c.tempo); tags.push("cortado para "+c.tempo+" min"); }
+  const ids=new Set(T.ex.map(a=>a[0]));
+  const podeBonus = c.tempo>=estMin(T)+8 && (c.sono==null||c.sono>=6) && c.energia==="alta";
+  let bonus=[];
+  if(podeBonus){ const E=(PROTO_BASE.treinos.E?.ex||[]).map(a=>(S.trocas||{})[a[0]]||a[0]).filter(id=>!ids.has(id)&&EXS[id]); const ms=new Set([...ids].map(i=>EXS[i]&&EXS[i].m)); E.sort((x,y)=>ms.has(EXS[x].m)-ms.has(EXS[y].m));
+    let folga=c.tempo-estMin(T); for(const id of E){ const add=[id,2,10,15,60,"0–1"]; const m=Math.round(2*(0.8+1)+1); if(bonus.length<2 && folga>=m){ bonus.push(add); folga-=m; } } }
+  if(c.bonus && bonus.length){ T.ex.push(...bonus); tags.push("➕ bônus"); }
+  T.ex.forEach(a=>{ if(a[6]===undefined) a.length=6; });
+  return {ex:T.ex.map(a=>obj(a,baseDe[a[0]])), est, min:estMin(T), tags, bonus:bonus.map(a=>a[0]), podeBonus:bonus.length>0};
+}
+function sheetCheckin(t, forcar){
+  const sh=sonoHoje();
+  const c=window._ck=window._ck&&window._ck.t===t?window._ck:{t,forcar,tempo:null,sono:sh?sh.h:null,energia:"ok",bonus:false};
+  const est=estMin({ex:exOf(t).map(tup)}); if(c.tempo==null) c.tempo=Math.min(90,Math.max(30,Math.round(est/10)*10));
+  const R=balanco(t,c), T=PROTOCOLO.treinos[t];
+  const b=(g,v,l)=>`<button class="${String(c[g])===String(v)?"on":""}" data-act="ckSel" data-g="${g}" data-v="${v}">${l}</button>`;
+  openSheet(`<div class="stack"><div class="row between"><h2>✅ Check-in · Treino ${t}</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="small muted">${esc(T.nome)} · normal ≈ <b style="color:var(--fg)">${est} min</b></div>
+    <div class="lbl">⏱ Quanto tempo você tem hoje?</div><div class="seg" style="flex-wrap:wrap">${[30,40,50,60,70,80,90].map(m=>b("tempo",m,m+"′")).join("")}</div>
+    <div class="lbl">😴 Quanto dormiu?</div><div class="seg">${[4,5,6,7,8].map(h=>b("sono",h,h===8?"8+":h)).join("")}</div>
+    <div class="lbl">⚡ Como está a energia?</div><div class="seg">${b("energia","baixa","😫 Baixa")}${b("energia","ok","😐 Normal")}${b("energia","alta","💪 Alta")}</div>
+    ${R.podeBonus?`<button class="btn ${c.bonus?"btn-red":"btn-ghost"}" data-act="ckSel" data-g="bonus" data-v="${c.bonus?0:1}">${c.bonus?"✓ Bônus incluído":"➕ Bônus"}: ${R.bonus.map(id=>esc(EXS[id].n)).join(" + ")}</button>`:""}
+    <div class="card stack" style="gap:6px;border-color:var(--red)"><b>Hoje: ${R.ex.length} exercícios · ≈ ${R.min} min${R.tags.length?" · "+esc(R.tags.join(" · ")):""}</b>
+      <div class="small muted">${R.ex.map(e=>esc(EXS[e.id].n)+" "+e.series+"×").join(" · ")}</div>
+      ${!R.tags.length?`<div class="small" style="color:var(--green)">Tudo certo: treino normal.</div>`:""}</div>
+    <div class="small muted">As cargas não mudam. Dor forte, tontura ou falta de ar: pare.</div>
+    <div class="grid2"><button class="btn btn-red" data-act="ckOk">Aceitar</button><button class="btn btn-ghost" data-act="ckNormal">Treino normal</button></div>
+  </div>`);
+}
+function confirmaCheckin(ajustar){
+  const c=window._ck; if(c.sono!=null){ S.sono=(S.sono||[]).filter(x=>x.d!==hoje()); S.sono.push({d:hoje(),t:Date.now(),h:+c.sono}); }
+  const R=balanco(c.t,c);
+  const info={tempo:c.tempo,sono:c.sono,energia:c.energia,est:R.est,min:ajustar?R.min:R.est,ajustes:ajustar?R.tags:[],bonus:ajustar&&c.bonus?R.bonus:[]};
+  closeSheet(); window._ck=null;
+  iniciar(c.t, c.forcar, {ex: ajustar && R.tags.length ? R.ex : null, checkin: info});
+}
+
 /* ===================== TROCAR EXERCÍCIO ===================== */
 function baseDe(id){ for(const [t,T] of Object.entries(PROTOCOLO.treinos)) for(const a of T.ex){ if(((S.trocas||{})[a[0]]||a[0])===id) return {t,base:a[0]}; } return null; }
 function sheetTrocar(base,t){
@@ -607,11 +653,12 @@ function trocar(base,novo,mot){
   if(novo===base) delete S.trocas[base]; else S.trocas[base]=novo;
   S.trocaMotivo=S.trocaMotivo||{}; if(mot) S.trocaMotivo[base]=mot; else delete S.trocaMotivo[base];
   if(a && a.log[velho] && !a.log[velho].sets.some(x=>x.feito)) delete a.log[velho];
+  if(a && a.ex) a.ex.forEach(e=>{ if(e.base===base) e.id=novo; });
   save(); closeSheet(); render(); toast("Trocado: "+EXS[novo].n);
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.2";
+const APP_VERSAO = "2.3";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -686,7 +733,7 @@ const I = {
 
 /* ============================ VIEWS ============================ */
 function vInicio(){
-  const a = ativa(), nx = a ? a.treino : proximo(), T = PROTOCOLO.treinos[nx], exs = exOf(nx);
+  const a = ativa(), nx = a ? a.treino : proximo(), T = PROTOCOLO.treinos[nx]||PROTO_BASE.treinos[nx], exs = a ? exSess(a) : exOf(nx);
   const series = exs.reduce((s,e)=>s+e.series,0);
   const dc = diaCiclo();
   const ult = [...S.sessoes].reverse().find(s=>s.status==="feito");
@@ -753,7 +800,7 @@ function vTreino(){
   if(!a) return `<div class="top"><div class="brand">IRON <b>28</b> PRO</div></div>
     <div class="card stack"><h2>Nenhum treino em andamento</h2><p class="muted" style="margin:0">Próximo da sequência: <b>${proximo()}</b> · ${PROTOCOLO.treinos[proximo()].nome}</p>
     <button class="btn btn-red" data-act="iniciar" data-t="${proximo()}">Iniciar ${proximo()}</button></div>`;
-  const T = PROTOCOLO.treinos[a.treino], exs = exOf(a.treino);
+  const T = PROTOCOLO.treinos[a.treino]||PROTO_BASE.treinos[a.treino], exs = exSess(a);
   const prim = exs.findIndex(e => !exConcluido(a,e));
   return `
   <div class="sess-head">
@@ -1002,10 +1049,10 @@ function confirmar(titulo, texto, botoes){ openSheet(`<div class="stack"><h2>${t
 let wake=null;
 async function pedirWake(){ try{ wake = await navigator.wakeLock?.request("screen"); }catch(e){} }
 
-function iniciar(t, forcar){
+function iniciar(t, forcar, opc){
   if(ativa()) return go("treino");
   if(t==="E" && !forcar && !PROTOCOLO.sequencia.includes("E") && !liberaE().ok) return confirmar("Treino extra ainda não","O protocolo v1.2 libera o treino E a partir da 3ª semana, só num 5º dia e depois de um treino de pernas.",`<button class="btn btn-ghost" data-act="forcarE">Fazer mesmo assim</button>`);
-  const s={id:uid(),treino:t,inicio:Date.now(),fim:null,status:"andamento",log:{}}; if(S.semana){ s.semana=S.semana.id; s.semanaNome=S.semana.nome; }
+  const s={id:uid(),treino:t,inicio:Date.now(),fim:null,status:"andamento",log:{}}; if(S.semana){ s.semana=S.semana.id; s.semanaNome=S.semana.nome; } if(opc&&opc.ex) s.ex=opc.ex; if(opc&&opc.checkin) s.checkin=opc.checkin;
   S.sessoes.push(s); S.ativa=s.id; if(!S.inicioCiclo) S.inicioCiclo=new Date(new Date().toDateString()).getTime();
   save(); pedirWake(); go("treino");
 }
@@ -1013,7 +1060,7 @@ function logEx(a,id){ return a.log[id] || (a.log[id]={sets:[],pulou:null}); }
 
 function marcaSerie(id,k){
   const a=ativa(); if(!a) return;
-  const e=exOf(a.treino).find(x=>x.id===id), lib=EXS[id], r=logEx(a,id);
+  const e=exSess(a).find(x=>x.id===id), lib=EXS[id], r=logEx(a,id);
   const st=r.sets[k]||(r.sets[k]={});
   if(st.feito){ st.feito=false; save(); render(); return; }
   const card=document.querySelector(`input[data-ex="${id}"][data-k="${k}"][data-f="reps"]`);
@@ -1027,14 +1074,14 @@ function marcaSerie(id,k){
   const ultimaSerie = k===e.series-1;
   const ehPrimeiroDoPar = e.par && !e.desc;
   if(ehPrimeiroDoPar){ toast("Agora o par, sem descanso"); }
-  else if(!(ultimaSerie && exOf(a.treino).every(x=>exConcluido(a,x)))){ startTimer(e.desc, lib.n); }
-  if(ultimaSerie && !e.par){ S.abertos[a.id+id]=false; const nx=exOf(a.treino).find(x=>!exConcluido(a,x)); if(nx) S.abertos[a.id+nx.id]=true; }
+  else if(!(ultimaSerie && exSess(a).every(x=>exConcluido(a,x)))){ startTimer(e.desc, lib.n); }
+  if(ultimaSerie && !e.par){ S.abertos[a.id+id]=false; const nx=exSess(a).find(x=>!exConcluido(a,x)); if(nx) S.abertos[a.id+nx.id]=true; }
   render();
 }
 
 function finalizar(){
   const a=ativa(); if(!a) return;
-  const exs=exOf(a.treino), done=exs.filter(e=>exConcluido(a,e)).length;
+  const exs=exSess(a), done=exs.filter(e=>exConcluido(a,e)).length;
   if(done===exs.length) return fechaSessao("feito");
   confirmar("Finalizar treino?", `Você concluiu ${done} de ${exs.length} exercícios.`,
     `<button class="btn btn-red" data-act="fim" data-v="feito">Contar como feito</button>
@@ -1473,8 +1520,8 @@ document.addEventListener("click",ev=>{
   if(el.classList.contains("sheet-bg") && ev.target.closest("[data-stop]")) return;
   const d=el.dataset, a=ativa();
   switch(d.act){
-    case "iniciar": iniciar(d.t); break;
-    case "forcarE": closeSheet(); iniciar("E",true); break;
+    case "iniciar": if(ativa()) return go("treino"); if(d.t==="E" && !PROTOCOLO.sequencia.includes("E") && !liberaE().ok) return iniciar(d.t); window._ck=null; sheetCheckin(d.t); break;
+    case "forcarE": window._ck=null; sheetCheckin("E",true); break;
     case "continuar": go("treino"); break;
     case "toggle": S.abertos[d.id]=!(S.abertos[d.id] ?? el.closest(".ex").querySelector(".ex-b")); save(); render(); break;
     case "serie": marcaSerie(d.ex,+d.k); break;
@@ -1501,7 +1548,7 @@ document.addEventListener("click",ev=>{
     case "igSalvar": { const v=$("#igIn").value.trim(); if(v && !/^https:\/\/(www\.)?instagram\.com\//.test(v)) return toast("Cole um link do instagram.com"); S.ig=S.ig||{}; if(v) S.ig[d.ex]=v; else delete S.ig[d.ex]; save(); toast("Link salvo"); sheetLib(d.ex); break; }
     case "criador": { const v=($("#criIn").value||"").trim().replace(/^@/,""); S.criador=v||"pedrolotz"; save(); toast("Criador salvo"); break; }
     case "editSess": { const s=S.sessoes.find(z=>z.id===d.id); if(!s) break;
-      const linhas = exOf(s.treino).filter(e=>s.log[e.id]?.sets?.some(z=>z.feito)).map(e=>`<div class="stack" style="gap:6px"><b>${esc(EXS[e.id].n)}</b>${s.log[e.id].sets.map((z,k)=>z.feito?`<div class="row"><span class="num" style="width:22px;font-family:var(--f-display);font-weight:800;color:var(--steel)">${k+1}</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="decimal" data-ed="${s.id}|${e.id}|${k}|kg" value="${z.kg}" aria-label="Carga"><span class="muted">×</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="numeric" data-ed="${s.id}|${e.id}|${k}|reps" value="${z.reps}" aria-label="Repetições"><button class="chk" data-act="delSerie" data-k="${s.id}|${e.id}|${k}" aria-label="Apagar série">🗑</button></div>`:"").join("")}</div>`).join("");
+      const linhas = (s.ex||exOf(s.treino)).filter(e=>s.log[e.id]?.sets?.some(z=>z.feito)).map(e=>`<div class="stack" style="gap:6px"><b>${esc(EXS[e.id].n)}</b>${s.log[e.id].sets.map((z,k)=>z.feito?`<div class="row"><span class="num" style="width:22px;font-family:var(--f-display);font-weight:800;color:var(--steel)">${k+1}</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="decimal" data-ed="${s.id}|${e.id}|${k}|kg" value="${z.kg}" aria-label="Carga"><span class="muted">×</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="numeric" data-ed="${s.id}|${e.id}|${k}|reps" value="${z.reps}" aria-label="Repetições"><button class="chk" data-act="delSerie" data-k="${s.id}|${e.id}|${k}" aria-label="Apagar série">🗑</button></div>`:"").join("")}</div>`).join("");
       openSheet(`<div class="stack"><div class="row between"><h2>Corrigir treino ${s.treino}</h2><button class="pill" data-act="fechar">Fechar</button></div><div class="small muted">${dataBR(s.inicio)} · as mudanças salvam sozinhas</div>${linhas||'<p class="muted">Nenhuma série registrada.</p>'}</div>`); break; }
     case "delSerie": { const [sid,ex,k]=d.k.split("|"); const s=S.sessoes.find(z=>z.id===sid); if(s){ s.log[ex].sets[+k].feito=false; save(); toast("Série apagada"); closeSheet(); render(); } break; }
     case "verTreino": { const t=d.t, T=PROTOCOLO.treinos[t], exs=exOf(t), a=ativa(), nx=proximo();
@@ -1510,7 +1557,7 @@ document.addEventListener("click",ev=>{
         <div class="card list" style="padding:4px 14px">${exs.map((e,i)=>`<button class="li" data-act="lib" data-ex="${e.id}"><div class="badge">${i+1}</div><div class="grow"><b>${esc(EXS[e.id].n)}</b><div class="small muted num">${e.series} × ${e.min}–${e.max} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div><span class="muted">▶</span></button>`).join("")}</div>
         ${a?`<p class="small muted" style="margin:0">Termine o treino ${a.treino} em andamento antes de começar outro.</p>`:`<button class="btn btn-red" data-act="iniciarSheet" data-t="${t}">Iniciar treino ${t}</button>${t!==nx?`<p class="small muted" style="margin:0">Fora da ordem: o próximo era o ${nx}. Se fizer o ${t}, depois vem o ${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(t)+1)%4]}.</p>`:""}`}
       </div>`); break; }
-    case "iniciarSheet": closeSheet(); iniciar(d.t); break;
+    case "iniciarSheet": if(ativa()){ closeSheet(); return go("treino"); } window._ck=null; sheetCheckin(d.t); break;
     case "prim": S.primeiro=d.v; save(); render(); break;
     case "exportar": exportar(); break;
     case "copiar": { const t=$("#bk"); if(!t.value) exportar(); navigator.clipboard?.writeText(t.value).then(()=>toast("Copiado"),()=>{t.select();toast("Selecionado: copie manualmente");}); break; }
@@ -1526,6 +1573,9 @@ document.addEventListener("click",ev=>{
     case "planoOrig": if(ativa()) return toast("Termine o treino em andamento antes"); confirmar("Usar o plano original?","O treino atual fica guardado em “Voltar ao treino anterior”. O histórico não muda.",`<button class="btn btn-red" data-act="planoOrigSim">Sim, usar o original</button>`); break;
     case "planoOrigSim": voltarPlano({plano:S.planoOriginal??null,trocas:{},objetivo:S.perfil&&S.perfil.objetivo}); closeSheet(); render(); toast("Plano original restaurado"); break;
     case "cardio": sheetCardio(); break;
+    case "ckSel": window._ck[d.g]=d.g==="tempo"||d.g==="sono"?+d.v:d.g==="bonus"?d.v==="1":d.v; sheetCheckin(window._ck.t,window._ck.forcar); break;
+    case "ckOk": confirmaCheckin(true); break;
+    case "ckNormal": confirmaCheckin(false); break;
     case "semana": if(ativa()) return toast("Termine o treino em andamento antes"); window._sw={dias:3,min:50}; sheetSemana(); break;
     case "swSel": window._sw[d.g]=d.g==="ini"?d.v:+d.v; if(d.g!=="ini") window._sw.ini=null; sheetSemana(); break;
     case "swUsar": usarSemana(); break;
