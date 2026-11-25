@@ -256,7 +256,8 @@ const EXS = {
 const MW = {"supino_guiado": "smith-machine-bench-press", "puxada_aberta": "machine-pulldown", "supino_incl_guiado": "smith-machine-incline-bench-press", "remada_baixa": "machine-seated-cable-row", "lateral_cabo": "cable-low-single-arm-lateral-raise", "triceps_v": "cable-bar-pushdown", "rosca_w": "ez-bar-curl", "agachamento_guiado": "smith-machine-squat", "leg_press": "machine-leg-press", "extensora": "machine-leg-extension", "flexora": "machine-seated-leg-curl", "adutora": "machine-hip-adduction", "abdutora": "machine-hip-abduction", "panturrilha_lp": "calf-raises", "abd_reverso": "reverse-crunch", "remada_unilateral": "dumbbell-row-unilateral", "supino_halter": "dumbbell-bench-press", "puxada_triangulo": "machine-pulldown", "crucifixo_voador": "machine-pec-fly", "voador_inverso": "machine-reverse-fly", "lateral_halter": "dumbbell-lateral-raise", "martelo_corda": "cable-rope-hammer-curl", "triceps_cabeca": "cable-rope-overhead-tricep-extension", "stiff": "barbell-romanian-deadlift", "elevacao_pelvica": "barbell-hip-thrust", "leg_press_alto": "machine-leg-press", "prancha": "forearm-plank", "encolhimento": "barbell-shrug", "triceps_testa": "barbell-skullcrusher", "rosca_polia": "cable-bar-curl", "triceps_corda": "cable-rope-pushdown"};
 
 /* ============================ ESTADO ============================ */
-const KEY = "iron28pro.v1";
+const APP_VERSAO = "1.3";
+const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
 try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(blank(), JSON.parse(raw)); }catch(e){}
@@ -343,6 +344,7 @@ function vInicio(){
       <button class="btn btn-red" data-act="${a?"continuar":"iniciar"}" data-t="${nx}">${a?"Continuar":"Iniciar treino"}</button>
     </section>
     ${marco}
+    ${S.sessoes.some(s=>s.status==="feito") && (!S.ultimoBackup || Date.now()-S.ultimoBackup>7*864e5) ? `<button class="card li" style="border-color:var(--red)" data-go="perfil"><div class="badge red">💾</div><div class="grow"><b>Faça um backup</b><div class="small muted">${S.ultimoBackup?"Último há "+Math.floor((Date.now()-S.ultimoBackup)/864e5)+" dias":"Você ainda não fez nenhum"}</div></div></button>`:""}
     <div class="grid2">
       <div class="card stat"><div class="lbl">Ciclo de 28 dias</div>${dc?`<div class="v num" style="margin-top:6px">${dc.dia}<small>/28</small></div><div class="bar"><i style="width:${dc.dia/28*100}%"></i></div><div class="small muted" style="margin-top:6px">Ciclo ${dc.ciclo}</div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted" style="margin-top:6px">Começa no 1º treino</div>`}</div>
       <div class="card stat"><div class="lbl">Último treino</div>${ult?`<div class="v" style="margin-top:6px">${ult.treino}<small> ${dataBR(ult.inicio)}</small></div><div class="small muted num" style="margin-top:6px">${durTxt(ult.fim-ult.inicio)} · ${contaSeries(ult)} séries</div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted" style="margin-top:6px">Nenhum ainda</div>`}</div>
@@ -370,6 +372,8 @@ function sonoHoje(){ return (S.sono||[]).find(x=>x.d===hoje()); }
 function liberaE(){
   const dc=diaCiclo(), sn=sonoHoje();
   if(sn && sn.h<6) return {ok:false,motivo:"😴 Dormiu menos de 6 h: hoje é descanso"};
+  const v7=(S.sono||[]).filter(x=>x.t>=Date.now()-7*864e5).map(x=>x.h);
+  if(v7.length>=3 && v7.reduce((a,b)=>a+b,0)/v7.length<6) return {ok:false,motivo:"😴 Média de sono da semana abaixo de 6 h"};
   if(!dc || (Date.now()-S.inicioCiclo)/864e5 < 14) return {ok:false,motivo:"Libera a partir da 3ª semana"};
   const ult=[...S.sessoes].reverse().find(s=>s.status==="feito");
   if(!ult || !["B","D"].includes(ult.treino)) return {ok:false,motivo:"Só depois de um treino de pernas (B ou D)"};
@@ -514,7 +518,7 @@ function vEvolucao(){
     </div>
     <div class="card"><div class="row between"><h3>Peso</h3><span class="small muted">${pesos.length} registros</span></div>${grafico(pesos.map(x=>[x.d,x.peso]),"kg")}</div>
     <div class="card"><div class="row between"><h3>Treinos</h3><span class="small muted num">${feitos.length} concluídos</span></div>
-      <div class="list" style="margin-top:6px">${feitos.length? feitos.slice(-10).reverse().map(s=>`<div class="li"><div class="badge">${s.treino}</div><div class="grow"><b>${PROTOCOLO.treinos[s.treino].nome}</b><div class="small muted num">${dataBR(s.inicio)} · ${horaBR(s.inicio)}–${horaBR(s.fim)} · ${durTxt(s.fim-s.inicio)}</div></div><div class="num small">${contaSeries(s)} séries</div></div>`).join("") : `<p class="muted small">Seus treinos concluídos aparecem aqui, com data, horário e duração.</p>`}</div>
+      <div class="list" style="margin-top:6px">${feitos.length? feitos.slice(-10).reverse().map(s=>`<div class="li" role="button" tabindex="0" data-act="editSess" data-id="${s.id}" style="cursor:pointer"><div class="badge">${s.treino}</div><div class="grow"><b>${PROTOCOLO.treinos[s.treino].nome}</b><div class="small muted num">${dataBR(s.inicio)} · ${horaBR(s.inicio)}–${horaBR(s.fim)} · ${durTxt(s.fim-s.inicio)}</div></div><div class="num small">${contaSeries(s)} séries ✏️</div></div>`).join("") : `<p class="muted small">Seus treinos concluídos aparecem aqui, com data, horário e duração.</p>`}</div>
     </div>
     <div class="card"><h3>Recordes por exercício</h3><div class="list" style="margin-top:6px">${recordes()}</div></div>
     <p class="small muted">Fotos de evolução entram na próxima versão.</p>
@@ -558,20 +562,23 @@ function vPerfil(){
     <div class="card stack">
       <h3>Criador de referência (Instagram)</h3>
       <div class="row"><input id="criIn" class="grow" style="height:48px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;padding:0 12px;font-size:17px" value="@${esc(S.criador||"pedrolotz")}"><button class="btn btn-ghost" style="width:auto" data-act="criador">Salvar</button></div>
-      <p class="small muted" style="margin:0">Seus vídeos ficam só neste iPhone e não entram no backup.</p>
+      <p class="small muted" style="margin:0">Seus vídeos ficam só neste iPhone (e entram no backup).</p>
     </div>
     <div class="card stack">
       <h3>Protocolo</h3>
-      <p class="small muted" style="margin:0">Versão <b style="color:var(--fg)">${PROTOCOLO.versao}</b>. Ainda depende da sua aprovação e da revisão de um profissional de Educação Física.</p>
+      <p class="small muted" style="margin:0">Versão <b style="color:var(--fg)">${PROTOCOLO.versao}</b>. Aprovada por você. Falta a revisão de um profissional de Educação Física.</p>
     </div>
     <div class="card stack">
       <h3>Backup</h3>
-      <p class="small muted" style="margin:0">Os dados ficam só neste aparelho. Faça backup toda semana: o iPhone pode apagar dados de sites pouco usados.</p>
-      <button class="btn btn-ghost" data-act="exportar">Exportar backup</button>
-      <textarea id="bk" aria-label="Backup em texto" placeholder="Cole aqui um backup para restaurar"></textarea>
+      <div class="cue bad"><b>!</b><span>O iPhone pode apagar os dados do app se ele ficar semanas sem uso ou faltar espaço. Faça backup toda semana.</span></div>
+      <div class="small muted">Último backup: <b style="color:var(--fg)">${S.ultimoBackup?dataBR(S.ultimoBackup):"nunca"}</b></div>
+      <label class="row small"><input type="checkbox" id="bkv" checked style="width:22px;height:22px"> Incluir meus vídeos (arquivo fica maior)</label>
+      <button class="btn btn-red" data-act="exportar">Salvar backup</button>
+      <textarea id="bk" aria-label="Backup em texto" placeholder="Cole aqui um backup para restaurar">${esc(window._bkTxt||"")}</textarea>
       <div class="grid2"><button class="btn btn-ghost" data-act="copiar">Copiar</button><button class="btn btn-ghost" data-act="importar">Restaurar</button></div>
       <label class="small muted">ou escolha um arquivo .json <input type="file" id="bkf" accept=".json,application/json" style="margin-top:6px;width:100%"></label>
     </div>
+    <p class="small muted" style="text-align:center;margin:0">IRON 28 PRO · app v${APP_VERSAO} · protocolo ${PROTOCOLO.versao}<br>Atualizações não apagam seu histórico.</p>
     <div class="card stack"><h3>Zerar dados</h3><button class="btn btn-ghost" style="color:var(--red-hi)" data-act="zerar">Apagar tudo deste aparelho</button></div>
   </div>`;
 }
@@ -702,14 +709,28 @@ let animT0=performance.now();
 })(performance.now());
 
 /* Backup */
-function exportar(){
-  const data=JSON.stringify({app:"IRON 28 PRO",formato:1,exportado:new Date().toISOString(),protocolo:PROTOCOLO.versao,dados:S});
-  $("#bk").value=data;
-  try{ const b=new Blob([data],{type:"application/json"}), a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="iron28pro-backup-"+new Date().toISOString().slice(0,10)+".json"; a.click(); }catch(e){}
-  toast("Backup pronto. Copie ou salve o arquivo.");
+DB.all = async function(){ const d=await this.open(); return new Promise(ok=>{ const out=[]; const c=d.transaction("m").objectStore("m").openCursor(); c.onsuccess=()=>{ const r=c.result; if(r){ out.push([r.key,r.value]); r.continue(); } else ok(out); }; c.onerror=()=>ok(out); }); };
+const toDataURL = b => new Promise(ok=>{ const f=new FileReader(); f.onload=()=>ok(f.result); f.readAsDataURL(b); });
+async function exportar(){
+  const comVideos = !!$("#bkv")?.checked;
+  const midia = {};
+  if(comVideos){ try{ for(const [k,v] of await DB.all()) midia[k]=await toDataURL(v); }catch(e){} }
+  const data=JSON.stringify({app:"IRON 28 PRO",formato:2,versaoApp:APP_VERSAO,exportado:new Date().toISOString(),protocolo:PROTOCOLO.versao,dados:S,midia});
+  S.ultimoBackup=Date.now(); save();
+  const nome="iron28pro-backup-"+new Date().toISOString().slice(0,10)+".json";
+  window._bkTxt = data.length<2e6 ? data : "Backup grande (com vídeos): use o arquivo salvo.";
+  try{
+    const file=new File([data],nome,{type:"application/json"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:"Backup IRON 28 PRO"}); toast("Escolha “Salvar em Arquivos”"); return render(); }
+    const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=nome; a.click();
+  }catch(e){}
+  toast("Backup pronto"); render();
 }
-function importar(txt){
-  try{ const j=JSON.parse(txt); if(j.app!=="IRON 28 PRO"||!j.dados) throw 0; S=Object.assign(blank(),j.dados); save(); toast("Backup restaurado"); go("inicio"); }
+async function importar(txt){
+  try{ const j=JSON.parse(txt); if(j.app!=="IRON 28 PRO"||!j.dados) throw 0;
+    S=Object.assign(blank(),j.dados); save();
+    let n=0; for(const [k,u] of Object.entries(j.midia||{})){ try{ const b=await (await fetch(u)).blob(); await DB.put(k,b); n++; }catch(e){} }
+    toast("Backup restaurado"+(n?` · ${n} vídeo(s)`:"")); go("inicio"); }
   catch(e){ toast("Esse texto não é um backup válido do IRON 28 PRO"); }
 }
 
@@ -745,6 +766,10 @@ document.addEventListener("click",ev=>{
     case "iglink": openSheet(`<div class="stack"><h2>Link do Instagram</h2><p class="muted small" style="margin:0">No Instagram: ⋯ → Copiar link. Cole aqui.</p><label class="field"><span class="lbl">Link do post</span><input id="igIn" inputmode="url" value="${esc(S.ig?.[d.ex]||"")}" placeholder="https://www.instagram.com/reel/..."></label><button class="btn btn-red" data-act="igSalvar" data-ex="${d.ex}">Salvar</button><button class="btn btn-ghost" data-act="fechar">Cancelar</button></div>`); break;
     case "igSalvar": { const v=$("#igIn").value.trim(); if(v && !/^https:\/\/(www\.)?instagram\.com\//.test(v)) return toast("Cole um link do instagram.com"); S.ig=S.ig||{}; if(v) S.ig[d.ex]=v; else delete S.ig[d.ex]; save(); toast("Link salvo"); sheetLib(d.ex); break; }
     case "criador": { const v=($("#criIn").value||"").trim().replace(/^@/,""); S.criador=v||"pedrolotz"; save(); toast("Criador salvo"); break; }
+    case "editSess": { const s=S.sessoes.find(z=>z.id===d.id); if(!s) break;
+      const linhas = exOf(s.treino).filter(e=>s.log[e.id]?.sets?.some(z=>z.feito)).map(e=>`<div class="stack" style="gap:6px"><b>${esc(EXS[e.id].n)}</b>${s.log[e.id].sets.map((z,k)=>z.feito?`<div class="row"><span class="num" style="width:22px;font-family:var(--f-display);font-weight:800;color:var(--steel)">${k+1}</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="decimal" data-ed="${s.id}|${e.id}|${k}|kg" value="${z.kg}" aria-label="Carga"><span class="muted">×</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="numeric" data-ed="${s.id}|${e.id}|${k}|reps" value="${z.reps}" aria-label="Repetições"><button class="chk" data-act="delSerie" data-k="${s.id}|${e.id}|${k}" aria-label="Apagar série">🗑</button></div>`:"").join("")}</div>`).join("");
+      openSheet(`<div class="stack"><div class="row between"><h2>Corrigir treino ${s.treino}</h2><button class="pill" data-act="fechar">Fechar</button></div><div class="small muted">${dataBR(s.inicio)} · as mudanças salvam sozinhas</div>${linhas||'<p class="muted">Nenhuma série registrada.</p>'}</div>`); break; }
+    case "delSerie": { const [sid,ex,k]=d.k.split("|"); const s=S.sessoes.find(z=>z.id===sid); if(s){ s.log[ex].sets[+k].feito=false; save(); toast("Série apagada"); closeSheet(); render(); } break; }
     case "prim": S.primeiro=d.v; save(); render(); break;
     case "exportar": exportar(); break;
     case "copiar": { const t=$("#bk"); if(!t.value) exportar(); navigator.clipboard?.writeText(t.value).then(()=>toast("Copiado"),()=>{t.select();toast("Selecionado: copie manualmente");}); break; }
@@ -755,6 +780,7 @@ document.addEventListener("click",ev=>{
 });
 document.addEventListener("change",ev=>{
   const t=ev.target;
+  if(t.dataset.ed){ const [sid,ex,k,f]=t.dataset.ed.split("|"); const s=S.sessoes.find(z=>z.id===sid); const v=parseFloat(t.value.replace(",",".")); if(s && !isNaN(v)){ s.log[ex].sets[+k][f]=v; save(); toast("Corrigido"); } return; }
   if(t.dataset.midia && t.files[0]){ const f=t.files[0]; if(f.size>80*1024*1024) return toast("Vídeo muito grande (máx. 80 MB)"); DB.put(t.dataset.midia,f).then(()=>{toast("Vídeo salvo neste aparelho"); sheetLib(t.dataset.midia.split(":")[0]);}).catch(()=>toast("Não deu para salvar o vídeo aqui")); return; }
   if(t.id==="bkf" && t.files[0]){ t.files[0].text().then(importar); return; }
   if(!t.dataset.f) return;
