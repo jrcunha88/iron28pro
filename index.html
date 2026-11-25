@@ -664,6 +664,52 @@ function iniciarExtra(modo){
   iniciar("E", true, {ex: modo==="leve"?exLeve(exOf("E")):null, checkin: info});
 }
 
+/* ===================== HOJE, SUGIRO (regras + histórico) ===================== */
+const DSEM=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const diaKey = t => new Date(t).toDateString();
+function sugestaoHoje(){
+  const d=864e5, h0=new Date(new Date().toDateString()).getTime();
+  const feitos=S.sessoes.filter(s=>s.status==="feito");
+  const dias=new Set(feitos.map(s=>diaKey(s.inicio)));
+  const treinou=i=>dias.has(diaKey(h0-i*d));           // i dias atrás
+  const seq=PROTOCOLO.sequencia, nx=proximo();
+  const hojeFeito=treinou(0);
+  const precisaDescanso=(t1,t2,t3,t4)=> (t1&&t2) || ([t1,t2,t3,t4].filter(Boolean).length>=3);
+  // E: fez a sequência toda em 7 dias, sono ok, execução boa, semana certa
+  const ult7=feitos.filter(s=>s.inicio>=h0-6*d);
+  const fezTudo=seq.every(t=>ult7.some(s=>s.treino===t)) && !ult7.some(s=>s.treino==="E");
+  const v7=(S.sono||[]).filter(x=>x.t>=Date.now()-7*d).map(x=>x.h), sm=v7.length?v7.reduce((a,b)=>a+b,0)/v7.length:null;
+  const parciais=S.sessoes.filter(s=>s.inicio>=h0-6*d && s.status==="parcial").length;
+  const semanaOk=S.inicioCiclo && (Date.now()-S.inicioCiclo)/d>=14;
+  const temE=PROTOCOLO.treinos.E && !seq.includes("E");
+  let hoje, motivo, acao;
+  if(hojeFeito){ hoje={tipo:"feito"}; motivo="✅ Você já treinou hoje. Bom descanso!"; }
+  else if(precisaDescanso(treinou(1),treinou(2),treinou(3),treinou(4))){ hoje={tipo:"descanso"}; motivo=treinou(1)&&treinou(2)?"Você treinou 2 dias seguidos. O músculo cresce no descanso.":"Você treinou 3 dos últimos 4 dias. Hoje é recuperação."; }
+  else if(temE && fezTudo && semanaOk && sm!=null && sm>=6 && !parciais){ hoje={tipo:"E"}; motivo=`Você fez ${seq.join(", ")} nesta semana, dormiu ${sm.toFixed(1)} h em média e completou tudo. Quer fazer o E hoje?`; }
+  else { hoje={tipo:"treino",t:nx}; motivo=!feitos.length?"Primeiro treino: comece pela sequência.":`Seu próximo da sequência é o ${nx}. Faltou um dia? A sequência continua de onde parou.`; }
+  // mini-agenda: hoje + 3 dias
+  const hist=[treinou(3),treinou(2),treinou(1)]; let ptr=seq.indexOf(nx); const ag=[];
+  for(let i=0;i<4;i++){
+    const t1=hist[hist.length-1], t2=hist[hist.length-2], t3=hist[hist.length-3]; let item;
+    if(i===0){ item=hoje.tipo==="feito"?"✓ treinou":hoje.tipo==="descanso"?"descanso":hoje.tipo==="E"?"E (extra)":hoje.t; if(hoje.tipo==="treino") ptr=(ptr+1)%seq.length; hist.push(hoje.tipo!=="descanso"); }
+    else if(precisaDescanso(t1,t2,t3,false)){ item="descanso"; hist.push(false); }
+    else { item=seq[ptr]; ptr=(ptr+1)%seq.length; hist.push(true); }
+    ag.push((i===0?"Hoje":DSEM[new Date(h0+i*d).getDay()])+" "+item);
+  }
+  return {hoje,motivo,ag};
+}
+function cardSugestao(){
+  if(ativa()) return "";
+  const g=sugestaoHoje(), H=g.hoje;
+  const titulo=H.tipo==="feito"?"✅ Treino de hoje feito":H.tipo==="descanso"?"🚶 Descanso ativo":H.tipo==="E"?"⭐ Treino extra (E)":`🏋️ Treino ${H.t} · ${esc(PROTOCOLO.treinos[H.t].nome)}`;
+  const bt=H.tipo==="descanso"?`<button class="btn btn-ghost" data-act="cardio">➕ Registrar cardio leve</button>`:H.tipo==="E"?`<button class="btn btn-red" data-act="iniciar" data-t="E">Ver o treino extra</button>`:H.tipo==="treino"?`<button class="btn btn-red" data-act="iniciar" data-t="${H.t}">Iniciar ${H.t}</button>`:"";
+  return `<div class="card stack" style="gap:8px;border-color:${H.tipo==="E"?"var(--green)":"var(--red)"}">
+    <div class="lbl">Hoje, sugiro:</div><h2 style="margin:0">${titulo}</h2>
+    <div class="small muted">${esc(g.motivo)}</div>
+    <div class="small num">📅 ${g.ag.map(esc).join(" · ")}</div>
+    ${bt}<div class="small muted">É só sugestão: você pode escolher outro treino abaixo.</div></div>`;
+}
+
 /* ===================== TROCAR EXERCÍCIO ===================== */
 function baseDe(id){ for(const [t,T] of Object.entries(PROTOCOLO.treinos)) for(const a of T.ex){ if(((S.trocas||{})[a[0]]||a[0])===id) return {t,base:a[0]}; } return null; }
 function sheetTrocar(base,t){
@@ -696,7 +742,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.4";
+const APP_VERSAO = "2.5";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -783,6 +829,7 @@ function vInicio(){
   <div class="stack">
     ${S.perfil?`<button class="row" data-go="perfil" style="gap:10px;text-align:left">${avatar(40)}<div><b>Olá${primeiroNome()?", "+esc(primeiroNome()):"! Complete seu cadastro"}</b><div class="small muted">${esc(PROTOCOLO.versao)}</div></div></button>`:""}
     ${avisoMedico()}
+    ${cardSugestao()}
     <section class="hero">
       <div class="letter">${nx}</div>
       <div class="lbl" style="color:var(--steel-hi)">${a?"Treino em andamento":"Próximo treino"}</div>
