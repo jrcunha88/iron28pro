@@ -350,20 +350,22 @@ function vInicio(){
       <div class="card stat"><div class="lbl">Último treino</div>${ult?`<div class="v" style="margin-top:6px">${ult.treino}<small> ${dataBR(ult.inicio)}</small></div><div class="small muted num" style="margin-top:6px">${durTxt(ult.fim-ult.inicio)} · ${contaSeries(ult)} séries</div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted" style="margin-top:6px">Nenhum ainda</div>`}</div>
     </div>
     <div class="card">
-      <div class="row between"><h3>Sequência</h3><span class="small muted">faltou? continua igual</span></div>
-      <div class="row" style="margin-top:12px;gap:8px">${PROTOCOLO.sequencia.map(t=>`<div class="badge ${t===nx?"red":""}">${t}</div>`).join("")}</div>
+      <div class="row between"><h3>Os 4 treinos</h3><span class="small muted">faltou? continua igual</span></div>
+      <div class="row" style="margin-top:12px;gap:6px;flex-wrap:wrap">${PROTOCOLO.sequencia.map(t=>`<div class="badge ${t===nx?"red":""}">${t}</div>`).join('<span class="muted">→</span>')}<span class="muted">→ A…</span></div>
+      <div class="small muted" style="margin-top:8px">${PROTOCOLO.sequencia.map(t=>`<b style="color:${t===nx?"var(--red-hi)":"var(--steel-hi)"}">${t}</b> ${PROTOCOLO.treinos[t].foco.toLowerCase()}`).join(" · ")}</div>
+      <div class="small" style="margin-top:6px">Hoje é o <b style="color:var(--red-hi)">${nx}</b>. Depois vem o <b>${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(nx)+1)%4]}</b>.</div>
       
     </div>
     ${!a?(()=>{const lib=liberaE(); return `<button class="card li" style="border-top:1px solid var(--line);${lib.ok?"":"opacity:.55"}" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · 11 séries</b><div class="small muted">${lib.ok?"Liberado hoje · não muda a sequência":lib.motivo}</div></div></button>`;})():""}
     <div class="card stack" style="gap:10px">
-      <div class="row between"><div class="lbl">😴 Quanto dormiu esta noite?</div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
+      <div class="row between"><div><div class="lbl">😴 Quanto dormiu esta noite?</div><div class="small muted" style="margin-top:2px">Não muda seu treino. Só libera o treino extra E.</div></div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
       <div class="seg">${[4,5,6,7,8].map(h=>`<button class="${sonoHoje()?.h===h?"on":""}" data-act="sono" data-v="${h}">${h===8?"8+":h}</button>`).join("")}</div>
     </div>
     <div class="card stack" style="gap:8px">
       <div class="lbl">Lembretes</div>
-      <div class="tip">☕ Cafeína até 14h</div>
-      <div class="tip">💊 Folga: creatina 3–5 g</div>
-      <div class="tip">😴 +30 min de sono</div>
+      <div class="tip">☕ Café, pré-treino e refrigerante de cola: só até as 14h</div>
+      <div class="tip">💊 Dia <b>sem</b> treino: tome 3 a 5 g de creatina. No dia de treino, o pré-treino já tem.</div>
+      <div class="tip">😴 Tente dormir 30 min mais cedo hoje</div>
     </div>
   </div>`;
 }
