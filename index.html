@@ -351,8 +351,9 @@ function vInicio(){
     </div>
     <div class="card">
       <div class="row between"><h3>Os 4 treinos</h3><span class="small muted">faltou? continua igual</span></div>
-      <div class="row" style="margin-top:12px;gap:6px;flex-wrap:wrap">${PROTOCOLO.sequencia.map(t=>`<div class="badge ${t===nx?"red":""}">${t}</div>`).join('<span class="muted">→</span>')}<span class="muted">→ A…</span></div>
+      <div class="row" style="margin-top:12px;gap:6px;flex-wrap:wrap">${PROTOCOLO.sequencia.map(t=>`<button class="badge ${t===nx?"red":""}" data-act="verTreino" data-t="${t}" aria-label="Ver treino ${t}">${t}</button>`).join('<span class="muted">→</span>')}<span class="muted">→ A…</span></div>
       <div class="small muted" style="margin-top:8px">${PROTOCOLO.sequencia.map(t=>`<b style="color:${t===nx?"var(--red-hi)":"var(--steel-hi)"}">${t}</b> ${PROTOCOLO.treinos[t].foco.toLowerCase()}`).join(" · ")}</div>
+      <div class="small muted" style="margin-top:6px">Toque numa letra para ver os exercícios.</div>
       <div class="small" style="margin-top:6px">Hoje é o <b style="color:var(--red-hi)">${nx}</b>. Depois vem o <b>${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(nx)+1)%4]}</b>.</div>
       
     </div>
@@ -772,6 +773,13 @@ document.addEventListener("click",ev=>{
       const linhas = exOf(s.treino).filter(e=>s.log[e.id]?.sets?.some(z=>z.feito)).map(e=>`<div class="stack" style="gap:6px"><b>${esc(EXS[e.id].n)}</b>${s.log[e.id].sets.map((z,k)=>z.feito?`<div class="row"><span class="num" style="width:22px;font-family:var(--f-display);font-weight:800;color:var(--steel)">${k+1}</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="decimal" data-ed="${s.id}|${e.id}|${k}|kg" value="${z.kg}" aria-label="Carga"><span class="muted">×</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="numeric" data-ed="${s.id}|${e.id}|${k}|reps" value="${z.reps}" aria-label="Repetições"><button class="chk" data-act="delSerie" data-k="${s.id}|${e.id}|${k}" aria-label="Apagar série">🗑</button></div>`:"").join("")}</div>`).join("");
       openSheet(`<div class="stack"><div class="row between"><h2>Corrigir treino ${s.treino}</h2><button class="pill" data-act="fechar">Fechar</button></div><div class="small muted">${dataBR(s.inicio)} · as mudanças salvam sozinhas</div>${linhas||'<p class="muted">Nenhuma série registrada.</p>'}</div>`); break; }
     case "delSerie": { const [sid,ex,k]=d.k.split("|"); const s=S.sessoes.find(z=>z.id===sid); if(s){ s.log[ex].sets[+k].feito=false; save(); toast("Série apagada"); closeSheet(); render(); } break; }
+    case "verTreino": { const t=d.t, T=PROTOCOLO.treinos[t], exs=exOf(t), a=ativa(), nx=proximo();
+      openSheet(`<div class="stack"><div class="row between"><div class="row"><div class="badge red">${t}</div><h2>${T.nome}</h2></div><button class="pill" data-act="fechar">Fechar</button></div>
+        <div class="small muted">${T.foco} · ${exs.reduce((n,e)=>n+e.series,0)} séries · ≈ ${T.min} min</div>
+        <div class="card list" style="padding:4px 14px">${exs.map((e,i)=>`<button class="li" data-act="lib" data-ex="${e.id}"><div class="badge">${i+1}</div><div class="grow"><b>${esc(EXS[e.id].n)}</b><div class="small muted num">${e.series} × ${e.min}–${e.max} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div><span class="muted">▶</span></button>`).join("")}</div>
+        ${a?`<p class="small muted" style="margin:0">Termine o treino ${a.treino} em andamento antes de começar outro.</p>`:`<button class="btn btn-red" data-act="iniciarSheet" data-t="${t}">Iniciar treino ${t}</button>${t!==nx?`<p class="small muted" style="margin:0">Fora da ordem: o próximo era o ${nx}. Se fizer o ${t}, depois vem o ${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(t)+1)%4]}.</p>`:""}`}
+      </div>`); break; }
+    case "iniciarSheet": closeSheet(); iniciar(d.t); break;
     case "prim": S.primeiro=d.v; save(); render(); break;
     case "exportar": exportar(); break;
     case "copiar": { const t=$("#bk"); if(!t.value) exportar(); navigator.clipboard?.writeText(t.value).then(()=>toast("Copiado"),()=>{t.select();toast("Selecionado: copie manualmente");}); break; }
