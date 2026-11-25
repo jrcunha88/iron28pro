@@ -248,7 +248,7 @@ const EXS = {
   elevacao_pelvica:{anim:"hip_thrust",okTag:"Quadril alinhado · glúteo",badTag:"Arqueia a lombar",n:"Elevação pélvica com barra",m:"Glúteos",e:"Barra + banco",u:"kg",inc:4,ok:["Costas apoiadas no banco","Suba até o quadril alinhar","Segure 1 s em cima"],bad:["Arquear a lombar em cima","Empurrar com a ponta dos pés"]},
   prancha:{anim:"prancha",okTag:"Corpo em linha reta · abdômen",badTag:"Quadril cai ou sobe demais",n:"Prancha no chão",m:"Abdômen",e:"Chão",u:"seg",inc:0,ok:["Corpo em linha reta","Abdômen e glúteos firmes"],bad:["Quadril caindo","Quadril muito alto"]},
   face_pull:{anim:"face_pull",okTag:"Cotovelos altos · ombro de trás",badTag:"Joga o corpo para trás",n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"placa",inc:null,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
-  encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento de ombros",m:"Trapézio",e:"Barra ou anilhas",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
+  encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento de ombros",m:"Trapézio",e:"Barra guiada (Smith) ou halteres",u:"kg",inc:4,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
   triceps_testa:{anim:"triceps_testa",okTag:"Cotovelo parado · tríceps",badTag:"Cotovelo se mexe",n:"Tríceps testa com barra W",m:"Tríceps",e:"Barra W",u:"kg",inc:4,ok:["Cotovelos apontando para o teto","Desça devagar"],bad:["Abrir os cotovelos","Mexer os ombros"]},
   rosca_polia:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"placa",inc:null,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
   triceps_corda:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"placa",inc:null,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
@@ -257,6 +257,16 @@ const EXS = {
 /* Vídeo real de referência: página exata do exercício no MuscleWiki (só link, nada é copiado) */
 /* Shorts do canal DeltaBolic (só link, conferidos em 25/11/2026): certo em verde, errado em vermelho */
 const YT = {"supino_guiado": "gQ3afio08V8", "supino_incl_guiado": "VXaBbUYMfIs", "supino_halter": "MjHjq6TC1n0", "puxada_aberta": "1riA95IP8KE", "remada_baixa": "bCd7Xil89F8", "remada_unilateral": "66U5H3ODdQk", "lateral_cabo": "9ilIKuy6B0g", "lateral_halter": "DuAaDnVhtZU", "triceps_v": "eDa0VYlbDeQ", "triceps_corda": "d9l2AYTGIEs", "triceps_cabeca": "fmgmPDacgKM", "triceps_testa": "-qtz5ysUzMM", "rosca_w": "j5amzQZy9Zk", "agachamento_guiado": "iKCJCydYYrE", "leg_press": "BIZhK4kulnk", "leg_press_alto": "BIZhK4kulnk", "extensora": "b9i5mXA_qsk", "flexora": "_lgE0gPvbik", "stiff": "uTA4GWNwUEo", "elevacao_pelvica": "CvuVYMFd11g", "prancha": "y3sxQUJ3Qsk", "face_pull": "IeOqdw9WI90", "encolhimento": "G_m6EGNpxBU", "crucifixo_voador": "Dy4Bl-ituTo", "voador_inverso": "ZzeiSNGJOeE", "crucifixo_cabo": "X-4cCjBEI5c"};
+/* 2ª opção de vídeo: versão na barra guiada vertical (Smith 90°) ou alternativa. Conferidos em 25/11/2026. */
+const YT2 = {
+  agachamento_guiado:{u:"https://www.youtube.com/shorts/jPrzu4kp47o",l:"Smith 90°: passo a passo"},
+  supino_guiado:{u:"https://www.youtube.com/shorts/XFYMLdlaq04",l:"Smith 90°: guia do supino"},
+  supino_incl_guiado:{u:"https://musclewiki.com/exercise/smith-machine-incline-bench-press",l:"Smith 90°: inclinado"},
+  stiff:{u:"https://musclewiki.com/exercise/smith-machine-romanian-deadlift",l:"Smith 90°: stiff na barra guiada"},
+  elevacao_pelvica:{u:"https://musclewiki.com/exercise/smith-machine-hip-thrust",l:"Smith 90°: elevação pélvica"},
+  panturrilha_lp:{u:"https://musclewiki.com/exercise/smith-machine-calf-raise",l:"Smith 90°: panturrilha em pé"},
+  encolhimento:{u:"https://www.youtube.com/shorts/VkZQsM7ZfsI",l:"Com halteres"}
+};
 const MW = {"supino_guiado": "smith-machine-bench-press", "puxada_aberta": "machine-pulldown", "supino_incl_guiado": "smith-machine-incline-bench-press", "remada_baixa": "machine-seated-cable-row", "lateral_cabo": "cable-low-single-arm-lateral-raise", "triceps_v": "cable-bar-pushdown", "rosca_w": "ez-bar-curl", "agachamento_guiado": "smith-machine-squat", "leg_press": "machine-leg-press", "extensora": "machine-leg-extension", "flexora": "machine-seated-leg-curl", "adutora": "machine-hip-adduction", "abdutora": "machine-hip-abduction", "panturrilha_lp": "calf-raises", "abd_reverso": "reverse-crunch", "remada_unilateral": "dumbbell-row-unilateral", "supino_halter": "dumbbell-bench-press", "puxada_triangulo": "machine-pulldown", "crucifixo_voador": "machine-pec-fly", "voador_inverso": "machine-reverse-fly", "lateral_halter": "dumbbell-lateral-raise", "martelo_corda": "cable-rope-hammer-curl", "triceps_cabeca": "cable-rope-overhead-tricep-extension", "stiff": "barbell-romanian-deadlift", "elevacao_pelvica": "barbell-hip-thrust", "leg_press_alto": "machine-leg-press", "prancha": "forearm-plank", "encolhimento": "barbell-shrug", "triceps_testa": "barbell-skullcrusher", "rosca_polia": "cable-bar-curl", "triceps_corda": "cable-rope-pushdown"};
 
 /* ===================== CADASTRO E GERADOR DE TREINO (offline, por regras) ===================== */
@@ -358,6 +368,48 @@ function salvarCadastro(primeira){
   if(mudou) return confirmar("Gerar treino novo?","Seus dados mudaram. Quer um treino novo com base neles? <b>O histórico continua salvo.</b> As trocas de exercício voltam ao padrão.",`<button class="btn btn-red" data-act="regerar">Sim, gerar treino novo</button><button class="btn btn-ghost" data-act="fecharRender">Manter o treino atual</button>`);
   closeSheet(); render(); toast("Cadastro salvo");
 }
+/* ===== Recorte da foto: círculo, pinça para zoom e arrastar ===== */
+function abrirRecorte(file){
+  const url=URL.createObjectURL(file), img=new Image();
+  img.onload=()=>{
+    const V=Math.min(300, window.innerWidth-48), w=img.naturalWidth, h=img.naturalHeight, s0=Math.max(V/w,V/h);
+    const st={z:1,tx:0,ty:0};
+    const ov=document.createElement("div"); ov.id="crop";
+    ov.style.cssText="position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px";
+    ov.innerHTML=`<b style="font-size:18px">Ajuste sua foto</b><div class="small muted">Arraste para centralizar · use dois dedos para zoom</div>
+      <div id="cropV" style="position:relative;width:${V}px;height:${V}px;overflow:hidden;touch-action:none;border-radius:14px;background:#000">
+        <img id="cropI" src="${url}" draggable="false" style="position:absolute;left:50%;top:50%;width:${w}px;height:${h}px;max-width:none;transform-origin:center;user-select:none;-webkit-user-select:none;pointer-events:none">
+        <div style="position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.6);border:2px dashed #fff;pointer-events:none"></div>
+      </div>
+      <input id="cropZ" type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom" style="width:${V}px">
+      <div class="row" style="gap:10px;width:${V}px"><button class="btn btn-ghost" id="cropNo" style="flex:1">Cancelar</button><button class="btn btn-red" id="cropOk" style="flex:1">Salvar foto</button></div>`;
+    document.body.appendChild(ov);
+    const el=ov.querySelector("#cropI"), vp=ov.querySelector("#cropV"), zr=ov.querySelector("#cropZ");
+    const lim=()=>{ const sc=s0*st.z, mx=Math.max(0,(w*sc-V)/2), my=Math.max(0,(h*sc-V)/2); st.tx=Math.max(-mx,Math.min(mx,st.tx)); st.ty=Math.max(-my,Math.min(my,st.ty)); };
+    const draw=()=>{ lim(); el.style.transform=`translate(-50%,-50%) translate(${st.tx}px,${st.ty}px) scale(${s0*st.z})`; zr.value=st.z; };
+    draw();
+    const pts=new Map(); let ini=null;
+    const snap=()=>{ const a=[...pts.values()]; ini={z:st.z,tx:st.tx,ty:st.ty,a:a.map(p=>({...p})),d:a.length>1?Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y):0,m:a.length>1?{x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}:{...a[0]}}; };
+    vp.addEventListener("pointerdown",e=>{ vp.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); snap(); e.preventDefault(); });
+    vp.addEventListener("pointermove",e=>{ if(!pts.has(e.pointerId)||!ini) return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); const a=[...pts.values()];
+      if(a.length>1 && ini.d){ const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y), m={x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}; const nz=Math.max(1,Math.min(4,ini.z*d/ini.d)), k=nz/ini.z;
+        st.z=nz; st.tx=ini.tx*k+(m.x-ini.m.x); st.ty=ini.ty*k+(m.y-ini.m.y); }
+      else { st.tx=ini.tx+(a[0].x-ini.m.x); st.ty=ini.ty+(a[0].y-ini.m.y); }
+      draw(); e.preventDefault(); });
+    const up=e=>{ pts.delete(e.pointerId); if(pts.size) snap(); else ini=null; };
+    vp.addEventListener("pointerup",up); vp.addEventListener("pointercancel",up);
+    vp.addEventListener("wheel",e=>{ const nz=Math.max(1,Math.min(4,st.z*(e.deltaY<0?1.08:0.92))), k=nz/st.z; st.z=nz; st.tx*=k; st.ty*=k; draw(); e.preventDefault(); },{passive:false});
+    zr.addEventListener("input",()=>{ const nz=+zr.value, k=nz/st.z; st.z=nz; st.tx*=k; st.ty*=k; draw(); });
+    const fecha=()=>{ ov.remove(); URL.revokeObjectURL(url); };
+    ov.querySelector("#cropNo").onclick=fecha;
+    ov.querySelector("#cropOk").onclick=()=>{ const O=240, c=document.createElement("canvas"); c.width=c.height=O; const x=c.getContext("2d");
+      x.fillStyle="#111"; x.fillRect(0,0,O,O); x.translate(O/2,O/2); x.scale(O/V,O/V); x.translate(st.tx,st.ty); x.scale(s0*st.z,s0*st.z); x.drawImage(img,-w/2,-h/2);
+      const u=c.toDataURL("image/jpeg",.85); fecha(); window._fotoTmp=u; const f=$("#cadFoto"); if(f) f.innerHTML=`<img src="${u}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--red)">`; toast("Foto ajustada. Toque em Salvar."); };
+  };
+  img.onerror=()=>{ URL.revokeObjectURL(url); toast("Não deu para abrir a foto"); };
+  img.src=url;
+}
+
 function fotoReduzida(file){ return new Promise((ok,no)=>{ const img=new Image(), url=URL.createObjectURL(file); img.onload=()=>{ const s=240, c=document.createElement("canvas"); c.width=c.height=s; const r=Math.min(img.width,img.height); c.getContext("2d").drawImage(img,(img.width-r)/2,(img.height-r)/2,r,r,0,0,s,s); URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg",.8)); }; img.onerror=no; img.src=url; }); }
 function cardPerfil(){
   const p=S.perfil||{}, x=(v,un)=>v!=null&&v!==""?`<b>${esc(String(v))}</b>${un}`:`<span class="muted">a preencher</span>`;
@@ -405,7 +457,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "1.8";
+const APP_VERSAO = "1.9";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -625,6 +677,7 @@ function sheetLib(id){
     <figure class="real"><div class="slot wide" id="slot-real"><label class="addbig"><input type="file" accept="video/*,image/*" data-midia="${id}:real" hidden><span style="font-size:30px">📹</span><b>Adicionar vídeo</b><span class="small muted">da galeria do iPhone · fica só neste aparelho</span></label></div></figure>
     <div class="row" style="gap:8px;flex-wrap:wrap">
       <a class="btn btn-red" style="flex:1 1 100%;font-size:18px" href="${YT[id]?"https://www.youtube.com/shorts/"+YT[id]:"https://musclewiki.com/exercise/"+MW[id]}" target="_blank" rel="noopener">▶ Ver vídeo real ${YT[id]?"🟢🔴":"deste exercício"}</a>
+      ${YT2[id]?`<a class="btn btn-ghost" style="flex:1 1 100%;font-size:16px" href="${YT2[id].u}" target="_blank" rel="noopener">▶ 2ª opção · ${esc(YT2[id].l)}</a>`:""}
       ${S.ig?.[id]?`<a class="btn btn-ghost" style="width:auto;flex:1;font-size:16px" href="${esc(S.ig[id])}" target="_blank" rel="noopener">📸 Ver no Instagram</a>`:""}
       <button class="btn btn-ghost" style="width:auto;flex:1;font-size:16px" data-act="iglink" data-ex="${id}">📸 ${S.ig?.[id]?"Trocar link do Instagram":"Salvar link do Instagram"}</button>
     </div>
@@ -1176,6 +1229,7 @@ const FRONT_DEF = {
     bb:{R:{a:20,f:70},sy:8},
     osc:(o,p)=>{o.sx=Math.sin(p*Math.PI*2)*7; o.sy+=Math.cos(p*Math.PI*2)*4;},
     hl:["trap"], gl:[["TR",10],["TL",10]], bm:["fa"], bg:[["ER",10],["EL",10]],
+    eq:(J,h)=>h.rail(22)+h.rail(178),
     fr:(J,h)=>h.L([J.WL[0]-14,J.WL[1]],[J.WR[0]+14,J.WR[1]],"#8a8c93",5)+h.plate([J.WL[0]-18,J.WL[1]],10)+h.plate([J.WR[0]+18,J.WR[1]],10)
   },
   adutora:{
@@ -1298,7 +1352,7 @@ document.addEventListener("change",ev=>{
   const t=ev.target;
   if(t.dataset.ed){ const [sid,ex,k,f]=t.dataset.ed.split("|"); const s=S.sessoes.find(z=>z.id===sid); const v=parseFloat(t.value.replace(",",".")); if(s && !isNaN(v)){ s.log[ex].sets[+k][f]=v; save(); toast("Corrigido"); } return; }
   if(t.dataset.midia && t.files[0]){ const f=t.files[0]; if(f.size>80*1024*1024) return toast("Vídeo muito grande (máx. 80 MB)"); DB.put(t.dataset.midia,f).then(()=>{toast("Vídeo salvo neste aparelho"); sheetLib(t.dataset.midia.split(":")[0]);}).catch(()=>toast("Não deu para salvar o vídeo aqui")); return; }
-  if(t.id==="fotoIn" && t.files[0]){ fotoReduzida(t.files[0]).then(u=>{ window._fotoTmp=u; $("#cadFoto").innerHTML=`<img src="${u}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--red)">`; }).catch(()=>toast("Não deu para ler a foto")); return; }
+  if(t.id==="fotoIn" && t.files[0]){ abrirRecorte(t.files[0]); t.value=""; return; }
   if(t.id==="bkf" && t.files[0]){ t.files[0].text().then(importar); return; }
   if(!t.dataset.f) return;
   const a=ativa(); if(!a) return;
