@@ -488,6 +488,7 @@ function sheetRelatorio(dias){
     `🎯 Séries por músculo: ${Object.entries(R.porMusc).map(([m,n])=>m+" "+n).join(", ")||"—"}`,
     `📈 Cargas que subiram: ${evoL.filter(e=>e.up&&e.n>1).map(e=>EXS[e.id].n+" "+e.a.kg+"→"+e.b.kg+unid(e.id)).join("; ")||"ainda sem comparação"}`,
     `✅ Check-ins: ${R.ses.filter(s=>s.checkin).length} (ajustados: ${R.ses.filter(s=>s.checkin&&s.checkin.ajustes.length).length})`,
+    `➕ Treinos extra: ${R.ses.filter(s=>s.treino==="E").length}${(S.extraRecusado||[]).filter(x=>x.t>=(dias?Date.now()-dias*864e5:0)).length?" · recusados: "+(S.extraRecusado||[]).filter(x=>x.t>=(dias?Date.now()-dias*864e5:0)).length:""}`,
     `🗓️ Treinos em semana ajustada: ${R.ses.filter(s=>s.semana).length}`,
     `🚶 Cardio: ${R.card.length}x · ${R.card.reduce((a,c)=>a+c.min,0)} min`,
     `😴 Sono médio: ${sm?sm.toFixed(1)+" h":"—"}`,
@@ -505,7 +506,7 @@ function sheetRelatorio(dias){
       <div class="card stat"><div class="lbl">Cardio</div><div class="v num">${R.card.length}x</div><div class="small muted">${R.card.reduce((a,c)=>a+c.min,0)} min</div></div>
       <div class="card stat"><div class="lbl">Sono</div><div class="v num">${sm?sm.toFixed(1)+" h":"—"}</div><div class="small muted">média</div></div>
     </div>
-    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}${s.checkin?`<div class="small muted" style="font-weight:400">⏱${s.checkin.tempo}′ · 😴${s.checkin.sono??"?"}h · ${{baixa:"😫",ok:"😐",alta:"💪"}[s.checkin.energia]||""}${s.checkin.ajustes.length?" · "+esc(s.checkin.ajustes.join(", ")):""}</div>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}${s.checkin?`<div class="small muted" style="font-weight:400">${s.checkin.tipo==="extra"?(s.checkin.alertas.length?"⚠️ "+esc(s.checkin.alertas.join(", "))+" · ":""):`⏱${s.checkin.tempo}′ · `}😴${s.checkin.sono??"?"}h · ${{baixa:"😫",ok:"😐",alta:"💪"}[s.checkin.energia]||""}${s.checkin.ajustes.length?" · "+esc(s.checkin.ajustes.join(", ")):""}</div>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
     <div class="card stack" style="gap:8px"><h3>Séries por músculo</h3>${Object.entries(R.porMusc).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<div class="small"><div class="row between"><span>${esc(m)}</span><b class="num">${n}</b></div><div class="bar"><i style="width:${n/maxM*100}%"></i></div></div>`).join("")||`<p class="muted small" style="margin:0">—</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Evolução de carga</h3>${evoL.length?evoL.map(e=>`<div class="li small num"><span class="grow ellip">${esc(EXS[e.id].n)}</span><span class="muted">${e.a.kg}×${e.a.reps}</span><b style="color:${e.up?"var(--green)":e.dn?"var(--red-hi)":"var(--fg)"}">→ ${e.b.kg}×${e.b.reps} ${e.up?"▲":e.dn?"▼":"="}</b></div>`).join(""):`<p class="muted small" style="margin:0">Aparece depois dos treinos.</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Peso</h3><div class="small">${p0?`${p0.peso} kg${p1!==p0?` → <b>${p1.peso} kg</b> (${(p1.peso-p0.peso>0?"+":"")+(p1.peso-p0.peso).toFixed(1)})`:""}`:`<span class="muted">Registre o peso em Evolução.</span>`}</div></div>
@@ -626,6 +627,43 @@ function confirmaCheckin(ajustar){
   iniciar(c.t, c.forcar, {ex: ajustar && R.tags.length ? R.ex : null, checkin: info});
 }
 
+/* ===================== TREINO EXTRA E: análise + 3 opções ===================== */
+function analiseExtra(){
+  const al=[], ok=[], d=864e5, n=Date.now();
+  const v7=(S.sono||[]).filter(x=>x.t>=n-7*d).map(x=>x.h), sm=v7.length?v7.reduce((a,b)=>a+b,0)/v7.length:null, sh=sonoHoje();
+  if(sh && sh.h<6) al.push(`😴 Dormiu ${sh.h} h esta noite`); 
+  if(sm!=null && sm<6) al.push(`😴 Sono médio de ${sm.toFixed(1)} h na semana`); else if(sm!=null) ok.push(`😴 Sono médio ${sm.toFixed(1)} h`);
+  const sem=S.sessoes.filter(s=>s.status==="feito"&&s.inicio>=n-7*d).length;
+  if(sem>=4) al.push(`🏋️ ${sem} treinos nos últimos 7 dias`); else ok.push(`🏋️ ${sem} treinos nos últimos 7 dias`);
+  const dc=diaCiclo(), semana=dc?Math.ceil(dc.dia/7):1;
+  if(!dc || (n-S.inicioCiclo)/d<14) al.push(`📅 ${semana}ª semana do ciclo (o protocolo prevê o extra a partir da 3ª)`); else ok.push(`📅 ${semana}ª semana do ciclo`);
+  const ontem=new Set(); S.sessoes.filter(s=>s.status==="feito"&&s.inicio>=n-1.5*d).forEach(s=>Object.entries(s.log).forEach(([id,r])=>{ if(EXS[id]&&(r.sets||[]).some(z=>z.feito)) ontem.add(GRUPO_M[EXS[id].m]); }));
+  const rep=["Ombros","Braços"].filter(g=>ontem.has(g));
+  if(rep.length) al.push(`🔁 ${rep.join(" e ")} treinados ontem`);
+  return {al,ok};
+}
+function sheetExtra(){
+  const A=analiseExtra(), E=exOf("E"), tot=E.reduce((n,e)=>n+e.series,0), leve=exLeve(E), totL=leve.reduce((n,e)=>n+e.series,0);
+  openSheet(`<div class="stack"><div class="row between"><h2>➕ Treino extra (E)</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="small muted">${esc(PROTOCOLO.treinos.E.foco)} · não muda a sequência A-B-C-D</div>
+    ${A.al.length?`<div class="cue bad"><b>!</b><span>${A.al.map(esc).join("<br>")}</span></div>`:`<div class="cue ok"><b>✓</b><span>Tudo certo para o extra hoje.</span></div>`}
+    ${A.ok.length?`<div class="small muted">${A.ok.map(esc).join(" · ")}</div>`:""}
+    <div class="lbl">Como você quer fazer?</div>
+    <button class="btn btn-red" data-act="extraModo" data-v="completo">🔥 Completo · ${tot} séries</button>
+    <button class="btn btn-ghost" data-act="extraModo" data-v="leve">⚖️ Leve · ${totL} séries <span class="small muted">(mesmas cargas, sobrando 1–2)</span></button>
+    <div class="small muted">${leve.map(e=>esc(EXS[e.id].n)+" "+e.series+"×").join(" · ")}</div>
+    <button class="btn btn-ghost" data-act="extraModo" data-v="nao">✋ Hoje não · descanso ativo</button>
+    <div class="small muted">Dá para trocar qualquer exercício no treino com 🔄 Trocar.</div>
+  </div>`);
+}
+function exLeve(E){ return E.map((e,i)=>({...e, series:Math.max(1,e.series-1), sobrar:e.sobrar==="—"?"—":"1–2"})); }
+function iniciarExtra(modo){
+  const A=analiseExtra(), info={tipo:"extra",modo,alertas:A.al,ajustes:modo==="leve"?["⚖️ extra leve"]:["🔥 extra completo"],tempo:null,sono:(sonoHoje()||{}).h??null,energia:null};
+  closeSheet();
+  if(modo==="nao"){ (S.extraRecusado=S.extraRecusado||[]).push({t:Date.now(),alertas:A.al}); save(); return sheetCardio(); }
+  iniciar("E", true, {ex: modo==="leve"?exLeve(exOf("E")):null, checkin: info});
+}
+
 /* ===================== TROCAR EXERCÍCIO ===================== */
 function baseDe(id){ for(const [t,T] of Object.entries(PROTOCOLO.treinos)) for(const a of T.ex){ if(((S.trocas||{})[a[0]]||a[0])===id) return {t,base:a[0]}; } return null; }
 function sheetTrocar(base,t){
@@ -658,7 +696,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.3";
+const APP_VERSAO = "2.4";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -766,11 +804,11 @@ function vInicio(){
       <div class="small" style="margin-top:6px">Hoje é o <b style="color:var(--red-hi)">${nx}</b>. Depois vem o <b>${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(nx)+1)%4]}</b>.</div>
       
     </div>
-    ${!a&&PROTOCOLO.treinos.E&&!PROTOCOLO.sequencia.includes("E")?(()=>{const lib=liberaE(); return `<button class="card li" style="border-top:1px solid var(--line);${lib.ok?"":"opacity:.55"}" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · 11 séries</b><div class="small muted">${lib.ok?"Liberado hoje · não muda a sequência":lib.motivo}</div></div></button>`;})():""}
+    ${!a&&PROTOCOLO.treinos.E&&!PROTOCOLO.sequencia.includes("E")?(()=>{const an=analiseExtra(); return `<button class="card li" style="border-top:1px solid var(--line)" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · ${exOf("E").reduce((n,e)=>n+e.series,0)} séries</b><div class="small muted">${an.al.length?"⚠️ "+esc(an.al[0])+" · toque para ver as opções":"✅ Tudo certo hoje · não muda a sequência"}</div></div></button>`;})():""}
     ${cardSemana()}
     ${cardCardio()}
     <div class="card stack" style="gap:10px">
-      <div class="row between"><div><div class="lbl">😴 Quanto dormiu esta noite?</div><div class="small muted" style="margin-top:2px">Não muda seu treino. Só libera o treino extra E.</div></div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
+      <div class="row between"><div><div class="lbl">😴 Quanto dormiu esta noite?</div><div class="small muted" style="margin-top:2px">Usado no check-in e na análise do treino extra.</div></div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
       <div class="seg">${[4,5,6,7,8].map(h=>`<button class="${sonoHoje()?.h===h?"on":""}" data-act="sono" data-v="${h}">${h===8?"8+":h}</button>`).join("")}</div>
     </div>
     <div class="card stack" style="gap:8px">
@@ -1520,7 +1558,8 @@ document.addEventListener("click",ev=>{
   if(el.classList.contains("sheet-bg") && ev.target.closest("[data-stop]")) return;
   const d=el.dataset, a=ativa();
   switch(d.act){
-    case "iniciar": if(ativa()) return go("treino"); if(d.t==="E" && !PROTOCOLO.sequencia.includes("E") && !liberaE().ok) return iniciar(d.t); window._ck=null; sheetCheckin(d.t); break;
+    case "iniciar": if(ativa()) return go("treino"); if(d.t==="E" && !PROTOCOLO.sequencia.includes("E")) return sheetExtra(); window._ck=null; sheetCheckin(d.t); break;
+    case "extraModo": iniciarExtra(d.v); break;
     case "forcarE": window._ck=null; sheetCheckin("E",true); break;
     case "continuar": go("treino"); break;
     case "toggle": S.abertos[d.id]=!(S.abertos[d.id] ?? el.closest(".ex").querySelector(".ex-b")); save(); render(); break;
@@ -1557,7 +1596,7 @@ document.addEventListener("click",ev=>{
         <div class="card list" style="padding:4px 14px">${exs.map((e,i)=>`<button class="li" data-act="lib" data-ex="${e.id}"><div class="badge">${i+1}</div><div class="grow"><b>${esc(EXS[e.id].n)}</b><div class="small muted num">${e.series} × ${e.min}–${e.max} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div><span class="muted">▶</span></button>`).join("")}</div>
         ${a?`<p class="small muted" style="margin:0">Termine o treino ${a.treino} em andamento antes de começar outro.</p>`:`<button class="btn btn-red" data-act="iniciarSheet" data-t="${t}">Iniciar treino ${t}</button>${t!==nx?`<p class="small muted" style="margin:0">Fora da ordem: o próximo era o ${nx}. Se fizer o ${t}, depois vem o ${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(t)+1)%4]}.</p>`:""}`}
       </div>`); break; }
-    case "iniciarSheet": if(ativa()){ closeSheet(); return go("treino"); } window._ck=null; sheetCheckin(d.t); break;
+    case "iniciarSheet": if(ativa()){ closeSheet(); return go("treino"); } if(d.t==="E" && !PROTOCOLO.sequencia.includes("E")) return sheetExtra(); window._ck=null; sheetCheckin(d.t); break;
     case "prim": S.primeiro=d.v; save(); render(); break;
     case "exportar": exportar(); break;
     case "copiar": { const t=$("#bk"); if(!t.value) exportar(); navigator.clipboard?.writeText(t.value).then(()=>toast("Copiado"),()=>{t.select();toast("Selecionado: copie manualmente");}); break; }
