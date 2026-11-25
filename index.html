@@ -256,7 +256,7 @@ const EXS = {
 const MW = {"supino_guiado": "smith-machine-bench-press", "puxada_aberta": "machine-pulldown", "supino_incl_guiado": "smith-machine-incline-bench-press", "remada_baixa": "machine-seated-cable-row", "lateral_cabo": "cable-low-single-arm-lateral-raise", "triceps_v": "cable-bar-pushdown", "rosca_w": "ez-bar-curl", "agachamento_guiado": "smith-machine-squat", "leg_press": "machine-leg-press", "extensora": "machine-leg-extension", "flexora": "machine-seated-leg-curl", "adutora": "machine-hip-adduction", "abdutora": "machine-hip-abduction", "panturrilha_lp": "calf-raises", "abd_reverso": "reverse-crunch", "remada_unilateral": "dumbbell-row-unilateral", "supino_halter": "dumbbell-bench-press", "puxada_triangulo": "machine-pulldown", "crucifixo_voador": "machine-pec-fly", "voador_inverso": "machine-reverse-fly", "lateral_halter": "dumbbell-lateral-raise", "martelo_corda": "cable-rope-hammer-curl", "triceps_cabeca": "cable-rope-overhead-tricep-extension", "stiff": "barbell-romanian-deadlift", "elevacao_pelvica": "barbell-hip-thrust", "leg_press_alto": "machine-leg-press", "prancha": "forearm-plank", "encolhimento": "barbell-shrug", "triceps_testa": "barbell-skullcrusher", "rosca_polia": "cable-bar-curl", "triceps_corda": "cable-rope-pushdown"};
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "1.3";
+const APP_VERSAO = "1.4";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -334,7 +334,7 @@ function vInicio(){
   if(a){ const done = exs.filter(e => (a.log[e.id]?.sets||[]).filter(x=>x.feito).length>=e.series || a.log[e.id]?.pulou).length; prog = `<span class="pill red">Em andamento · ${done}/${exs.length}</span>`; }
   const marco = dc && [1,14,28].includes(dc.dia) ? `<div class="card row"><div class="badge red">${dc.dia}</div><div class="grow"><b>Dia de medir</b><div class="small muted">Peso em jejum, cintura no umbigo e fotos (frente, lado, costas).</div></div><button class="btn btn-ghost" style="width:auto" data-go="evolucao">Medir</button></div>`:"";
   return `
-  <div class="top"><div class="brand">IRON <b>28</b> PRO</div>${prog || `<span class="pill">${PROTOCOLO.versao}</span>`}</div>
+  <div class="top"><div class="brand">IRON <b>28</b> PRO</div>${prog || `<span class="pill">app v${APP_VERSAO}</span>`}</div>
   <div class="stack">
     <section class="hero">
       <div class="letter">${nx}</div>
@@ -802,7 +802,11 @@ document.addEventListener("change",ev=>{
 
 if(ativa()) view="treino";
 render();
-if("serviceWorker" in navigator && location.protocol==="https:" && document.querySelector('link[rel="manifest"]')){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+if("serviceWorker" in navigator && location.protocol==="https:" && document.querySelector('link[rel="manifest"]')){
+  const tinha = !!navigator.serviceWorker.controller; let recarregou=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(tinha && !recarregou && !ativa()){ recarregou=true; location.reload(); } });
+  navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{ r.update(); document.addEventListener("visibilitychange",()=>{ if(!document.hidden) r.update(); }); }).catch(()=>{});
+}
 </script>
 
 </body></html>
