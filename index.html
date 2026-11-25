@@ -191,7 +191,7 @@ textarea{height:140px;padding:10px;font-size:12px;font-family:ui-monospace,Menlo
    PROTOCOLO — dados fáceis de trocar (v1.1, proposta NÃO aprovada)
    Formato de cada exercício: [id, séries, repsMín, repsMáx, descanso(s), sobrar, dupla?]
    ============================================================ */
-const PROTOCOLO = {
+const PROTO_BASE = {
   versao: "v1.2",
   sequencia: ["A","B","C","D"],
   extra: "E",
@@ -216,6 +216,7 @@ const PROTOCOLO = {
   }
 };
 
+let PROTOCOLO = PROTO_BASE;
 /* Biblioteca: u = unidade, inc = menor aumento (null = 1 placa), lado = um lado por vez */
 const EXS = {
   supino_guiado:{anim:"supino",okTag:"Barra no meio do peito · peito",badTag:"Quadril sai do banco · quica",n:"Supino reto na barra guiada",m:"Peito",e:"Barra guiada",u:"kg",inc:4,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
@@ -258,12 +259,161 @@ const EXS = {
 const YT = {"supino_guiado": "gQ3afio08V8", "supino_incl_guiado": "VXaBbUYMfIs", "supino_halter": "MjHjq6TC1n0", "puxada_aberta": "1riA95IP8KE", "remada_baixa": "bCd7Xil89F8", "remada_unilateral": "66U5H3ODdQk", "lateral_cabo": "9ilIKuy6B0g", "lateral_halter": "DuAaDnVhtZU", "triceps_v": "eDa0VYlbDeQ", "triceps_corda": "d9l2AYTGIEs", "triceps_cabeca": "fmgmPDacgKM", "triceps_testa": "-qtz5ysUzMM", "rosca_w": "j5amzQZy9Zk", "agachamento_guiado": "iKCJCydYYrE", "leg_press": "BIZhK4kulnk", "leg_press_alto": "BIZhK4kulnk", "extensora": "b9i5mXA_qsk", "flexora": "_lgE0gPvbik", "stiff": "uTA4GWNwUEo", "elevacao_pelvica": "CvuVYMFd11g", "prancha": "y3sxQUJ3Qsk", "face_pull": "IeOqdw9WI90", "encolhimento": "G_m6EGNpxBU", "crucifixo_voador": "Dy4Bl-ituTo", "voador_inverso": "ZzeiSNGJOeE", "crucifixo_cabo": "X-4cCjBEI5c"};
 const MW = {"supino_guiado": "smith-machine-bench-press", "puxada_aberta": "machine-pulldown", "supino_incl_guiado": "smith-machine-incline-bench-press", "remada_baixa": "machine-seated-cable-row", "lateral_cabo": "cable-low-single-arm-lateral-raise", "triceps_v": "cable-bar-pushdown", "rosca_w": "ez-bar-curl", "agachamento_guiado": "smith-machine-squat", "leg_press": "machine-leg-press", "extensora": "machine-leg-extension", "flexora": "machine-seated-leg-curl", "adutora": "machine-hip-adduction", "abdutora": "machine-hip-abduction", "panturrilha_lp": "calf-raises", "abd_reverso": "reverse-crunch", "remada_unilateral": "dumbbell-row-unilateral", "supino_halter": "dumbbell-bench-press", "puxada_triangulo": "machine-pulldown", "crucifixo_voador": "machine-pec-fly", "voador_inverso": "machine-reverse-fly", "lateral_halter": "dumbbell-lateral-raise", "martelo_corda": "cable-rope-hammer-curl", "triceps_cabeca": "cable-rope-overhead-tricep-extension", "stiff": "barbell-romanian-deadlift", "elevacao_pelvica": "barbell-hip-thrust", "leg_press_alto": "machine-leg-press", "prancha": "forearm-plank", "encolhimento": "barbell-shrug", "triceps_testa": "barbell-skullcrusher", "rosca_polia": "cable-bar-curl", "triceps_corda": "cable-rope-pushdown"};
 
+/* ===================== CADASTRO E GERADOR DE TREINO (offline, por regras) ===================== */
+/* Perfil padrão de quem já usava o app (sem dados pessoais: o site é público). Os dados chegam por link privado #perfil=... */
+const PERFIL_PADRAO = {nome:"",sexo:"M",idade:null,peso:null,altura:null,cintura:null,objetivo:"recomp",dias:4,nivel:"inter",lim:[],obs:"",foto:null};
+const OBJETIVOS = {recomp:"Perder gordura e ganhar músculo",hiper:"Ganhar músculo",emag:"Emagrecer",saude:"Saúde e disposição"};
+const NIVEIS = {ini:"Iniciante",inter:"Intermediário",avan:"Avançado"};
+const LIMS = {joelho:"Dor no joelho",lombar:"Dor na lombar",ombro:"Dor no ombro",pressao:"Pressão alta ou coração"};
+const FULL3 = {versao:"3 dias",sequencia:["A","B","C"],primeiro:"A",treinos:{
+  A:{nome:"Corpo todo 1",foco:"Pernas, peito e costas",min:55,ex:[["agachamento_guiado",3,8,12,150,"1–2"],["supino_guiado",3,8,12,120,"1–2"],["puxada_aberta",3,8,12,120,"1–2"],["flexora",2,10,15,90,"0–1"],["lateral_halter",2,12,15,60,"0–1"],["abd_reverso",2,10,15,60,"1"]]},
+  B:{nome:"Corpo todo 2",foco:"Pernas, costas e braços",min:55,ex:[["leg_press",3,10,15,120,"1–2"],["remada_baixa",3,8,12,120,"1–2"],["supino_halter",3,8,12,120,"1–2"],["stiff",2,8,12,120,"1–2"],["rosca_w",2,10,15,60,"0–1"],["triceps_corda",2,10,15,60,"0–1"]]},
+  C:{nome:"Corpo todo 3",foco:"Glúteos, costas e ombros",min:55,ex:[["elevacao_pelvica",3,8,12,120,"1–2"],["puxada_triangulo",3,8,12,120,"1–2"],["supino_incl_guiado",3,8,12,120,"1–2"],["extensora",2,12,15,90,"0–1"],["face_pull",2,12,15,60,"0–1"],["prancha",2,30,45,60,"—"]]}}};
+/* Alternativas: mesmo músculo, aparelhos da academia */
+const ALT = {
+  supino_guiado:["supino_halter","supino_incl_guiado","crucifixo_cabo"], supino_incl_guiado:["supino_guiado","supino_halter","crucifixo_cabo"],
+  supino_halter:["supino_guiado","supino_incl_guiado","crucifixo_voador"], crucifixo_cabo:["crucifixo_voador","supino_halter"], crucifixo_voador:["crucifixo_cabo","supino_halter"],
+  puxada_aberta:["puxada_triangulo","remada_baixa","remada_unilateral"], puxada_triangulo:["puxada_aberta","remada_baixa","remada_unilateral"],
+  remada_baixa:["remada_unilateral","puxada_triangulo","puxada_aberta"], remada_unilateral:["remada_baixa","puxada_triangulo","puxada_aberta"],
+  lateral_cabo:["lateral_halter","face_pull"], lateral_halter:["lateral_cabo","face_pull"], voador_inverso:["face_pull","lateral_cabo"], face_pull:["voador_inverso","remada_baixa"],
+  encolhimento:["face_pull","remada_unilateral"],
+  triceps_v:["triceps_corda","triceps_cabeca","triceps_testa"], triceps_corda:["triceps_v","triceps_cabeca","triceps_testa"],
+  triceps_cabeca:["triceps_corda","triceps_v","triceps_testa"], triceps_testa:["triceps_cabeca","triceps_corda","triceps_v"],
+  rosca_w:["rosca_polia","martelo_corda"], rosca_polia:["rosca_w","martelo_corda"], martelo_corda:["rosca_polia","rosca_w"],
+  agachamento_guiado:["leg_press","extensora","leg_press_alto"], leg_press:["agachamento_guiado","extensora","leg_press_alto"],
+  leg_press_alto:["leg_press","elevacao_pelvica","agachamento_guiado"], extensora:["leg_press","agachamento_guiado"],
+  flexora:["stiff","elevacao_pelvica"], stiff:["flexora","elevacao_pelvica","leg_press_alto"], elevacao_pelvica:["abdutora","leg_press_alto","stiff"],
+  adutora:["abdutora","leg_press"], abdutora:["elevacao_pelvica","adutora"], panturrilha_lp:[],
+  abd_reverso:["prancha"], prancha:["abd_reverso"]
+};
+/* exercícios que saem por idade ou limitação (troca pelo 1º da lista ALT que não esteja no treino) */
+const TIRA = {
+  idoso:["agachamento_guiado","stiff","remada_unilateral","supino_halter","triceps_testa","elevacao_pelvica","abd_reverso"],
+  joelho:["agachamento_guiado"], lombar:["stiff","agachamento_guiado","remada_unilateral","elevacao_pelvica","abd_reverso"],
+  ombro:["supino_halter","triceps_testa","triceps_cabeca","lateral_cabo"], pressao:[]
+};
+const PREF_IDOSO = {stiff:["flexora","abdutora"],agachamento_guiado:["leg_press","extensora"],elevacao_pelvica:["abdutora","leg_press_alto"],remada_unilateral:["remada_baixa","puxada_triangulo"],supino_halter:["supino_guiado","crucifixo_voador"],triceps_testa:["triceps_corda","triceps_v"],abd_reverso:["prancha"]};
+function gerarPlano(p){
+  const idoso=(+p.idade||0)>=60, ini=p.nivel==="ini", lim=p.lim||[], dias=+p.dias||4;
+  if(dias===4 && !ini && !idoso && !lim.length && p.objetivo!=="saude") return null;   // = protocolo IRON 28 v1.2 aprovado
+  const pl = JSON.parse(JSON.stringify(dias<=3 ? FULL3 : PROTO_BASE));
+  if(dias>=5 && pl.treinos.E){ pl.sequencia=["A","B","C","D","E"]; pl.treinos.E.nome="Ombros e braços"; }
+  if(dias<5) delete pl.treinos.E;
+  pl.primeiro = pl.sequencia.includes("B") && dias>=4 ? "B" : "A";
+  const tirar = new Set([...(idoso?TIRA.idoso:[]), ...lim.flatMap(l=>TIRA[l]||[])]);
+  for(const T of Object.values(pl.treinos)){
+    const usados = new Set(T.ex.map(a=>a[0]));
+    T.ex = T.ex.filter(a=>{
+      if(!tirar.has(a[0])) return true;
+      const cand=[...((idoso&&PREF_IDOSO[a[0]])||[]), ...(ALT[a[0]]||[])].find(c=>!usados.has(c)&&!tirar.has(c));
+      if(!cand) return false;
+      usados.delete(a[0]); usados.add(cand); a[0]=cand; return true;
+    });
+    T.ex.forEach(a=>{
+      if(ini||idoso||p.objetivo==="saude"){ a[1]=Math.max(2,a[1]-1); if(a[5]!=="—") a[5]="2–3"; if(a[2]<8 && a[5]!=="—"){ a[2]=8; a[3]=Math.max(a[3],12); } }
+      if(idoso){ a[1]=Math.min(a[1],2); if(a[4]>=90) a[4]+=30; }
+    });
+    T.min = Math.round(T.ex.reduce((m,a)=>m+a[1]*(1+(a[4]||40)/60),8));
+  }
+  pl.versao = "Gerado: "+dias+" dias · "+(idoso?"60+":NIVEIS[p.nivel]||"")+(lim.length?" · com limitação":"");
+  return pl;
+}
+function aplicarPlano(pl){ S.plano=pl; PROTOCOLO=pl||PROTO_BASE; S.trocas={}; S.primeiro=PROTOCOLO.primeiro; save(); }
+function precisaLiberacao(p){ return p && ((+p.idade||0)>=60 || (p.lim||[]).length>0); }
+const avisoMedico = () => precisaLiberacao(S.perfil) ? `<div class="cue bad"><b>!</b><span><span style="font-weight:700;color:var(--fg)">Antes de começar, peça liberação ao seu médico.</span> Pare se sentir dor forte, falta de ar ou tontura.</span></div>` : "";
+const primeiroNome = () => ((S.perfil&&S.perfil.nome)||"").trim().split(/\s+/)[0] || "";
+function avatar(sz=44){ const f=S.perfil&&S.perfil.foto; return f?`<img src="${f}" alt="" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;border:2px solid var(--red);flex:none">`:`<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:${sz*.45}px;flex:none;border:2px solid var(--line)">👤</div>`; }
+const cmpIn = 'style="height:48px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;padding:0 12px;font-size:17px;color:var(--fg);width:100%"';
+function formCadastro(p, primeira){
+  p = p || {dias:4,nivel:"inter",objetivo:"recomp",sexo:"M",lim:[]};
+  const seg=(nome,opts,val)=>`<div class="seg" data-seg="${nome}">${Object.entries(opts).map(([k,l])=>`<button type="button" class="${String(val)===String(k)?"on":""}" data-act="segSel" data-v="${k}">${l}</button>`).join("")}</div>`;
+  const campo=(id,l,v,un,tipo="number")=>`<label class="stack" style="gap:4px"><span class="small muted">${l}${un?` (${un})`:""}</span><input id="cad_${id}" type="${tipo}" ${tipo==="number"?'inputmode="decimal"':""} ${cmpIn} value="${v??""}" placeholder="a preencher"></label>`;
+  window._fotoTmp = p.foto||null;
+  return `<div class="stack">
+    ${primeira?`<h2>Bem-vindo ao IRON 28 PRO 💪</h2><p class="muted" style="margin:0">Preencha seus dados. O app monta o seu treino com base neles.</p>`:`<div class="row between"><h2>Meu cadastro</h2><button class="pill" data-act="fechar">Fechar</button></div>`}
+    <label class="row" style="gap:14px;cursor:pointer"><span id="cadFoto">${p.foto?`<img src="${p.foto}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--red)">`:`<div style="width:84px;height:84px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:36px;border:2px dashed var(--line)">📷</div>`}</span><span><b>Foto do perfil</b><br><span class="small muted">Toque para tirar ou escolher. Fica só neste aparelho.</span></span><input type="file" id="fotoIn" accept="image/*" hidden></label>
+    ${campo("nome","Nome",esc(p.nome||""),"","text")}
+    <div class="stack" style="gap:4px"><span class="small muted">Sexo</span>${seg("sexo",{M:"Masculino",F:"Feminino"},p.sexo)}</div>
+    <div class="grid2">${campo("idade","Idade",p.idade,"anos")}${campo("peso","Peso",p.peso,"kg")}</div>
+    <div class="grid2">${campo("altura","Altura",p.altura,"cm")}${campo("cintura","Cintura",p.cintura,"cm")}</div>
+    <div class="stack" style="gap:4px"><span class="small muted">Objetivo</span>${seg("objetivo",OBJETIVOS,p.objetivo)}</div>
+    <div class="stack" style="gap:4px"><span class="small muted">Dias de treino por semana</span>${seg("dias",{3:"3 dias",4:"4 dias",5:"5 dias"},p.dias)}</div>
+    <div class="stack" style="gap:4px"><span class="small muted">Nível</span>${seg("nivel",NIVEIS,p.nivel)}</div>
+    <div class="stack" style="gap:6px"><span class="small muted">Limitações</span>${Object.entries(LIMS).map(([k,l])=>`<label class="row small"><input type="checkbox" class="cadLim" value="${k}" ${(p.lim||[]).includes(k)?"checked":""} style="width:22px;height:22px"> ${l}</label>`).join("")}
+      <input id="cad_obs" ${cmpIn} value="${esc(p.obs||"")}" placeholder="Outra observação (opcional)"></div>
+    <button class="btn btn-red" data-act="cadSalvar" data-primeira="${primeira?1:""}">${primeira?"Salvar e montar meu treino":"Salvar"}</button>
+  </div>`;
+}
+function lerCadastro(){
+  const v=id=>{const el=$("#cad_"+id); return el?el.value.trim():"";}, n=id=>{const x=parseFloat(v(id).replace(",",".")); return isNaN(x)?null:x;};
+  const sg=nome=>{const b=document.querySelector(`[data-seg="${nome}"] .on`); return b?b.dataset.v:null;};
+  return {...(S.perfil||{}), nome:v("nome"), sexo:sg("sexo"), idade:n("idade"), peso:n("peso"), altura:n("altura"), cintura:n("cintura"),
+    objetivo:sg("objetivo")||"recomp", dias:+(sg("dias")||4), nivel:sg("nivel")||"inter", lim:[...document.querySelectorAll(".cadLim:checked")].map(x=>x.value), obs:v("obs"), foto:window._fotoTmp||null};
+}
+function salvarCadastro(primeira){
+  const p=lerCadastro(); if(!p.nome) return toast("Escreva o nome");
+  const antes=S.perfil; S.perfil=p; save();
+  if(primeira){ aplicarPlano(gerarPlano(p)); closeSheet(); go("inicio"); toast("Treino montado para "+primeiroNome()+" 💪"); return; }
+  const mudou = !antes || ["dias","nivel","objetivo"].some(k=>String(antes[k])!==String(p[k])) || ((+antes.idade||0)>=60)!==((+p.idade||0)>=60) || (antes.lim||[]).join()!==(p.lim||[]).join();
+  if(mudou) return confirmar("Gerar treino novo?","Seus dados mudaram. Quer um treino novo com base neles? <b>O histórico continua salvo.</b> As trocas de exercício voltam ao padrão.",`<button class="btn btn-red" data-act="regerar">Sim, gerar treino novo</button><button class="btn btn-ghost" data-act="fecharRender">Manter o treino atual</button>`);
+  closeSheet(); render(); toast("Cadastro salvo");
+}
+function fotoReduzida(file){ return new Promise((ok,no)=>{ const img=new Image(), url=URL.createObjectURL(file); img.onload=()=>{ const s=240, c=document.createElement("canvas"); c.width=c.height=s; const r=Math.min(img.width,img.height); c.getContext("2d").drawImage(img,(img.width-r)/2,(img.height-r)/2,r,r,0,0,s,s); URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg",.8)); }; img.onerror=no; img.src=url; }); }
+function cardPerfil(){
+  const p=S.perfil||{}, x=(v,un)=>v!=null&&v!==""?`<b>${esc(String(v))}</b>${un}`:`<span class="muted">a preencher</span>`;
+  return `<div class="card stack">
+    <div class="row" style="gap:14px">${avatar(64)}<div class="grow"><h2 style="margin:0">${esc(p.nome||"Seu nome")}</h2><div class="small muted">${p.sexo==="F"?"Feminino":"Masculino"} · ${x(p.idade," anos")}</div></div></div>
+    <div class="grid2 small">
+      <div>⚖️ Peso: ${x(p.peso," kg")}</div><div>📏 Altura: ${x(p.altura," cm")}</div>
+      <div>📐 Cintura: ${x(p.cintura," cm")}</div><div>📅 ${x(p.dias," dias/semana")}</div>
+      <div>🎯 ${esc(OBJETIVOS[p.objetivo]||"")}</div><div>🏋️ ${esc(NIVEIS[p.nivel]||"")}</div>
+    </div>
+    <div class="small">🩺 ${(p.lim||[]).length?(p.lim||[]).map(l=>LIMS[l]).join(", "):"Sem limitações marcadas"}${p.obs?` · <span class="muted">${esc(p.obs)}</span>`:""}</div>
+    ${avisoMedico()}
+    <div class="small muted">Treino: <b style="color:var(--fg)">${esc(PROTOCOLO.versao)}</b>${S.plano?"":" (protocolo IRON 28 aprovado)"}</div>
+    <button class="btn btn-ghost" data-act="cadEditar">✏️ Editar cadastro</button>
+  </div>`;
+}
+/* ===================== TROCAR EXERCÍCIO ===================== */
+function baseDe(id){ for(const [t,T] of Object.entries(PROTOCOLO.treinos)) for(const a of T.ex){ if(((S.trocas||{})[a[0]]||a[0])===id) return {t,base:a[0]}; } return null; }
+function sheetTrocar(base,t){
+  const atual=(S.trocas[base]||base);
+  openSheet(`<div class="stack"><div class="row between"><h2>🔄 Trocar exercício</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="small muted">${esc(EXS[atual].n)}</div><div class="lbl">Por quê?</div>
+    ${[["dor","😣 Dor ou desconforto"],["aparelho","🚫 Sem aparelho ou ocupado"],["dificil","🤷 Não consigo fazer direito"]].map(([k,l])=>`<button class="btn btn-ghost" data-act="trocaMot" data-base="${base}" data-t="${t}" data-v="${k}">${l}</button>`).join("")}
+  </div>`);
+}
+function sheetAlternativas(base,t,mot){
+  const atual=(S.trocas[base]||base), noTreino=new Set(exOf(t).map(e=>e.id));
+  const ops=[base,...(ALT[base]||[])].filter(c=>c!==atual && EXS[c] && !noTreino.has(c)).slice(0,4);
+  const motTxt={dor:"dor ou desconforto",aparelho:"falta de aparelho",dificil:"dificuldade de execução"}[mot];
+  const perg="Exercício: "+EXS[atual].n+". Não consigo fazer por "+motTxt+". Qual exercício posso usar no lugar, trabalhando o mesmo músculo, numa academia de condomínio (barra guiada, polias, crossover, leg press, extensora/flexora, voador, halteres montados)? Responda curto e indique um vídeo de demonstração.";
+  openSheet(`<div class="stack"><div class="row between"><h2>Escolha o substituto</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    ${mot==="dor"?`<div class="cue bad"><b>!</b><span>Se a dor for forte ou não passar, pare e procure um profissional.</span></div>`:""}
+    <div class="small muted">Mesmo músculo: <b style="color:var(--fg)">${esc(EXS[atual].m)}</b>. Vale para todos os treinos onde ele aparece.</div>
+    ${ops.length?`<div class="card list">${ops.map(c=>`<button class="li" data-act="trocaSel" data-base="${base}" data-v="${c}" data-mot="${mot}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);overflow:hidden;flex:none">${animThumb(c)}</div><div class="grow"><b>${esc(EXS[c].n)}</b>${c===base?' <span class="pill">original</span>':""}<div class="small muted">${esc(EXS[c].e)}</div></div></button>`).join("")}</div>`:`<p class="muted">Não há substituto pronto para este. Pergunte abaixo.</p>`}
+    <div class="lbl">❓ Prefere perguntar?</div>
+    <div class="row" style="gap:8px"><a class="btn btn-ghost" style="flex:1;font-size:16px" data-copy="${esc(perg)}" href="https://chatgpt.com/?q=${encodeURIComponent(perg)}" target="_blank" rel="noopener">💬 ChatGPT</a><a class="btn btn-ghost" style="flex:1;font-size:16px" data-copy="${esc(perg)}" href="https://claude.ai/new?q=${encodeURIComponent(perg)}" target="_blank" rel="noopener">✳️ Claude</a></div>
+  </div>`);
+}
+function trocar(base,novo,mot){
+  const velho=S.trocas[base]||base, a=ativa();
+  if(novo===base) delete S.trocas[base]; else S.trocas[base]=novo;
+  S.trocaMotivo=S.trocaMotivo||{}; if(mot) S.trocaMotivo[base]=mot; else delete S.trocaMotivo[base];
+  if(a && a.log[velho] && !a.log[velho].sets.some(x=>x.feito)) delete a.log[velho];
+  save(); closeSheet(); render(); toast("Trocado: "+EXS[novo].n);
+}
+
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "1.7";
+const APP_VERSAO = "1.8";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
-try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(blank(), JSON.parse(raw)); }catch(e){}
+let _tinhaDados=false;
+try{ const raw = localStorage.getItem(KEY); if(raw){ S = Object.assign(blank(), JSON.parse(raw)); _tinhaDados=true; } }catch(e){}
+function aposCarregar(){ S.trocas=S.trocas||{}; if(S.perfil===undefined && _tinhaDados) S.perfil={...PERFIL_PADRAO};
+  try{ const h=location.hash; if(h.startsWith("#perfil=")){ const p=JSON.parse(decodeURIComponent(escape(atob(h.slice(8))))); S.perfil={...PERFIL_PADRAO,...(S.perfil||{}),...p}; S.trocas=S.trocas||{}; history.replaceState(null,"",location.pathname+location.search); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} } }catch(e){} PROTOCOLO=S.plano||PROTO_BASE; if(!PROTOCOLO.sequencia.includes(S.primeiro)) S.primeiro=PROTOCOLO.primeiro; }
+aposCarregar();
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 let view = "inicio";
 
@@ -275,7 +425,7 @@ const dataBR = ts => new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",mont
 const horaBR = ts => new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
 const durTxt = ms => { const m=Math.round(ms/60000); return m>=60? Math.floor(m/60)+"h"+String(m%60).padStart(2,"0") : m+" min"; };
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const exOf = t => PROTOCOLO.treinos[t].ex.map(a => ({id:a[0],series:a[1],min:a[2],max:a[3],desc:a[4],sobrar:a[5],par:a[6]||null}));
+const exOf = t => (PROTOCOLO.treinos[t]||PROTO_BASE.treinos[t]).ex.map(a => ({id:(S.trocas||{})[a[0]]||a[0],base:a[0],series:a[1],min:a[2],max:a[3],desc:a[4],sobrar:a[5],par:a[6]||null}));
 const parNome = (t, e) => { if(!e.par) return null; const o = exOf(t).find(x => x.par===e.par && x.id!==e.id); return o? EXS[o.id].n : null; };
 
 function proximo(){
@@ -339,6 +489,8 @@ function vInicio(){
   return `
   <div class="top"><div class="brand">IRON <b>28</b> PRO</div>${prog || `<span class="pill">app v${APP_VERSAO}</span>`}</div>
   <div class="stack">
+    ${S.perfil?`<button class="row" data-go="perfil" style="gap:10px;text-align:left">${avatar(40)}<div><b>Olá${primeiroNome()?", "+esc(primeiroNome()):"! Complete seu cadastro"}</b><div class="small muted">${esc(PROTOCOLO.versao)}</div></div></button>`:""}
+    ${avisoMedico()}
     <section class="hero">
       <div class="letter">${nx}</div>
       <div class="lbl" style="color:var(--steel-hi)">${a?"Treino em andamento":"Próximo treino"}</div>
@@ -360,7 +512,7 @@ function vInicio(){
       <div class="small" style="margin-top:6px">Hoje é o <b style="color:var(--red-hi)">${nx}</b>. Depois vem o <b>${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(nx)+1)%4]}</b>.</div>
       
     </div>
-    ${!a?(()=>{const lib=liberaE(); return `<button class="card li" style="border-top:1px solid var(--line);${lib.ok?"":"opacity:.55"}" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · 11 séries</b><div class="small muted">${lib.ok?"Liberado hoje · não muda a sequência":lib.motivo}</div></div></button>`;})():""}
+    ${!a&&PROTOCOLO.treinos.E&&!PROTOCOLO.sequencia.includes("E")?(()=>{const lib=liberaE(); return `<button class="card li" style="border-top:1px solid var(--line);${lib.ok?"":"opacity:.55"}" data-act="iniciar" data-t="E"><div class="badge">E</div><div class="grow"><b>Treino extra (opcional) · 11 séries</b><div class="small muted">${lib.ok?"Liberado hoje · não muda a sequência":lib.motivo}</div></div></button>`;})():""}
     <div class="card stack" style="gap:10px">
       <div class="row between"><div><div class="lbl">😴 Quanto dormiu esta noite?</div><div class="small muted" style="margin-top:2px">Não muda seu treino. Só libera o treino extra E.</div></div>${sonoHoje()?`<span class="pill ${sonoHoje().h>=6?"green":"red"}">${sonoHoje().h>=8?"8 h+":sonoHoje().h+" h"}</span>`:""}</div>
       <div class="seg">${[4,5,6,7,8].map(h=>`<button class="${sonoHoje()?.h===h?"on":""}" data-act="sono" data-v="${h}">${h===8?"8+":h}</button>`).join("")}</div>
@@ -445,7 +597,8 @@ function cardEx(a,e,i,cur){
       ${e.sobrar!=="—"?`<div class="stop">${reservaVis(e.sobrar)}<div><b>Pare quando ainda aguentar ${e.sobrar==="0"?"0 (até o limite)":"+"+e.sobrar.replace("–"," a +")}</b><span>repetições</span></div></div>`:""}
       ${!prev&&!semCargaEx(lib)?`<div class="tip" style="margin-bottom:10px">✍️ <b>1º treino: escolha sua carga.</b> Toque no campo e digite. Use um peso que dê as repetições com boa execução.</div>`:""}
       <table class="sets"><thead><tr><th></th><th>Anterior</th>${lib.u==="rep"||lib.u==="seg"?"<th></th>":`<th>${lib.u==="placa"?"Placa":lib.u==="kg/halter"?"kg/halter":"kg"}</th>`}<th>${repsL}</th><th></th></tr></thead><tbody>${rows}</tbody></table>
-      <div class="links">${r.pulou?`<button data-act="despular" data-ex="${e.id}">Desfazer pulo</button>`:`<button data-act="pular" data-ex="${e.id}">Pular exercício</button>`}</div>
+      ${e.id!==e.base?`<div class="tip" style="margin-top:10px">🔄 No lugar de <b>${esc(EXS[e.base].n)}</b> <button class="pill" data-act="trocaSel" data-base="${e.base}" data-v="${e.base}">Desfazer</button></div>`:""}
+      <div class="links"><button data-act="trocar" data-base="${e.base}" data-t="${a.treino}">🔄 Trocar</button>${r.pulou?`<button data-act="despular" data-ex="${e.id}">Desfazer pulo</button>`:`<button data-act="pular" data-ex="${e.id}">Pular exercício</button>`}</div>
     </div>`:""}
   </section>`;
 }
@@ -475,6 +628,7 @@ function sheetLib(id){
       ${S.ig?.[id]?`<a class="btn btn-ghost" style="width:auto;flex:1;font-size:16px" href="${esc(S.ig[id])}" target="_blank" rel="noopener">📸 Ver no Instagram</a>`:""}
       <button class="btn btn-ghost" style="width:auto;flex:1;font-size:16px" data-act="iglink" data-ex="${id}">📸 ${S.ig?.[id]?"Trocar link do Instagram":"Salvar link do Instagram"}</button>
     </div>
+    ${(()=>{const b=baseDe(id); return b?`<button class="btn btn-ghost" data-act="trocar" data-base="${b.base}" data-t="${b.t}">🔄 Trocar este exercício no treino</button>`:"";})()}
     <div class="lbl">❓ Tirar dúvida</div>
     <div class="row" style="gap:8px">
       <a class="btn btn-ghost" style="flex:1;font-size:16px" data-copy="${esc(perguntaDuvida(x.n))}" href="https://chatgpt.com/?q=${encodeURIComponent(perguntaDuvida(x.n))}" target="_blank" rel="noopener">💬 ChatGPT</a>
@@ -569,6 +723,7 @@ function grafico(pts, un){
 function vPerfil(){
   return `<div class="top"><div class="brand">Perfil</div></div>
   <div class="stack">
+    ${cardPerfil()}
     <div class="card stack">
       <h3>Primeiro treino da sequência</h3>
       <div class="seg">${PROTOCOLO.sequencia.map(t=>`<button class="${S.primeiro===t?"on":""}" data-act="prim" data-v="${t}">${t}</button>`).join("")}</div>
@@ -581,7 +736,7 @@ function vPerfil(){
     </div>
     <div class="card stack">
       <h3>Protocolo</h3>
-      <p class="small muted" style="margin:0">Versão <b style="color:var(--fg)">${PROTOCOLO.versao}</b>. Aprovada por você. Falta a revisão de um profissional de Educação Física.</p>
+      <p class="small muted" style="margin:0">${S.plano?`Treino <b style="color:var(--fg)">${esc(PROTOCOLO.versao)}</b>, montado pelo app a partir do cadastro.`:`Versão <b style="color:var(--fg)">${PROTOCOLO.versao}</b>. Aprovada por você.`} Falta a revisão de um profissional de Educação Física.</p>
     </div>
     <div class="card stack">
       <h3>Backup</h3>
@@ -600,6 +755,7 @@ function vPerfil(){
 
 /* ============================ AÇÕES ============================ */
 function render(){
+  if(!S.perfil){ $("#app").innerHTML=`<div class="top"><div class="brand">IRON <b>28</b> PRO</div></div>`+formCadastro(null,true); $("#tabs").innerHTML=""; return; }
   const v = {inicio:vInicio,treino:vTreino,biblioteca:vBiblioteca,evolucao:vEvolucao,perfil:vPerfil}[view];
   $("#app").innerHTML = v();
   $("#tabs").innerHTML = [["inicio","Início",I.home],["treino","Treinar",I.treino],["biblioteca","Biblioteca",I.lib],["evolucao","Evolução",I.evo],["perfil","Perfil",I.perfil]]
@@ -617,7 +773,7 @@ async function pedirWake(){ try{ wake = await navigator.wakeLock?.request("scree
 
 function iniciar(t, forcar){
   if(ativa()) return go("treino");
-  if(t==="E" && !forcar && !liberaE().ok) return confirmar("Treino extra ainda não","O protocolo v1.2 libera o treino E a partir da 3ª semana, só num 5º dia e depois de um treino de pernas.",`<button class="btn btn-ghost" data-act="forcarE">Fazer mesmo assim</button>`);
+  if(t==="E" && !forcar && !PROTOCOLO.sequencia.includes("E") && !liberaE().ok) return confirmar("Treino extra ainda não","O protocolo v1.2 libera o treino E a partir da 3ª semana, só num 5º dia e depois de um treino de pernas.",`<button class="btn btn-ghost" data-act="forcarE">Fazer mesmo assim</button>`);
   const s={id:uid(),treino:t,inicio:Date.now(),fim:null,status:"andamento",log:{}};
   S.sessoes.push(s); S.ativa=s.id; if(!S.inicioCiclo) S.inicioCiclo=new Date(new Date().toDateString()).getTime();
   save(); pedirWake(); go("treino");
@@ -1072,7 +1228,7 @@ async function exportar(){
 }
 async function importar(txt){
   try{ const j=JSON.parse(txt); if(j.app!=="IRON 28 PRO"||!j.dados) throw 0;
-    S=Object.assign(blank(),j.dados); save();
+    S=Object.assign(blank(),j.dados); _tinhaDados=true; aposCarregar(); save();
     let n=0; for(const [k,u] of Object.entries(j.midia||{})){ try{ const b=await (await fetch(u)).blob(); await DB.put(k,b); n++; }catch(e){} }
     toast("Backup restaurado"+(n?` · ${n} vídeo(s)`:"")); go("inicio"); }
   catch(e){ toast("Esse texto não é um backup válido do IRON 28 PRO"); }
@@ -1127,13 +1283,22 @@ document.addEventListener("click",ev=>{
     case "copiar": { const t=$("#bk"); if(!t.value) exportar(); navigator.clipboard?.writeText(t.value).then(()=>toast("Copiado"),()=>{t.select();toast("Selecionado: copie manualmente");}); break; }
     case "importar": importar($("#bk").value); break;
     case "zerar": confirmar("Apagar tudo?","Todos os treinos e medidas deste aparelho serão apagados. Faça um backup antes.",`<button class="btn btn-red" data-act="zerarSim">Apagar tudo</button>`); break;
-    case "zerarSim": S=blank(); save(); closeSheet(); toast("Dados apagados"); go("inicio"); break;
+    case "segSel": el.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b===el)); break;
+    case "cadSalvar": salvarCadastro(!!d.primeira); break;
+    case "cadEditar": openSheet(formCadastro(S.perfil,false)); break;
+    case "regerar": if(ativa()){ closeSheet(); return toast("Termine o treino em andamento antes"); } aplicarPlano(gerarPlano(S.perfil)); closeSheet(); go("inicio"); toast("Treino novo montado 💪"); break;
+    case "fecharRender": closeSheet(); render(); toast("Cadastro salvo"); break;
+    case "trocar": sheetTrocar(d.base,d.t); break;
+    case "trocaMot": sheetAlternativas(d.base,d.t,d.v); break;
+    case "trocaSel": trocar(d.base,d.v,d.mot); break;
+    case "zerarSim": S=blank(); PROTOCOLO=PROTO_BASE; save(); closeSheet(); toast("Dados apagados"); go("inicio"); break;
   }
 });
 document.addEventListener("change",ev=>{
   const t=ev.target;
   if(t.dataset.ed){ const [sid,ex,k,f]=t.dataset.ed.split("|"); const s=S.sessoes.find(z=>z.id===sid); const v=parseFloat(t.value.replace(",",".")); if(s && !isNaN(v)){ s.log[ex].sets[+k][f]=v; save(); toast("Corrigido"); } return; }
   if(t.dataset.midia && t.files[0]){ const f=t.files[0]; if(f.size>80*1024*1024) return toast("Vídeo muito grande (máx. 80 MB)"); DB.put(t.dataset.midia,f).then(()=>{toast("Vídeo salvo neste aparelho"); sheetLib(t.dataset.midia.split(":")[0]);}).catch(()=>toast("Não deu para salvar o vídeo aqui")); return; }
+  if(t.id==="fotoIn" && t.files[0]){ fotoReduzida(t.files[0]).then(u=>{ window._fotoTmp=u; $("#cadFoto").innerHTML=`<img src="${u}" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:2px solid var(--red)">`; }).catch(()=>toast("Não deu para ler a foto")); return; }
   if(t.id==="bkf" && t.files[0]){ t.files[0].text().then(importar); return; }
   if(!t.dataset.f) return;
   const a=ativa(); if(!a) return;
