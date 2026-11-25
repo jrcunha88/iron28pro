@@ -542,7 +542,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.0";
+const APP_VERSAO = "2.1";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -741,15 +741,35 @@ function cardEx(a,e,i,cur){
   </section>`;
 }
 
+const GRUPO_M = {"Peito":"Peito","Costas":"Costas","Ombro lateral":"Ombros","Ombro de trás":"Ombros","Trapézio":"Ombros","Bíceps":"Braços","Tríceps":"Braços","Frente da coxa":"Pernas","Posterior da coxa":"Pernas","Posterior e glúteos":"Pernas","Glúteos":"Pernas","Adutores":"Pernas","Panturrilha":"Pernas","Abdômen":"Abdômen"};
+const GRUPOS = ["Peito","Costas","Ombros","Braços","Pernas","Abdômen"];
+const GRUPO_IC = {Peito:"🏋️",Costas:"🔙",Ombros:"🎯",Braços:"💪",Pernas:"🦵",Abdômen:"🧱"};
+const semAc = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const grupoDe = id => GRUPO_M[EXS[id].m] || "Outros";
+function itemLib(id){ const x=EXS[id]; return `<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(id)}</div><div class="grow"><div class="ellip"><b>${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div></div></button>`; }
+function listaLib(){
+  const f=S.libFil||"Todos", ord=S.libOrd||"treino", q=semAc(window._libQ||"").trim();
+  let ids=Object.keys(EXS).filter(id=>(f==="Todos"||grupoDe(id)===f) && (!q || semAc(EXS[id].n+" "+EXS[id].m+" "+EXS[id].e).includes(q)));
+  if(!ids.length) return `<p class="muted" style="text-align:center">Nada encontrado.</p>`;
+  const sec=(t,l)=>l.length?`<div class="lbl" style="margin:6px 2px 0">${t} <span class="muted">· ${l.length}</span></div><div class="card list">${l.map(itemLib).join("")}</div>`:"";
+  const az=l=>[...l].sort((a,b)=>EXS[a].n.localeCompare(EXS[b].n,"pt-BR"));
+  if(ord==="az") return sec("A → Z",az(ids));
+  if(ord==="musc") return GRUPOS.map(g=>sec(GRUPO_IC[g]+" "+g, az(ids.filter(id=>grupoDe(id)===g)))).join("");
+  const usados=new Set(); let h="";
+  for(const t of [...PROTOCOLO.sequencia, ...Object.keys(PROTOCOLO.treinos).filter(t=>!PROTOCOLO.sequencia.includes(t))]){
+    const l=exOf(t).map(e=>e.id).filter(id=>ids.includes(id)&&!usados.has(id)); l.forEach(id=>usados.add(id));
+    h+=sec(`Treino ${t} · ${esc(PROTOCOLO.treinos[t].nome)}`, l);
+  }
+  return h+sec("Outros (para trocar)", az(ids.filter(id=>!usados.has(id))));
+}
 function vBiblioteca(){
-  const grupos = [...new Set(Object.values(EXS).map(x=>x.m))];
-  const f = window._fil || "Todos";
-  const itens = Object.entries(EXS).filter(([,x]) => f==="Todos" || x.m===f);
+  const f=S.libFil||"Todos", ord=S.libOrd||"treino";
   return `<div class="top"><div class="brand">Biblioteca</div><span class="pill">${Object.keys(EXS).length} exercícios</span></div>
   <div class="stack">
-    <div class="filter">${["Todos",...grupos].map(g=>`<button class="${g===f?"on":""}" data-act="fil" data-v="${esc(g)}">${esc(g)}</button>`).join("")}</div>
-    <div class="card list">${itens.map(([id,x])=>`<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(id)}</div><div class="grow"><div class="ellip"><b>${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div></div></button>`).join("")}</div>
-    
+    <input id="libQ" type="search" placeholder="🔍 Buscar exercício (ex.: supino, abdômen)" value="${esc(window._libQ||"")}" autocomplete="off" style="height:48px;border-radius:12px;border:1px solid var(--line);background:#0c0c0d;padding:0 14px;font-size:17px;color:var(--fg);width:100%">
+    <div class="filter" style="flex-wrap:wrap">${["Todos",...GRUPOS].map(g=>`<button class="${g===f?"on":""}" data-act="fil" data-v="${g}">${g==="Todos"?"Todos":GRUPO_IC[g]+" "+g}</button>`).join("")}</div>
+    <div class="row" style="gap:8px;align-items:center"><span class="small muted">Ordem:</span><div class="seg" style="flex:1">${[["treino","Por treino"],["musc","Músculo"],["az","A–Z"]].map(([k,l])=>`<button class="${ord===k?"on":""}" data-act="libOrd" data-v="${k}">${l}</button>`).join("")}</div></div>
+    <div id="libList" class="stack" style="gap:8px">${listaLib()}</div>
   </div>`;
 }
 function perguntaDuvida(nome){ return "Exercício: "+nome+". Vou mandar foto/vídeo/áudio da minha execução ou do aparelho. Responda curto e objetivo, diga o que corrigir e indique um vídeo de demonstração."; }
@@ -1395,7 +1415,8 @@ document.addEventListener("click",ev=>{
     case "fim": fechaSessao(d.v); break;
     case "lib": sheetLib(d.ex); break;
     case "fechar": closeSheet(); break;
-    case "fil": window._fil=d.v; render(); break;
+    case "fil": S.libFil=d.v; save(); render(); break;
+    case "libOrd": S.libOrd=d.v; save(); render(); break;
     case "mais15": S.timer.fim+=15000; S.timer.total+=15; save(); renderTimer(); break;
     case "menos15": S.timer.fim-=15000; save(); renderTimer(); break;
     case "pulaTimer": S.timer=null; save(); renderTimer(); break;
@@ -1445,6 +1466,7 @@ document.addEventListener("click",ev=>{
     case "zerarSim": S=blank(); PROTOCOLO=PROTO_BASE; save(); closeSheet(); toast("Dados apagados"); go("inicio"); break;
   }
 });
+document.addEventListener("input",ev=>{ if(ev.target.id==="libQ"){ window._libQ=ev.target.value; const l=$("#libList"); if(l) l.innerHTML=listaLib(); } });
 document.addEventListener("change",ev=>{
   const t=ev.target;
   if(t.dataset.ed){ const [sid,ex,k,f]=t.dataset.ed.split("|"); const s=S.sessoes.find(z=>z.id===sid); const v=parseFloat(t.value.replace(",",".")); if(s && !isNaN(v)){ s.log[ex].sets[+k][f]=v; save(); toast("Corrigido"); } return; }
