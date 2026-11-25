@@ -1,4 +1,4 @@
-const C="iron28-v17";
+const C="iron28-v18";
 const F=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-180.png"];
 // Baixa sempre do servidor (ignora o cache HTTP do navegador) ao instalar
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(F.map(u=>fetch(new Request(u,{cache:"reload"})).then(r=>c.put(u,r))))));self.skipWaiting();});
