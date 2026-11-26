@@ -198,6 +198,7 @@ textarea{height:140px;padding:10px;font-size:12px;font-family:ui-monospace,Menlo
    PROTOCOLO — dados fáceis de trocar (v1.1, proposta NÃO aprovada)
    Formato de cada exercício: [id, séries, repsMín, repsMáx, descanso(s), sobrar, dupla?]
    ============================================================ */
+const ORDEM_TXT = `<div class="tip">🔢 <b>Siga esta ordem.</b> Primeiro os exercícios grandes (mais energia), depois os isolados e o abdômen no fim. Aparelho ocupado? Pule e volte depois.</div>`;
 const PROTO_BASE = {
   versao: "v1.2",
   sequencia: ["A","B","C","D"],
@@ -837,7 +838,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.6";
+const APP_VERSAO = "2.7";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -990,6 +991,7 @@ function vTreino(){
   </div>
   <div class="stack">
     ${contaSeries(a)===0?`<div class="card stack" style="gap:8px"><div class="lbl">🔥 Aquecimento · 5–7 min</div><div class="tip">🚲 3 min leve</div><div class="tip">1º exercício: 50% × 10 → 75% × 5</div></div>`:""}
+    ${ORDEM_TXT}
     ${exs.map((e,i)=>cardEx(a,e,i,i===prim)).join("")}
     <button class="btn btn-green" data-act="finalizar">Finalizar treino</button>
   </div>`;
@@ -1023,7 +1025,7 @@ function cardEx(a,e,i,cur){
   }
   return `<section class="ex ${done?"done":""} ${cur&&!done?"cur":""}">
     <button class="ex-h" data-act="toggle" data-id="${a.id+e.id}">
-      <div class="badge ${done?"green":cur?"red":""}">${done?"✓":i+1}</div>
+      <div class="badge ${done?"green":cur?"red":""}">${done?"✓":(i+1)+"º"}</div>
       <div class="grow"><div class="nm">${esc(lib.n)}${r.pulou?' <span class="pill">pulado</span>':""}</div>
       <div class="rx num">${e.series} × ${e.min}–${e.max}${lib.lado?" cada lado":""} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div>
     </button>
@@ -1737,7 +1739,8 @@ document.addEventListener("click",ev=>{
     case "verTreino": { const t=d.t, T=PROTOCOLO.treinos[t], exs=exOf(t), a=ativa(), nx=proximo();
       openSheet(`<div class="stack"><div class="row between"><div class="row"><div class="badge red">${t}</div><h2>${T.nome}</h2></div><button class="pill" data-act="fechar">Fechar</button></div>
         <div class="small muted">${T.foco} · ${exs.reduce((n,e)=>n+e.series,0)} séries · ≈ ${T.min} min</div>
-        <div class="card list" style="padding:4px 14px">${exs.map((e,i)=>`<button class="li" data-act="lib" data-ex="${e.id}"><div class="badge">${i+1}</div><div class="grow"><b>${esc(EXS[e.id].n)}</b><div class="small muted num">${e.series} × ${e.min}–${e.max} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div><span class="muted">▶</span></button>`).join("")}</div>
+        ${ORDEM_TXT}
+        <div class="card list" style="padding:4px 14px">${exs.map((e,i)=>`<button class="li" data-act="lib" data-ex="${e.id}"><div class="badge">${i+1}º</div><div class="grow"><b>${esc(EXS[e.id].n)}</b><div class="small muted num">${e.series} × ${e.min}–${e.max} · ⏱ ${e.desc?mmss(e.desc):"sem pausa"}</div></div><span class="muted">▶</span></button>`).join("")}</div>
         ${a?`<p class="small muted" style="margin:0">Termine o treino ${a.treino} em andamento antes de começar outro.</p>`:`<button class="btn btn-red" data-act="iniciarSheet" data-t="${t}">Iniciar treino ${t}</button>${t!==nx?`<p class="small muted" style="margin:0">Fora da ordem: o próximo era o ${nx}. Se fizer o ${t}, depois vem o ${PROTOCOLO.sequencia[(PROTOCOLO.sequencia.indexOf(t)+1)%4]}.</p>`:""}`}
       </div>`); break; }
     case "iniciarSheet": if(ativa()){ closeSheet(); return go("treino"); } if(d.t==="E" && !PROTOCOLO.sequencia.includes("E")) return sheetExtra(); window._ck=null; sheetCheckin(d.t); break;
