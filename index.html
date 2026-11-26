@@ -184,6 +184,8 @@ textarea{height:140px;padding:10px;font-size:12px;font-family:ui-monospace,Menlo
 .ck-res.igual{border-color:var(--green)}
 body.flash::after{content:"";position:fixed;inset:0;background:var(--green);opacity:.35;pointer-events:none;z-index:999;animation:fl .55s 4}
 @keyframes fl{50%{opacity:0}}
+.timer.pz{background:linear-gradient(180deg,#2a1d05,#171003);border-top-color:#f59e0b}
+.tb-crono{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--red);background:var(--red-dim);font-weight:700;font-size:14px}
 .ck-big{font-family:var(--f-display);font-weight:800;font-size:22px;font-style:italic}
 .chart{width:100%;height:auto;display:block}
 .toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top,0px));z-index:60;background:var(--surface2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-weight:600}
@@ -236,38 +238,38 @@ let PROTOCOLO = PROTO_BASE;
 /* Biblioteca: u = unidade, inc = menor aumento (null = 1 placa), lado = um lado por vez */
 const EXS = {
   supino_guiado:{anim:"supino",okTag:"Barra no meio do peito · peito",badTag:"Quadril sai do banco · quica",n:"Supino reto na Smith (barra guiada)",m:"Peito",e:"Barra guiada",u:"kg",inc:2,lk:true,ok:["Escápulas juntas e para baixo, peito alto","Barra desce na linha do meio do peito","Pés firmes no chão"],bad:["Cotovelos abertos a 90° do corpo","Quicar a barra no peito","Tirar o quadril do banco"]},
-  puxada_aberta:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta pela frente, pegada aberta",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Puxe com os cotovelos para baixo e para trás","Barra até a parte de cima do peito","Suba controlando até esticar os braços"],bad:["Jogar o tronco para trás para roubar","Puxar atrás da nuca","Encolher os ombros"]},
+  puxada_aberta:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta pela frente, pegada aberta",m:"Costas",e:"Puxada alta",u:"kg",inc:5,maq:true,ok:["Puxe com os cotovelos para baixo e para trás","Barra até a parte de cima do peito","Suba controlando até esticar os braços"],bad:["Jogar o tronco para trás para roubar","Puxar atrás da nuca","Encolher os ombros"]},
   supino_incl_guiado:{anim:"supino_incl",okTag:"Banco a 30° · parte de cima do peito",badTag:"Banco em pé demais · vira ombro",n:"Supino inclinado na Smith (~30°)",m:"Peito",e:"Barra guiada + banco",u:"kg",inc:2,lk:true,ok:["Banco a cerca de 30°","Barra desce na parte de cima do peito","Escápulas firmes no banco"],bad:["Banco muito inclinado (vira ombro)","Descer sem controle","Arquear demais a lombar"]},
-  remada_baixa:{anim:"remada_baixa",okTag:"Tronco firme · costas",badTag:"Balança o tronco · coluna curva",n:"Remada baixa com triângulo",m:"Costas",e:"Remada baixa",u:"placa",inc:null,ok:["Tronco firme, peito aberto","Leve o triângulo até a barriga","Junte as escápulas no fim"],bad:["Balançar o tronco para frente e para trás","Arredondar as costas","Puxar só com os braços"]},
-  lateral_cabo:{anim:"lateral_cabo",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · balança o corpo",n:"Elevação lateral no cabo, um braço",m:"Ombro lateral",e:"Polia baixa",u:"placa",inc:null,lado:true,ok:["Suba só até a altura do ombro","Cotovelo levemente dobrado","Movimento lento, sem impulso"],bad:["Subir acima do ombro","Balançar o corpo","Encolher o ombro junto"]},
-  triceps_v:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na polia com barra V",m:"Tríceps",e:"Polia alta",u:"placa",inc:null,ok:["Cotovelos colados ao corpo","Estique totalmente embaixo","Volte devagar"],bad:["Cotovelos indo para frente","Inclinar o corpo para empurrar","Movimento curto"]},
+  remada_baixa:{anim:"remada_baixa",okTag:"Tronco firme · costas",badTag:"Balança o tronco · coluna curva",n:"Remada baixa com triângulo",m:"Costas",e:"Remada baixa",u:"kg",inc:5,maq:true,ok:["Tronco firme, peito aberto","Leve o triângulo até a barriga","Junte as escápulas no fim"],bad:["Balançar o tronco para frente e para trás","Arredondar as costas","Puxar só com os braços"]},
+  lateral_cabo:{anim:"lateral_cabo",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · balança o corpo",n:"Elevação lateral no cabo, um braço",m:"Ombro lateral",e:"Polia baixa",u:"kg",inc:5,maq:true,lado:true,ok:["Suba só até a altura do ombro","Cotovelo levemente dobrado","Movimento lento, sem impulso"],bad:["Subir acima do ombro","Balançar o corpo","Encolher o ombro junto"]},
+  triceps_v:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na polia com barra V",m:"Tríceps",e:"Polia alta",u:"kg",inc:5,maq:true,ok:["Cotovelos colados ao corpo","Estique totalmente embaixo","Volte devagar"],bad:["Cotovelos indo para frente","Inclinar o corpo para empurrar","Movimento curto"]},
   rosca_w:{anim:"rosca",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca com barra W",m:"Bíceps",e:"Barra W",u:"kg",inc:2,lk:true,ok:["Cotovelos parados ao lado do corpo","Suba e desça controlando","Punhos firmes"],bad:["Balançar o tronco","Cotovelos indo para frente","Soltar o peso na descida"]},
   agachamento_guiado:{anim:"squat",okTag:"Coluna reta · quadríceps",badTag:"Costas arredondadas · calcanhar sobe",n:"Agachamento na Smith (barra guiada)",m:"Frente da coxa",e:"Barra guiada",u:"kg",inc:2,lk:true,ok:["Abdômen firme antes de descer","Joelhos na direção dos pés","Desça até onde a lombar fica neutra"],bad:["Joelhos caindo para dentro","Arredondar a lombar embaixo","Tirar os calcanhares do chão"]},
   leg_press:{anim:"leg_press",okTag:"Quadril apoiado · frente da coxa",badTag:"Quadril descola do banco",n:"Leg press 45°",m:"Frente da coxa",e:"Leg press",u:"kg",inc:2,lk:true,ok:["Lombar e quadril apoiados o tempo todo","Joelhos alinhados com os pés","Travas de segurança à mão"],bad:["Quadril descolando do banco embaixo","Travar os joelhos em cima","Prender o ar por muito tempo"]},
   leg_press_alto:{anim:"leg_press_alto",okTag:"Empurra com o calcanhar · glúteo",badTag:"Quadril descola do banco",n:"Leg press 45° (pés altos)",m:"Posterior e glúteos",e:"Leg press",u:"kg",inc:2,lk:true,ok:["Pés na parte alta da plataforma","Empurre pelos calcanhares","Lombar apoiada"],bad:["Quadril descolando","Joelhos para dentro","Amplitude curta demais"]},
-  extensora:{anim:"extensora",okTag:"Estica até o fim · frente da coxa",badTag:"Chuta e tira o quadril",n:"Cadeira extensora",m:"Frente da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo do aparelho","Estique até o fim e segure 1 s","Desça devagar"],bad:["Chutar o peso","Tirar o quadril do banco","Descer soltando"]},
-  flexora:{anim:"flexora",okTag:"Dobra até o fim · posterior",badTag:"Levanta o quadril",n:"Cadeira flexora",m:"Posterior da coxa",e:"Extensora/flexora",u:"placa",inc:null,ok:["Joelho alinhado com o eixo","Dobre até o fim","Volte controlando"],bad:["Levantar o quadril","Movimento curto","Usar impulso"]},
-  adutora:{anim:"adutora",okTag:"Fecha controlando · parte de dentro",badTag:"Bate as almofadas",n:"Adutora (fechar as pernas)",m:"Adutores",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Feche controlando","Abra devagar"],bad:["Bater as almofadas","Abrir rápido demais"]},
-  abdutora:{anim:"abdutora",okTag:"Abre e segura · glúteo",badTag:"Balança o tronco",n:"Abdutora (abrir as pernas)",m:"Glúteos",e:"Adutora/abdutora",u:"placa",inc:null,ok:["Costas apoiadas","Abra e segure 1 s","Volte devagar"],bad:["Usar impulso","Sair do banco"]},
+  extensora:{anim:"extensora",okTag:"Estica até o fim · frente da coxa",badTag:"Chuta e tira o quadril",n:"Cadeira extensora",m:"Frente da coxa",e:"Extensora/flexora",u:"kg",inc:5,maq:true,ok:["Joelho alinhado com o eixo do aparelho","Estique até o fim e segure 1 s","Desça devagar"],bad:["Chutar o peso","Tirar o quadril do banco","Descer soltando"]},
+  flexora:{anim:"flexora",okTag:"Dobra até o fim · posterior",badTag:"Levanta o quadril",n:"Cadeira flexora",m:"Posterior da coxa",e:"Extensora/flexora",u:"kg",inc:5,maq:true,ok:["Joelho alinhado com o eixo","Dobre até o fim","Volte controlando"],bad:["Levantar o quadril","Movimento curto","Usar impulso"]},
+  adutora:{anim:"adutora",okTag:"Fecha controlando · parte de dentro",badTag:"Bate as almofadas",n:"Adutora (fechar as pernas)",m:"Adutores",e:"Adutora/abdutora",u:"kg",inc:5,maq:true,ok:["Costas apoiadas","Feche controlando","Abra devagar"],bad:["Bater as almofadas","Abrir rápido demais"]},
+  abdutora:{anim:"abdutora",okTag:"Abre e segura · glúteo",badTag:"Balança o tronco",n:"Abdutora (abrir as pernas)",m:"Glúteos",e:"Adutora/abdutora",u:"kg",inc:5,maq:true,ok:["Costas apoiadas","Abra e segure 1 s","Volte devagar"],bad:["Usar impulso","Sair do banco"]},
   panturrilha_lp:{anim:"panturrilha",okTag:"Joelho reto · panturrilha",badTag:"Dobra os joelhos",n:"Panturrilha no leg press",m:"Panturrilha",e:"Leg press",u:"kg",inc:2,lk:true,ok:["Só a ponta dos pés na plataforma","Desça alongando bem","Suba até o máximo e segure 1 s"],bad:["Dobrar os joelhos","Quicar embaixo","Fazer sem as travas"]},
   abd_reverso:{anim:"abd_rev",okTag:"Lombar no chão · abdômen",badTag:"Balança as pernas · puxa o pescoço",n:"Abdominal reverso no chão",m:"Abdômen",e:"Chão",u:"rep",inc:0,ok:["Lombar colada no chão","Leve os joelhos ao peito tirando o quadril","Desça devagar"],bad:["Balançar as pernas","Puxar pelo pescoço"]},
   remada_unilateral:{anim:"remada_uni",okTag:"Costas retas · cotovelo ao quadril",badTag:"Gira e arredonda as costas",n:"Remada com halter montado, um braço",m:"Costas",e:"Halter montado + banco",u:"kg",inc:4,lado:true,ok:["Mão e joelho apoiados no banco","Puxe o cotovelo em direção ao quadril","Costas retas"],bad:["Girar o tronco","Puxar com o bíceps","Arredondar as costas"]},
   supino_halter:{anim:"supino_halter",okTag:"Desce até a linha do peito",badTag:"Desce demais · ombro sofre",n:"Supino reto com halteres montados",m:"Peito",e:"Halteres montados",u:"kg/halter",inc:4,ok:["Escápulas juntas","Desça até a linha do peito","Suba aproximando os halteres"],bad:["Cotovelos muito abertos","Bater os halteres em cima","Descer sem controle"]},
-  puxada_triangulo:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta com triângulo",m:"Costas",e:"Puxada alta",u:"placa",inc:null,ok:["Peito alto","Puxe até a parte de cima do peito","Suba controlando"],bad:["Jogar o tronco para trás","Encolher os ombros"]},
-  crucifixo_cabo:{anim:"crucifixo_cabo",okTag:"Fecha com a força do peito",badTag:"Ombro sobe · empurra com o braço",n:"Crucifixo no crossover (cabo)",m:"Peito",e:"Crossover, polias na altura do ombro",u:"placa",inc:null,ok:["Um pé à frente, tronco levemente inclinado","Cotovelos levemente dobrados e fixos","Feche as mãos na frente do peito e segure 1 s"],bad:["Dobrar e esticar os cotovelos (vira supino)","Ombros subindo","Abrir além do conforto do ombro"]},
-  crucifixo_voador:{anim:"crucifixo",okTag:"Fecha com a força do peito",badTag:"Ombro sobe · empurra com o braço",n:"Crucifixo no voador",m:"Peito",e:"Voador",u:"placa",inc:null,ok:["Cotovelos levemente dobrados","Feche pela força do peito","Abra devagar"],bad:["Abrir além do conforto do ombro","Empurrar com os braços"]},
-  voador_inverso:{anim:"voador_inv",okTag:"Abre até a linha do corpo",badTag:"Aperta as escápulas com força",n:"Voador inverso (ombro de trás)",m:"Ombro de trás",e:"Voador",u:"placa",inc:null,ok:["Peito no apoio","Abra os braços para trás","Movimento curto e controlado"],bad:["Juntar as escápulas com força","Usar impulso"]},
+  puxada_triangulo:{anim:"puxada",okTag:"Cotovelos para baixo · costas",badTag:"Joga o tronco para trás",n:"Puxada alta com triângulo",m:"Costas",e:"Puxada alta",u:"kg",inc:5,maq:true,ok:["Peito alto","Puxe até a parte de cima do peito","Suba controlando"],bad:["Jogar o tronco para trás","Encolher os ombros"]},
+  crucifixo_cabo:{anim:"crucifixo_cabo",okTag:"Fecha com a força do peito",badTag:"Ombro sobe · empurra com o braço",n:"Crucifixo no crossover (cabo)",m:"Peito",e:"Crossover, polias na altura do ombro",u:"kg",inc:5,maq:true,ok:["Um pé à frente, tronco levemente inclinado","Cotovelos levemente dobrados e fixos","Feche as mãos na frente do peito e segure 1 s"],bad:["Dobrar e esticar os cotovelos (vira supino)","Ombros subindo","Abrir além do conforto do ombro"]},
+  crucifixo_voador:{anim:"crucifixo",okTag:"Fecha com a força do peito",badTag:"Ombro sobe · empurra com o braço",n:"Crucifixo no voador",m:"Peito",e:"Voador",u:"kg",inc:5,maq:true,ok:["Cotovelos levemente dobrados","Feche pela força do peito","Abra devagar"],bad:["Abrir além do conforto do ombro","Empurrar com os braços"]},
+  voador_inverso:{anim:"voador_inv",okTag:"Abre até a linha do corpo",badTag:"Aperta as escápulas com força",n:"Voador inverso (ombro de trás)",m:"Ombro de trás",e:"Voador",u:"kg",inc:5,maq:true,ok:["Peito no apoio","Abra os braços para trás","Movimento curto e controlado"],bad:["Juntar as escápulas com força","Usar impulso"]},
   lateral_halter:{anim:"lateral_halter",okTag:"Até o ombro · ombro lateral",badTag:"Sobe demais · encolhe e balança",n:"Elevação lateral com halteres",m:"Ombro lateral",e:"Halteres (montados ou de plástico)",u:"kg/halter",inc:2,ok:["Suba só até o ombro","Sem impulso"],bad:["Balançar o corpo","Subir acima do ombro"]},
-  martelo_corda:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca martelo na corda (polia baixa)",m:"Bíceps",e:"Polia baixa + corda",u:"placa",inc:null,ok:["Palmas viradas uma para a outra","Cotovelos parados"],bad:["Balançar o tronco"]},
-  triceps_cabeca:{anim:"triceps_cabeca",okTag:"Cotovelo parado · estica tudo",badTag:"Arqueia a lombar",n:"Tríceps acima da cabeça na corda",m:"Tríceps",e:"Polia + corda",u:"placa",inc:null,ok:["Cotovelos apontando para frente","Estique totalmente"],bad:["Abrir os cotovelos","Arquear a lombar"]},
+  martelo_corda:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca martelo na corda (polia baixa)",m:"Bíceps",e:"Polia baixa + corda",u:"kg",inc:5,maq:true,ok:["Palmas viradas uma para a outra","Cotovelos parados"],bad:["Balançar o tronco"]},
+  triceps_cabeca:{anim:"triceps_cabeca",okTag:"Cotovelo parado · estica tudo",badTag:"Arqueia a lombar",n:"Tríceps acima da cabeça na corda",m:"Tríceps",e:"Polia + corda",u:"kg",inc:5,maq:true,ok:["Cotovelos apontando para frente","Estique totalmente"],bad:["Abrir os cotovelos","Arquear a lombar"]},
   stiff:{anim:"stiff",okTag:"Quadril para trás · coluna reta",badTag:"Coluna curva · barra longe",n:"Stiff com barra longa",m:"Posterior e glúteos",e:"Barra longa",u:"kg",inc:2,lk:true,ok:["Quadril para trás, joelhos levemente dobrados","Barra próxima das pernas","Coluna neutra"],bad:["Arredondar a coluna","Barra longe do corpo","Descer além da sua amplitude"]},
   elevacao_pelvica:{anim:"hip_thrust",okTag:"Quadril alinhado · glúteo",badTag:"Arqueia a lombar",n:"Elevação pélvica com barra",m:"Glúteos",e:"Barra + banco",u:"kg",inc:2,lk:true,ok:["Costas apoiadas no banco","Suba até o quadril alinhar","Segure 1 s em cima"],bad:["Arquear a lombar em cima","Empurrar com a ponta dos pés"]},
   prancha:{anim:"prancha",okTag:"Corpo em linha reta · abdômen",badTag:"Quadril cai ou sobe demais",n:"Prancha no chão",m:"Abdômen",e:"Chão",u:"seg",inc:0,ok:["Corpo em linha reta","Abdômen e glúteos firmes"],bad:["Quadril caindo","Quadril muito alto"]},
-  face_pull:{anim:"face_pull",okTag:"Cotovelos altos · ombro de trás",badTag:"Joga o corpo para trás",n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"placa",inc:null,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
+  face_pull:{anim:"face_pull",okTag:"Cotovelos altos · ombro de trás",badTag:"Joga o corpo para trás",n:"Puxada na corda ao rosto (polia alta)",m:"Ombro de trás",e:"Polia alta + corda",u:"kg",inc:5,maq:true,ok:["Puxe a corda em direção à testa","Cotovelos altos"],bad:["Jogar o corpo para trás"]},
   encolhimento:{anim:"encolhimento",okTag:"Sobe reto · trapézio",badTag:"Gira os ombros · dobra os braços",n:"Encolhimento na Smith (ou halteres)",m:"Trapézio",e:"Barra guiada (Smith) ou halteres",u:"kg",inc:2,lk:true,ok:["Braços esticados","Suba os ombros em direção às orelhas","Segure 1 s"],bad:["Girar os ombros","Dobrar os cotovelos"]},
   triceps_testa:{anim:"triceps_testa",okTag:"Cotovelo parado · tríceps",badTag:"Cotovelo se mexe",n:"Tríceps testa com barra W",m:"Tríceps",e:"Barra W",u:"kg",inc:2,lk:true,ok:["Cotovelos apontando para o teto","Desça devagar"],bad:["Abrir os cotovelos","Mexer os ombros"]},
-  rosca_polia:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"placa",inc:null,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
-  triceps_corda:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"placa",inc:null,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
+  rosca_polia:{anim:"rosca_polia",okTag:"Cotovelo parado · bíceps",badTag:"Balança o tronco",n:"Rosca na polia baixa",m:"Bíceps",e:"Polia baixa",u:"kg",inc:5,maq:true,ok:["Cotovelos parados","Suba e desça controlando"],bad:["Balançar o tronco"]},
+  triceps_corda:{anim:"triceps_polia",okTag:"Cotovelo colado · tríceps",badTag:"Cotovelo vai à frente",n:"Tríceps na corda",m:"Tríceps",e:"Polia alta + corda",u:"kg",inc:5,maq:true,ok:["Cotovelos colados","Abra a corda embaixo"],bad:["Cotovelos para frente"]}
 };
 
 /* Vídeo real de referência: página exata do exercício no MuscleWiki (só link, nada é copiado) */
@@ -492,6 +494,43 @@ function relatorio(dias){
   const card=(S.cardio||[]).filter(x=>x.t>=ini);
   return {ses,tMed,freq:ses.length/span*7,porMusc,series,volKg,evo,sob,sono,pesos,card,dias};
 }
+/* ---------- análise de tempo / execução por sessão ---------- */
+function analisaSessao(s){
+  const pz=s.pausas||[], out=[]; let prevFim=null, prevDesc=0;
+  const desconta=(t0,t1)=>pz.reduce((n,p)=>n+Math.max(0,Math.min(t1,p.fim)-Math.max(t0,p.ini)),0);
+  for(const e of exSess(s)){
+    const r=s.log[e.id], lib=EXS[e.id]; if(!r||!lib) continue;
+    const fs=(r.sets||[]).filter(z=>z.feito&&z.t); if(!fs.length) continue;
+    const aqTs=((s.aq||{})[e.id]||[]).filter(Boolean);
+    const estExec=z=>lib.u==="seg"?z.reps*1000:z.reps*3000;
+    const ini=Math.min(...[r.ini,...aqTs,fs[0].ti].filter(Boolean), fs[0].t-estExec(fs[0]));
+    const fim=fs[fs.length-1].t, plan=(S.descPref||{})[e.id]??e.desc;
+    const sets=fs.map((z,k)=>{ const ant=fs[k-1], exec=z.ti?(z.t-z.ti)/1000:null;
+      const desc=ant?Math.max(0,((z.ti||(z.t-estExec(z)))-ant.t-desconta(ant.t,z.ti||z.t))/1000):null;
+      return {k,reps:z.reps,kg:z.kg,sug:z.sug,sob:z.sob,corte:z.corte||0,exec,spr:(exec&&lib.u!=="seg"&&z.reps)?exec/z.reps:null,desc}; });
+    const troca=prevFim!=null?Math.max(0,(ini-prevFim-desconta(prevFim,ini))/1000-prevDesc):null;
+    out.push({id:e.id,ini,fim,total:Math.max(0,(fim-ini-desconta(ini,fim))/1000),aq:aqTs.length>0||!!fs[0].aq,aqPlan:!semCargaEx(lib),plan,sets,troca});
+    prevFim=fim; prevDesc=plan||0;
+  }
+  return {ex:out,bruto:brutoMs(s)/1000,pausas:pausasMs(s,s.fim)/1000,liquido:liquidoMs(s)/1000,pz};
+}
+const media=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+function sheetSessao(id){
+  const s=S.sessoes.find(z=>z.id===id); if(!s) return; const A=analisaSessao(s), dsem=DSEM[new Date(s.inicio).getDay()];
+  const gT=A.ex.slice().sort((x,y)=>y.total-x.total)[0];
+  const over=A.ex.map(x=>({x,d:media(x.sets.map(z=>z.desc).filter(v=>v!=null))})).filter(o=>o.d!=null&&o.x.plan&&o.d>o.x.plan*1.25).sort((a,b)=>(b.d/b.x.plan)-(a.d/a.x.plan))[0];
+  openSheet(`<div class="stack"><div class="row between"><h2>📊 Treino ${esc(s.treino)} · ${dsem} ${dataBR(s.inicio)}</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="card stack" style="gap:4px"><div class="small num">🕐 ${horaBR(s.inicio)}–${s.fim?horaBR(s.fim):"agora"}</div>
+      <div class="num"><b>${durTxt(A.bruto*1000)}</b> total ${A.pausas>30?`− <b style="color:#f59e0b">${durTxt(A.pausas*1000)}</b> pausas = <b style="color:var(--green)">${durTxt(A.liquido*1000)} de treino</b>`:""}</div>
+      ${A.pz.length?`<div class="small muted">⏸ ${A.pz.map(p=>`${horaBR(p.ini)} ${esc(p.motivo)}${p.txt?" ("+esc(p.txt)+")":""} · ${mmss((p.fim-p.ini)/1000)}`).join("<br>⏸ ")}</div>`:""}
+      ${gT?`<div class="small">🚦 Mais demorado: <b>${esc(EXS[gT.id].n)}</b> (${mmss(gT.total)})</div>`:""}
+      ${over?`<div class="small">🐢 Descanso acima do plano: <b>${esc(EXS[over.x.id].n)}</b> (${mmss(over.d)} × ${mmss(over.x.plan)})</div>`:""}</div>
+    ${A.ex.map((x,i)=>{ const lib=EXS[x.id], dm=media(x.sets.map(z=>z.desc).filter(v=>v!=null)), sp=media(x.sets.map(z=>z.spr).filter(Boolean));
+      return `<div class="card stack" style="gap:4px"><div class="row between"><b>${i+1}º ${esc(lib.n)}</b><span class="num small">⏱ ${mmss(x.total)}</span></div>
+      <div class="small muted">${x.aqPlan?(x.aq?"🔥 aqueceu":"🔥 aquecimento não marcado"):""}${x.troca!=null?` · 🔧 troca ${mmss(x.troca)}`:""}${dm!=null?` · descanso médio ${mmss(dm)}${x.plan?" (plano "+mmss(x.plan)+")":""}`:""}${sp?` · ${sp.toFixed(1)} s/rep`:""}</div>
+      ${x.sets.map(z=>`<div class="small num">S${z.k+1}: <b>${z.reps}${lib.u==="seg"?" s":lib.u==="rep"?" reps":"×"+z.kg}</b>${z.sug?(z.reps>=z.sug.reps&&(z.kg||0)>=(z.sug.kg||0)?" ✅":" · meta "+z.sug.reps+"×"+(z.sug.kg||"")):""}${z.desc!=null?" · desc "+mmss(z.desc):""}${z.corte?` · cortou ${z.corte}s`:""}${z.exec?` · exec ${Math.round(z.exec)}s`:""}${z.spr&&z.spr<2?` <b style="color:var(--red-hi)">⚡ rápido</b>`:""}${z.sob!=null?` · +${z.sob}`:""}</div>`).join("")}</div>`; }).join("")||`<p class="muted">Sem séries registradas.</p>`}
+    <div class="small muted">Tempos de execução aparecem quando você usa "▶ Começar série". Sem isso, o app estima.</div></div>`);
+}
 function sheetRelatorio(dias){
   dias = dias===undefined ? 28 : dias;
   const R=relatorio(dias), md=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
@@ -510,6 +549,17 @@ function sheetRelatorio(dias){
     `🚶 Cardio: ${R.card.length}x · ${R.card.reduce((a,c)=>a+c.min,0)} min`,
     `😴 Sono médio: ${sm?sm.toFixed(1)+" h":"—"}`,
     `⚖️ Peso: ${p0?p0.peso+" kg"+(p1!==p0?" → "+p1.peso+" kg":""):"—"}`];
+  // ---- tempos, aquecimento, séries
+  const AN=R.ses.map(analisaSessao), porEx={};
+  AN.forEach((A,si)=>A.ex.forEach(x=>{ const o=porEx[x.id]=porEx[x.id]||{tot:[],desc:[],plan:x.plan,spr:[],troca:[],com:[],sem:[],ser:{}}; o.tot.push(x.total); x.sets.forEach(z=>{ if(z.desc!=null) o.desc.push(z.desc); if(z.spr) o.spr.push(z.spr); (o.ser[z.k]=o.ser[z.k]||[]).push({d:R.ses[si].inicio,reps:z.reps,kg:z.kg}); }); if(x.troca!=null) o.troca.push(x.troca); const f=x.sets[0]; if(x.aqPlan&&f) (x.aq?o.com:o.sem).push(f.sug&&f.sug.reps?f.reps/f.sug.reps:NaN); }));
+  const exL=Object.entries(porEx).map(([id,o])=>({id,tot:media(o.tot),desc:media(o.desc),plan:o.plan,spr:media(o.spr),troca:media(o.troca),com:media(o.com.filter(Number.isFinite)),sem:media(o.sem.filter(Number.isFinite)),ser:o.ser})).sort((a,b)=>b.tot-a.tot);
+  const pzT=AN.reduce((n,A)=>n+A.pausas,0), pzN=AN.reduce((n,A)=>n+A.pz.length,0), motivos={}; AN.forEach(A=>A.pz.forEach(p=>motivos[p.motivo]=(motivos[p.motivo]||0)+1));
+  const liqMed=media(AN.map(A=>A.liquido).filter(Boolean));
+  const evoSer=exL.filter(x=>Object.values(x.ser).some(v=>v.length>1)).map(x=>({id:x.id,txt:Object.entries(x.ser).sort((a,b)=>a[0]-b[0]).map(([k,v])=>{ const a=v[0],b=v[v.length-1], up=(b.kg||0)>(a.kg||0)||((b.kg||0)===(a.kg||0)&&b.reps>a.reps), dn=(b.kg||0)<(a.kg||0)||((b.kg||0)===(a.kg||0)&&b.reps<a.reps); return `S${+k+1} ${a.reps}×${a.kg||""}→${b.reps}×${b.kg||""} ${up?"▲":dn?"▼":"="}`; }).join(" · ")}));
+  const queda=exL.map(x=>{ const s1=media((x.ser[0]||[]).map(z=>z.reps)), ks=Object.keys(x.ser), sl=media((x.ser[ks[ks.length-1]]||[]).map(z=>z.reps)); return {id:x.id,q:(s1&&sl&&ks.length>1)?(s1-sl)/s1:null}; }).filter(x=>x.q!=null);
+  linhas.push(`⏱ Tempo líquido médio (sem pausas): ${liqMed?durTxt(liqMed*1000):"—"}`, `⏸ Pausas: ${pzN} · ${Math.round(pzT/60)} min${Object.keys(motivos).length?" ("+Object.entries(motivos).map(([m,n])=>m+" "+n).join(", ")+")":""}`,
+    `🚦 Mais demorados: ${exL.slice(0,3).map(x=>EXS[x.id].n+" "+mmss(x.tot)).join("; ")||"—"}`,
+    ...evoSer.map(e=>`📈 ${EXS[e.id].n}: ${e.txt}`));
   window._relTxt=linhas.join("\n");
   const chip=(v,l)=>`<button class="${dias===v?"on":""}" data-act="relPer" data-v="${v}">${l}</button>`;
   const maxM=Math.max(1,...Object.values(R.porMusc));
@@ -523,9 +573,15 @@ function sheetRelatorio(dias){
       <div class="card stat"><div class="lbl">Cardio</div><div class="v num">${R.card.length}x</div><div class="small muted">${R.card.reduce((a,c)=>a+c.min,0)} min</div></div>
       <div class="card stat"><div class="lbl">Sono</div><div class="v num">${sm?sm.toFixed(1)+" h":"—"}</div><div class="small muted">média</div></div>
     </div>
-    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}${s.checkin?`<div class="small muted" style="font-weight:400">${s.checkin.tipo==="extra"?(s.checkin.alertas.length?"⚠️ "+esc(s.checkin.alertas.join(", "))+" · ":""):`⏱${s.checkin.tempo}′ · `}😴${s.checkin.sono??"?"}h · ${{baixa:"😫",ok:"😐",alta:"💪"}[s.checkin.energia]||""}${s.checkin.ajustes.length?" · "+esc(s.checkin.ajustes.join(", ")):""}</div>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>Dias treinados</h3>${R.ses.length?R.ses.map(s=>`<div class="li small num" role="button" data-act="sessao" data-id="${s.id}" style="cursor:pointer"><span style="width:96px">${DIAS_SEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)}</span><b class="grow">Treino ${s.treino}${s.semana?` <span class="pill">🗓️ ajustada</span>`:""}${s.checkin?`<div class="small muted" style="font-weight:400">${s.checkin.tipo==="extra"?(s.checkin.alertas.length?"⚠️ "+esc(s.checkin.alertas.join(", "))+" · ":""):`⏱${s.checkin.tempo}′ · `}😴${s.checkin.sono??"?"}h · ${{baixa:"😫",ok:"😐",alta:"💪"}[s.checkin.energia]||""}${s.checkin.ajustes.length?" · "+esc(s.checkin.ajustes.join(", ")):""}</div>`:""}</b><span class="muted">${s.fim?durTxt(s.fim-s.inicio):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Nenhum treino no período.</p>`}</div>
     <div class="card stack" style="gap:8px"><h3>Séries por músculo</h3>${Object.entries(R.porMusc).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<div class="small"><div class="row between"><span>${esc(m)}</span><b class="num">${n}</b></div><div class="bar"><i style="width:${n/maxM*100}%"></i></div></div>`).join("")||`<p class="muted small" style="margin:0">—</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Evolução de carga</h3>${evoL.length?evoL.map(e=>`<div class="li small num"><span class="grow ellip">${esc(EXS[e.id].n)}</span><span class="muted">${e.a.kg}×${e.a.reps}</span><b style="color:${e.up?"var(--green)":e.dn?"var(--red-hi)":"var(--fg)"}">→ ${e.b.kg}×${e.b.reps} ${e.up?"▲":e.dn?"▼":"="}</b></div>`).join(""):`<p class="muted small" style="margin:0">Aparece depois dos treinos.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>⏱ Tempo por exercício</h3>
+      <div class="small muted">Tempo líquido médio do treino: <b style="color:var(--fg)">${liqMed?durTxt(liqMed*1000):"—"}</b>${pzN?` · ⏸ ${pzN} pausas (${Math.round(pzT/60)} min${Object.keys(motivos).length?": "+Object.entries(motivos).map(([m,n])=>esc(m)+" "+n).join(", "):""})`:""}</div>
+      ${exL.length?exL.map((x,i)=>`<div class="small num" style="border-top:1px solid var(--line);padding-top:6px">${i===0?"🚦 ":""}<b>${esc(EXS[x.id].n)}</b> · ${mmss(x.tot)}<br><span class="muted">descanso ${x.desc!=null?mmss(x.desc):"—"}${x.plan?" (plano "+mmss(x.plan)+")":""}${x.desc!=null&&x.plan&&x.desc>x.plan*1.25?' <b style="color:#f59e0b">acima</b>':""}${x.desc!=null&&x.plan&&x.desc<x.plan*0.75?' <b style="color:var(--red-hi)">curto</b>':""}${x.troca!=null?" · troca "+mmss(x.troca):""}${x.spr?" · "+x.spr.toFixed(1)+" s/rep"+(x.spr<2?' <b style="color:var(--red-hi)">⚡ rápido: desça mais devagar ou suba a carga</b>':""):""}</span></div>`).join(""):`<p class="muted small" style="margin:0">Aparece depois dos treinos.</p>`}</div>
+    <div class="card stack" style="gap:6px"><h3>📈 Evolução por série</h3>${evoSer.length?evoSer.map(e=>`<div class="small num"><b>${esc(EXS[e.id].n)}</b><br><span class="muted">${e.txt}</span></div>`).join(""):`<p class="muted small" style="margin:0">Aparece a partir do 2º treino de cada exercício.</p>`}
+      ${queda.length?`<div class="small muted">Da 1ª para a última série: ${queda.map(q=>esc(EXS[q.id].n)+" "+(q.q>0?"caiu "+Math.round(q.q*100)+"%":q.q<0?"subiu "+Math.round(-q.q*100)+"%":"igual")).join(" · ")}</div>`:""}</div>
+    <div class="card stack" style="gap:6px"><h3>🔥 Aquecimento faz diferença?</h3>${exL.filter(x=>x.com!=null&&x.sem!=null).map(x=>`<div class="small">${esc(EXS[x.id].n)}: 1ª série ${x.com>x.sem?`<b style="color:var(--green)">melhor com aquecimento</b>`:x.com<x.sem?"igual ou melhor sem":"igual"}</div>`).join("")||`<p class="muted small" style="margin:0">Precisa de treinos com e sem aquecimento marcado no mesmo exercício para comparar.</p>`}</div>
     <div class="card stack" style="gap:6px"><h3>Peso</h3><div class="small">${p0?`${p0.peso} kg${p1!==p0?` → <b>${p1.peso} kg</b> (${(p1.peso-p0.peso>0?"+":"")+(p1.peso-p0.peso).toFixed(1)})`:""}`:`<span class="muted">Registre o peso em Evolução.</span>`}</div></div>
     <div class="grid2"><button class="btn btn-red" data-act="relShare">📤 Compartilhar</button><button class="btn btn-ghost" data-act="relCopy">📋 Copiar</button></div>
   </div>`);
@@ -853,7 +909,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "3.0";
+const APP_VERSAO = "3.1";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -896,6 +952,10 @@ function anterior(exId, excluir){
   }
   return null;
 }
+function anteriorPulando(exId, ids){
+  for(let i=S.sessoes.length-1;i>=0;i--){ const s=S.sessoes[i]; if(ids.includes(s.id)) continue; const r=s.log[exId]; if(r && r.sets.some(x=>x.feito)) return {s, sets:r.sets}; }
+  return null;
+}
 function sugestao(ex, i, prev, atual){
   const lib = EXS[ex.id];
   if(atual && i>0){ const sa=atual[i-1]; if(sa&&sa.feito&&sa.reps<=ex.min-3){
@@ -906,6 +966,14 @@ function sugestao(ex, i, prev, atual){
   const p = prev.sets[i] || prev.sets.filter(x=>x.feito).slice(-1)[0];
   if(!p || !p.feito) return null;
   const kg = p.kg;
+  const cortouBem = p.corte>=15 && p.reps>=ex.max-1 && (p.sob==null || +p.sob>=2) && lib.inc;
+  if(cortouBem && p.reps<ex.max) return {kg: kg+lib.inc, reps: ex.min, txt:"▲ cortou o descanso e aguentou: +"+lib.inc+" kg", up:true};
+  if(p.reps < ex.min){
+    const ant=prev.sets[i-1], descReal=(ant&&ant.t&&p.ti)?(p.ti-ant.t)/1000:null, curto=(descReal!=null&&descReal<(ex.desc||90)*0.75)||p.corte>=15;
+    if(curto) return {kg, reps: ex.min, txt:"manter: descanso foi curto", up:false};
+    const p2=anteriorPulando(ex.id,[prev.s.id,S.ativa]), q=p2&&p2.sets[i];
+    if(q && q.feito && q.kg>=kg && q.reps>=ex.min) return {kg, reps: ex.min, txt:"manter: foi um dia ruim", up:false};
+  }
   if(p.reps >= ex.max){
     if(lib.inc) return {kg: kg+lib.inc, reps: ex.min, txt:"▲ +"+lib.inc+(lib.u==="kg/halter"?" kg/halter":" kg"), up:true};
     if(lib.inc===null) return {kg, reps: ex.min, txt:"▲ +1 placa", up:true};
@@ -950,7 +1018,7 @@ function vInicio(){
       <button class="btn btn-red" data-act="${a?"continuar":"iniciar"}" data-t="${nx}">${a?"Continuar":"Iniciar treino"}</button>
     </section>
     ${marco}
-    ${S.sessoes.some(s=>s.status==="feito") && (!S.ultimoBackup || Date.now()-S.ultimoBackup>7*864e5) ? `<button class="card li" style="border-color:var(--red)" data-go="perfil"><div class="badge red">💾</div><div class="grow"><b>Faça um backup</b><div class="small muted">${S.ultimoBackup?"Último há "+Math.floor((Date.now()-S.ultimoBackup)/864e5)+" dias":"Você ainda não fez nenhum"}</div></div></button>`:""}
+    ${S.sessoes.some(s=>s.status==="feito") && (!S.ultimoBackup || Date.now()-S.ultimoBackup>3*864e5) ? `<button class="card li" style="border-color:var(--red)" data-go="perfil"><div class="badge red">💾</div><div class="grow"><b>Faça um backup</b><div class="small muted">${S.ultimoBackup?"Último há "+Math.floor((Date.now()-S.ultimoBackup)/864e5)+" dias":"Você ainda não fez nenhum"}</div></div></button>`:""}
     <div class="grid2">
       <div class="card stat"><div class="lbl">Ciclo de 28 dias</div>${dc?`<div class="v num" style="margin-top:6px">${dc.dia}<small>/28</small></div><div class="bar"><i style="width:${dc.dia/28*100}%"></i></div><div class="small muted" style="margin-top:6px">Ciclo ${dc.ciclo}</div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted" style="margin-top:6px">Começa no 1º treino</div>`}</div>
       <div class="card stat"><div class="lbl">Último treino</div>${ult?`<div class="v" style="margin-top:6px">${ult.treino}<small> ${dataBR(ult.inicio)}</small></div><div class="small muted num" style="margin-top:6px">${durTxt(ult.fim-ult.inicio)} · ${contaSeries(ult)} séries</div>`:`<div class="v" style="margin-top:6px">—</div><div class="small muted" style="margin-top:6px">Nenhum ainda</div>`}</div>
@@ -1002,8 +1070,8 @@ function vTreino(){
   return `
   <div class="sess-head">
     <div class="bar" style="margin:0 0 10px"><i style="width:${contaSeries(a)/exs.reduce((n,e)=>n+e.series,0)*100}%"></i></div>
-    <div class="row between"><div class="row"><div class="badge red">${a.treino}</div><div><h2 style="font-size:20px">${T.nome}</h2><div class="small muted num">${contaSeries(a)}/${exs.reduce((n,e)=>n+e.series,0)} séries · <span id="elap">${mmss((Date.now()-a.inicio)/1000)}</span></div></div></div>
-    <button class="btn btn-ghost" style="width:auto;min-height:44px;font-size:16px" data-act="finalizar">Encerrar</button></div>
+    <div class="row between"><div class="row"><div class="badge red">${a.treino}</div><div><h2 style="font-size:20px">${T.nome}</h2><div class="small muted num">${contaSeries(a)}/${exs.reduce((n,e)=>n+e.series,0)} séries · <button data-act="hIni" style="color:var(--fg);text-decoration:underline dotted">⏱ <span id="elap">${mmss(liquidoMs(a)/1000)}</span></button>${(a.pausas||[]).length?` <span class="small">(−${mmss(pausasMs(a)/1000)} pausas)</span>`:""}</div></div></div>
+    <div class="row" style="gap:6px"><button class="btn btn-ghost" style="width:auto;min-height:44px;font-size:15px;padding:0 12px" data-act="${a.pausa?"pzFim":"pausa"}">${a.pausa?"▶":"⏸"}</button><button class="btn btn-ghost" style="width:auto;min-height:44px;font-size:15px;padding:0 12px" data-act="finalizar">Encerrar</button></div></div>
   </div>
   <div class="stack">
     ${contaSeries(a)===0?`<div class="card stack" style="gap:8px"><div class="lbl">🔥 Aquecimento geral · 5 min</div><div class="tip">🚲 5 min de bike ou esteira leve + mobilidade (giros de quadril, ombros, agachamento sem peso)</div><div class="tip">🧘 Alongamento parado e demorado fica para <b>depois</b> do treino.</div><div class="tip">🏋️ Cada exercício mostra as séries de aquecimento com a carga já calculada. Elas <b>não contam</b> no histórico.</div></div>`:""}
@@ -1018,27 +1086,50 @@ function reservaVis(sob){
   return `<div class="dots" aria-hidden="true">${h}</div>`;
 }
 /* Aquecimento por exercício: separado das séries válidas (fica em a.aq, não entra no histórico nem na progressão). */
+function passoCarga(lib){ return lib.lk?1:lib.maq?5:lib.u==="kg/halter"?1:(lib.inc>=4?2:(lib.inc||1)); }
+function unTxt(lib){ return lib.u==="kg/halter"?" kg/halter":" kg"+(lib.lk?" de cada lado":""); }
 function planoAquec(a,e,i){
-  const lib=EXS[e.id]; if(!lib || semCargaEx(lib) || lib.m==="Abdômen") return null;
-  const exs=exSess(a), primeiroDoMusc=!exs.slice(0,i).some(x=>EXS[x.id]&&EXS[x.id].m===lib.m);
+  const lib=EXS[e.id]; if(!lib) return null;
+  const exs=exSess(a), antes=exs.slice(0,i), primeiroDoMusc=!antes.some(x=>EXS[x.id]&&EXS[x.id].m===lib.m);
+  if(semCargaEx(lib)) return {nada: antes.length?"Sem aquecimento: o corpo já está aquecido dos exercícios anteriores.":"Aqueça com 5 min de bike ou esteira leve antes."};
   const grande=e.sobrar==="1–2"||(e.desc||0)>=120;
   const prev=anterior(e.id,a.id), r=a.log[e.id]||{sets:[]}, sg=sugestao(e,0,prev,r.sets);
   const alvo=(r.sets[0]&&r.sets[0].kg)||(sg&&sg.kg)||(prev&&prev.sets[0]&&prev.sets[0].kg)||null;
-  const inc=lib.lk?1:lib.inc>=4?2:(lib.inc||1);
-  const arred=f=>{ if(!alvo) return null; const v=Math.max(lib.inc===null?1:0, Math.round(alvo*f/inc)*inc); return +v.toFixed(1); };
-  const un=lib.u==="placa"?" placa":lib.u==="kg/halter"?" kg/halter":" kg"+(lib.lk?" de cada lado":"");
+  const st=passoCarga(lib), min=lib.maq?5:0;
+  const arred=f=>{ if(!alvo) return null; return +Math.max(min, Math.round(alvo*f/st)*st).toFixed(1); };
   let L;
-  if(primeiroDoMusc && grande) L=[{p:50,f:.5,r:"8–10"},{p:70,f:.7,r:"4–6"}];
-  else if(primeiroDoMusc) L=[{p:60,f:.6,r:"10"}];
-  else L=[{p:60,f:.6,r:"6–8",opc:true}];
-  return L.map(x=>({...x,kg:arred(x.f),un}));
+  if(primeiroDoMusc && grande) L=[{f:.5,r:"8–10",lev:"metade"},{f:.7,r:"4–6",lev:"uns 70%"}];
+  else if(primeiroDoMusc) L=[{f:.6,r:"10",lev:"uns 60%"}];
+  else L=[{f:.6,r:"6–8",lev:"uns 60%",opc:true}];
+  return {L:L.map(x=>({...x,kg:arred(x.f)})), alvo, un:unTxt(lib), opc:!primeiroDoMusc};
 }
 function blocoAquec(a,e,i){
   const P=planoAquec(a,e,i); if(!P) return "";
+  if(P.nada) return `<div class="aq"><div class="small">🔥 ${esc(P.nada)}</div></div>`;
   const feitos=(a.aq||{})[e.id]||[];
-  return `<div class="aq"><div class="row between"><b>🔥 Aquecimento ${P[0].opc?"(opcional)":""}</b><span class="small muted">não conta no histórico · ⏱ 1 min</span></div>
-    ${P.map((x,k)=>`<div class="aq-r ${feitos[k]?"ok":""}"><span class="num">${x.p}%</span><span class="grow num">${x.kg!=null?`<b>${x.kg}</b>${x.un}`:`${x.p}% da sua carga`} × ${x.r}</span><button class="chk ${feitos[k]?"on":""}" aria-label="Aquecimento ${k+1}" data-act="aqOk" data-ex="${e.id}" data-k="${k}">${I.check}</button></div>`).join("")}
+  return `<div class="aq"><div class="row between"><b>🔥 Aquecimento ${P.opc?"(opcional, só 1)":""}</b><span class="small muted">não conta no histórico</span></div>
+    ${P.L.map((x,k)=>`<div class="aq-r ${feitos[k]?"ok":""}"><span class="grow num">Aquecimento ${k+1}: ${x.kg!=null?`<b>${x.kg}${P.un}</b>`:`<b>peso leve</b> (${x.lev} do que vai usar)`} × ${x.r}</span><button class="chk ${feitos[k]?"on":""}" aria-label="Aquecimento ${k+1}" data-act="aqOk" data-ex="${e.id}" data-k="${k}">${I.check}</button></div>`).join("")}
+    <div class="small">➡️ Depois: <b>Série 1 (vale)</b>${P.alvo?` com <b>${P.alvo}${P.un}</b>`:""}. Descanse 1 min após cada aquecimento.</div>
+    ${P.alvo?"":`<div class="small muted">Digite a carga da série 1 abaixo e eu calculo o aquecimento.</div>`}
   </div>`;
+}
+function metaTag(st){ const g=st.sug; const kgOk=(st.kg||0)>=(g.kg||0), rOk=st.reps>=g.reps;
+  if(kgOk&&rOk&&((st.kg||0)>(g.kg||0)||st.reps>g.reps)) return `<em class="up">⬆ superou a meta</em>`;
+  if(kgOk&&rOk) return `<em class="up">✅ bateu a meta</em>`;
+  return `<em class="down">meta ${g.reps}×${g.kg||""}</em>`; }
+function sheetCrono(id,k){
+  const a=ativa(), e=exSess(a).find(x=>x.id===id); window._cr={id,k,min:e.min,max:e.max,cont:Date.now()+3000,ini:null,b1:false,b2:false};
+  openSheet(`<div class="stack" style="align-items:center;text-align:center"><div class="row between" style="width:100%"><h2>⏱ ${esc(EXS[id].n)} · série ${k+1}</h2><button class="pill" data-act="crSair">Fechar</button></div>
+    <div class="small muted">Alvo: <b style="color:var(--fg)">${e.min} a ${e.max} segundos</b></div>
+    <div id="crV" class="num" style="font-size:110px;line-height:1;font-family:var(--f-display);font-weight:800">3</div><div id="crL" class="lbl">Prepare-se…</div>
+    <button class="btn btn-red" style="width:100%" data-act="crPara">■ Parar e salvar</button></div>`);
+  clearInterval(window._crI); window._crI=setInterval(()=>{ const c=window._cr, v=$("#crV"), l=$("#crL"); if(!c||!v){ clearInterval(window._crI); return; }
+    const n=Date.now(); if(n<c.cont){ v.textContent=Math.ceil((c.cont-n)/1000); return; }
+    if(!c.ini){ c.ini=c.cont; bip(); }
+    const sec=Math.floor((n-c.ini)/1000); v.textContent=sec; v.style.color=sec>=c.max?"var(--green)":sec>=c.min?"var(--green-hi,#4ade80)":"var(--fg)";
+    l.textContent=sec>=c.max?"🏆 Alvo máximo! Pode parar":sec>=c.min?"✅ Mínimo atingido · aguente até "+c.max:"Segure firme…";
+    if(sec>=c.min&&!c.b1){ c.b1=true; bip(); } if(sec>=c.max&&!c.b2){ c.b2=true; bip(); }
+  },200);
 }
 function exConcluido(a,e){ const r=a.log[e.id]; return r && (r.pulou || r.sets.filter(x=>x.feito).length>=e.series); }
 function semCargaEx(lib){ return lib.u==="rep"||lib.u==="seg"; }
@@ -1055,9 +1146,9 @@ function cardEx(a,e,i,cur){
     const semCarga = lib.u==="rep"||lib.u==="seg";
     rows += `<tr class="${st.feito?"ok":""}">
       <td class="sn">${k+1}</td>
-      <td class="prev num">${p&&p.feito? (semCarga? p.reps+" "+repsL : `${p.reps}×${p.kg}`) : "—"}${sg?`<em class="${sg.up?"up":sg.down?"down":""}">${sg.txt}</em>`:""}</td>
+      <td class="prev num">${p&&p.feito? (semCarga? p.reps+" "+repsL : `${p.reps}×${p.kg}`) : "—"}${st.feito&&st.sug?metaTag(st):sg?`<em class="${sg.up?"up":sg.down?"down":""}">${sg.txt}</em>`:""}</td>
       <td><input inputmode="numeric" aria-label="Repetições série ${k+1}" data-f="reps" data-ex="${e.id}" data-k="${k}" value="${st.reps??""}" placeholder="${sg?sg.reps:e.max}"></td>
-      ${semCarga?`<td></td>`:`<td><input inputmode="decimal" aria-label="Carga série ${k+1}" data-f="kg" data-ex="${e.id}" data-k="${k}" value="${st.kg??""}" placeholder="${sg?sg.kg:(p?p.kg:"?")}"></td>`}
+      ${lib.u==="seg"?`<td><button class="tb-crono" data-act="crono" data-ex="${e.id}" data-k="${k}">⏱ Iniciar</button></td>`:semCarga?`<td></td>`:`<td><input inputmode="decimal" aria-label="Carga série ${k+1}" data-f="kg" data-ex="${e.id}" data-k="${k}" value="${st.kg??""}" placeholder="${sg?sg.kg:(p?p.kg:"?")}"></td>`}
       <td><button class="chk ${st.feito?"on":""}" aria-label="Concluir série ${k+1}" data-act="serie" data-ex="${e.id}" data-k="${k}">${I.check}</button></td>
     </tr>
     ${st.feito && e.sobrar!=="—"?`<tr><td colspan="5"><div class="sob"><span class="small muted" style="width:100%">Quantas reps ainda aguentaria? <i>(só a sensação, não muda o que você fez)</i></span>${[["3","😌 +3"],["2","💪 +2"],["1","🔥 +1"],["0","✋ 0"]].map(([v,l])=>`<button class="${st.sob===v?"on":""}" data-act="sob" data-ex="${e.id}" data-k="${k}" data-v="${v}">${l}</button>`).join("")}</div></td></tr>`:""}`;
@@ -1073,6 +1164,7 @@ function cardEx(a,e,i,cur){
       ${par?`<div class="tip" style="margin-bottom:10px">🔁 Dupla com <b>${esc(par)}</b></div>`:""}
       ${e.sobrar!=="—"?`<div class="stop">${reservaVis(e.sobrar)}<div><b>Pare quando ainda aguentar ${e.sobrar==="0"?"0 (até o limite)":"+"+e.sobrar.replace("–"," a +")}</b><span>repetições</span></div></div>`:""}
       ${!prev&&!semCargaEx(lib)?`<div class="tip" style="margin-bottom:10px">✍️ <b>1º treino: escolha sua carga.</b> Toque no campo e digite. Use um peso que dê as repetições com boa execução.</div>`:""}
+      ${!done && !(r.sets||[]).some(x=>x.feito) ? (r.ini?`<div class="small muted" style="margin-bottom:8px">⏱ Começou às ${horaBR(r.ini)}</div>`:`<button class="btn btn-ghost" style="min-height:44px;font-size:15px;margin-bottom:10px" data-act="exIni" data-ex="${e.id}">▶ Começar este exercício <span class="small muted">(aparelho pronto)</span></button>`) : ""}
       ${blocoAquec(a,e,i)}
       <table class="sets"><thead><tr><th></th><th>Anterior</th><th>${repsL}</th>${lib.u==="rep"||lib.u==="seg"?"<th></th>":`<th>${lib.u==="placa"?"Placa":lib.u==="kg/halter"?"kg/halter":lib.lk?"kg/lado":"kg"}</th>`}<th></th></tr></thead><tbody>${rows}</tbody></table>
       ${e.id!==e.base?`<div class="tip" style="margin-top:10px">🔄 No lugar de <b>${esc(EXS[e.base].n)}</b> <button class="pill" data-act="trocaSel" data-base="${e.base}" data-v="${e.base}">Desfazer</button></div>`:""}
@@ -1187,7 +1279,7 @@ function vEvolucao(){
     </div>
     <div class="card"><div class="row between"><h3>Peso</h3><span class="small muted">${pesos.length} registros</span></div>${grafico(pesos.map(x=>[x.d,x.peso]),"kg")}</div>
     <div class="card"><div class="row between"><h3>Treinos</h3><span class="small muted num">${feitos.length} concluídos</span></div>
-      <div class="list" style="margin-top:6px">${feitos.length? feitos.slice(-10).reverse().map(s=>`<div class="li" role="button" tabindex="0" data-act="editSess" data-id="${s.id}" style="cursor:pointer"><div class="badge">${s.treino}</div><div class="grow"><b>${PROTOCOLO.treinos[s.treino].nome}</b><div class="small muted num">${dataBR(s.inicio)} · ${horaBR(s.inicio)}–${horaBR(s.fim)} · ${durTxt(s.fim-s.inicio)}</div></div><div class="num small">${contaSeries(s)} séries ✏️</div></div>`).join("") : `<p class="muted small">Seus treinos concluídos aparecem aqui, com data, horário e duração.</p>`}</div>
+      <div class="list" style="margin-top:6px">${feitos.length? feitos.slice(-10).reverse().map(s=>`<div class="li" role="button" tabindex="0" data-act="editSess" data-id="${s.id}" style="cursor:pointer"><div class="badge">${s.treino}</div><div class="grow"><b>${PROTOCOLO.treinos[s.treino].nome}</b><div class="small muted num">${DSEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)} · ${horaBR(s.inicio)}–${horaBR(s.fim)} · ${durTxt(liquidoMs(s))}${(s.pausas||[]).length?" líquido":""}</div></div><div class="num small">${contaSeries(s)} séries ✏️</div></div>`).join("") : `<p class="muted small">Seus treinos concluídos aparecem aqui, com data, horário e duração.</p>`}</div>
     </div>
     <div class="card"><h3>Recordes por exercício</h3><div class="list" style="margin-top:6px">${recordes()}</div></div>
     <p class="small muted">Fotos de evolução entram na próxima versão.</p>
@@ -1239,8 +1331,24 @@ function vPerfil(){
       <p class="small muted" style="margin:0">${S.plano?`Treino <b style="color:var(--fg)">${esc(PROTOCOLO.versao)}</b>, montado pelo app a partir do cadastro.`:`Versão <b style="color:var(--fg)">${PROTOCOLO.versao}</b>. Aprovada por você.`} Falta a revisão de um profissional de Educação Física.</p>
     </div>
     <div class="card stack">
+      <h3>⏰ Alarme do iPhone no descanso</h3>
+      <div class="small muted">O app não consegue tocar com a tela bloqueada ou com outro app aberto. Com isto ligado, cada descanso também liga o <b style="color:var(--fg)">Timer do iPhone</b>, que toca alto mesmo bloqueado.</div>
+      <button class="btn ${S.atalho?"btn-red":"btn-ghost"}" data-act="atalhoTog">${S.atalho?"✓ Ligado: usar o Timer do iPhone":"Ligar o Timer do iPhone"}</button>
+      <details><summary class="small" style="cursor:pointer">📲 Como criar o atalho (uma vez só, 1 minuto)</summary>
+        <ol class="small" style="margin:8px 0 0;padding-left:20px;line-height:1.6">
+          <li>Abra o app <b>Atalhos</b> do iPhone e toque em <b>+</b></li>
+          <li>Toque no nome no topo e escreva exatamente: <b>Descanso IRON</b></li>
+          <li>Busque a ação <b>Iniciar Timer</b> (ou "Iniciar temporizador") e adicione</li>
+          <li>Toque no tempo e escolha <b>Entrada do Atalho</b>; deixe a unidade em <b>segundos</b></li>
+          <li>Toque no "i" de baixo e ligue <b>Mostrar na Folha de Compartilhamento</b> se pedir. Salve.</li>
+          <li>Volte aqui e toque em <b>Testar</b> abaixo</li>
+        </ol>
+        <button class="btn btn-ghost" style="margin-top:8px" data-act="atalhoTeste">▶ Testar (timer de 10 s)</button>
+      </details>
+    </div>
+    <div class="card stack">
       <h3>Backup</h3>
-      <div class="cue bad"><b>!</b><span>O iPhone pode apagar os dados do app se ele ficar semanas sem uso ou faltar espaço. Faça backup toda semana.</span></div>
+      <div class="cue bad"><b>!</b><span>O iPhone pode apagar os dados do app se ele ficar semanas sem uso ou faltar espaço. Faça backup a cada 3 ou 4 dias.</span></div>
       <div class="small muted">Último backup: <b style="color:var(--fg)">${S.ultimoBackup?dataBR(S.ultimoBackup):"nunca"}</b></div>
       <label class="row small"><input type="checkbox" id="bkv" checked style="width:22px;height:22px"> Incluir meus vídeos (arquivo fica maior)</label>
       <button class="btn btn-red" data-act="exportar">Salvar backup</button>
@@ -1282,23 +1390,32 @@ function iniciar(t, forcar, opc){
 }
 function logEx(a,id){ return a.log[id] || (a.log[id]={sets:[],pulou:null}); }
 
-function marcaSerie(id,k){
+function marcaSerie(id,k,ov){
   const a=ativa(); if(!a) return;
   const e=exSess(a).find(x=>x.id===id), lib=EXS[id], r=logEx(a,id);
   const st=r.sets[k]||(r.sets[k]={});
   if(st.feito){ st.feito=false; save(); render(); return; }
-  const card=document.querySelector(`input[data-ex="${id}"][data-k="${k}"][data-f="reps"]`);
-  const kgIn=document.querySelector(`input[data-ex="${id}"][data-k="${k}"][data-f="kg"]`);
+  const card=ov?null:document.querySelector(`input[data-ex="${id}"][data-k="${k}"][data-f="reps"]`);
+  const kgIn=ov?null:document.querySelector(`input[data-ex="${id}"][data-k="${k}"][data-f="kg"]`);
   const kg = kgIn ? parseFloat((kgIn.value||kgIn.placeholder).replace(",",".")) : 0;
-  const reps = parseInt(card.value||card.placeholder,10);
+  const reps = ov ? ov.reps : parseInt(card.value||card.placeholder,10);
   if(kgIn && isNaN(kg)) return toast("Coloque a carga");
   if(isNaN(reps)) return toast("Coloque as repetições");
-  Object.assign(st,{kg:kgIn?kg:0,reps,feito:true,t:Date.now()});
+  const n=Date.now(), sg=sugestao(e,k,anterior(id,a.id),r.sets), tAnt=(r.sets[k-1]||{}).t||0;
+  let ti = ov&&ov.ti ? ov.ti : null;
+  if(!ti && a.serieIni && a.serieIni>tAnt && n-a.serieIni<10*60e3) ti=a.serieIni;
+  if(!ti && a.restFim && a.restFim>tAnt && n-a.restFim>0 && n-a.restFim<120e3) ti=a.restFim;
+  Object.assign(st,{kg:kgIn?kg:0,reps,feito:true,t:n});
+  if(ti) st.ti=ti; else delete st.ti;
+  if(sg) st.sug={kg:sg.kg,reps:sg.reps};
+  if(k===0) st.aq=((a.aq||{})[id]||[]).some(Boolean);
+  if(!r.ini) r.ini=ti||(n-reps*3000);
+  a.serieIni=null; a.restFim=null;
   save();
   const ultimaSerie = k===e.series-1;
   const ehPrimeiroDoPar = e.par && !e.desc;
   if(ehPrimeiroDoPar){ toast("Agora o par, sem descanso"); }
-  else if(!(ultimaSerie && exSess(a).every(x=>exConcluido(a,x)))){ const nxE=ultimaSerie?exSess(a).find(x=>!exConcluido(a,x)&&x.id!==id):null; startTimer(descDe(e), lib.n, id, nxE?EXS[nxE.id].n:null); }
+  else if(!(ultimaSerie && exSess(a).every(x=>exConcluido(a,x)))){ const nxE=ultimaSerie?exSess(a).find(x=>!exConcluido(a,x)&&x.id!==id):null; startTimer(descDe(e), lib.n, id, nxE?EXS[nxE.id].n:null, {ref:{id,k},msg:nxE?null:"Agora: série "+(k+2)}); }
   if(ultimaSerie && !e.par){ S.abertos[a.id+id]=false; const nx=exSess(a).find(x=>!exConcluido(a,x)); if(nx) S.abertos[a.id+nx.id]=true; }
   render();
 }
@@ -1311,6 +1428,30 @@ function finalizar(){
     `<button class="btn btn-green" data-act="fechar">↩ Continuar treinando</button>
      <button class="btn btn-ghost" data-act="fim" data-v="feito">Encerrar e contar como feito</button>
      <button class="btn btn-ghost" data-act="fim" data-v="parcial">Encerrar sem contar (repetir ${a.treino} depois)</button>`);
+}
+const pausasMs = (s, ate) => (s.pausas||[]).reduce((n,p)=>n+(p.fim-p.ini),0) + (s.pausa?((ate||Date.now())-s.pausa.ini):0);
+const brutoMs = s => (s.fim||Date.now())-s.inicio;
+const liquidoMs = s => Math.max(0, brutoMs(s)-pausasMs(s, s.fim));
+function ultimaAcao(a){
+  let t=a.inicio; for(const [id,r] of Object.entries(a.log)){ (r.sets||[]).forEach(z=>{ if(z.t) t=Math.max(t,z.t); if(z.ti) t=Math.max(t,z.ti); }); if(r.ini) t=Math.max(t,r.ini); }
+  Object.values(a.aq||{}).forEach(l=>l.forEach(x=>{ if(x) t=Math.max(t,x); })); (a.pausas||[]).forEach(p=>t=Math.max(t,p.fim)); if(a.serieIni) t=Math.max(t,a.serieIni);
+  return t;
+}
+function sheetInicio(){
+  const a=ativa(); if(!a) return; const d=new Date(a.inicio), hh=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+  openSheet(`<div class="stack"><div class="row between"><h2>⏰ Hora de início</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="small muted">Apertou "Iniciar" mas começou depois? Coloque a hora certa e o tempo é recalculado.</div>
+    <input type="time" id="hIni" value="${hh}" style="height:56px;font-size:24px;border-radius:12px;border:1px solid var(--line);background:#0c0c0d;color:var(--fg);padding:0 14px">
+    <button class="btn btn-red" data-act="iniSalvar">Salvar</button></div>`);
+}
+function sheetPausa(){
+  const a=ativa(); if(!a) return; window._pz=window._pz||{motivo:"Conversa"};
+  const b=(m,l)=>`<button class="${window._pz.motivo===m?"on":""}" data-act="pzSel" data-v="${m}">${l}</button>`;
+  openSheet(`<div class="stack"><div class="row between"><h2>⏸ Treino interrompido</h2><button class="pill" data-act="fechar">Fechar</button></div>
+    <div class="small muted">O relógio geral continua, mas esse tempo é descontado do tempo de treino.</div>
+    <div class="lbl">Por quê?</div><div class="seg" style="flex-wrap:wrap">${b("Conversa","💬 Conversa")}${b("Telefone","📞 Telefone")}${b("Banheiro","🚻 Banheiro")}${b("Água","💧 Água")}${b("Outro","✏️ Outro")}</div>
+    <input id="pzTxt" placeholder="Observação (opcional)" style="height:48px;border-radius:12px;border:1px solid var(--line);background:#0c0c0d;color:var(--fg);padding:0 14px;font-size:16px">
+    <button class="btn btn-red" data-act="pzIni">⏸ Pausar agora</button></div>`);
 }
 function retomavel(){
   if(ativa()) return null;
@@ -1336,22 +1477,47 @@ function fechaSessao(status){
 
 /* Cronômetro: baseado em horário absoluto (continua certo se o app for para segundo plano) */
 const descDe = e => (S.descPref||{})[e.id] ?? e.desc;
-function startTimer(sec,label,id,prox){ if(!sec) return; destravaSom(); S.timer={fim:Date.now()+sec*1000,total:sec,base:sec,label,id,prox:prox||null,avisou:false}; save(); renderTimer(); }
+function startTimer(sec,label,id,prox,opc){ if(!sec) return; destravaSom(); const a=ativa();
+  S.timer={fim:Date.now()+sec*1000,total:sec,base:sec,label,id,prox:prox||null,tipo:(opc&&opc.tipo)||"serie",msg:(opc&&opc.msg)||null,ref:(opc&&opc.ref)||null,avisou:false,ini:Date.now()}; save(); renderTimer();
+  if(S.atalho && sec>=45 && !(opc&&opc.tipo==="aq")) abreAtalho(sec);
+}
+function abreAtalho(sec){ try{ location.href="shortcuts://run-shortcut?name="+encodeURIComponent("Descanso IRON")+"&input=text&text="+Math.round(sec); }catch(e){} }
+function fechaTimer(acao){
+  const a=ativa(), t=S.timer; if(!t){ return; }
+  const n=Date.now(), falta=Math.round((t.fim-n)/1000);
+  if(a){ a.restFim=Math.min(n,t.fim);
+    if(acao==="serie"){ a.serieIni=n; if(falta>5 && t.ref){ const st=a.log[t.ref.id]?.sets[t.ref.k]; if(st) st.corte=falta; } }
+  }
+  S.timer=null; save(); renderTimer(); if(acao==="serie") toast("Bora! Série começou ⏱");
+}
 function renderTimer(){
-  const el=$("#timer"), t=S.timer;
+  const el=$("#timer"), t=S.timer, a=ativa();
+  if(a && a.pausa){ const d=(Date.now()-a.pausa.ini)/1000;
+    el.innerHTML=`<div class="timer pz" role="timer"><div class="in"><div class="t num">${mmss(d)}</div><div class="grow small"><div class="lbl" style="color:#f59e0b">⏸ Treino interrompido</div><div class="ellip muted">${esc(a.pausa.motivo)}${a.pausa.txt?" · "+esc(a.pausa.txt):""}</div></div><button class="tb" style="border-color:#f59e0b" data-act="pzFim">▶ Voltar ao treino</button></div></div>`; return; }
+  if(a && a.perguntaParado){ const m=Math.round((Date.now()-a.perguntaParado.desde)/60000);
+    el.innerHTML=`<div class="timer pz"><div class="in"><div class="grow small"><div class="lbl" style="color:#f59e0b">Parado há ${m} min</div><div class="muted">Foi uma interrupção? Desconto do tempo de treino.</div></div><button class="tb" data-act="paradoSim">⏸ Sim</button><button class="tb" data-act="paradoNao">Não</button></div></div>`; return; }
   if(!t){ el.innerHTML=""; return; }
   const rest=(t.fim-Date.now())/1000, over=rest<=0;
+  const titulo = over ? (t.prox?"Descanso acabou · troca de aparelho":t.tipo==="aq"?"Aquecimento ok":"Descanso acabou · pode ir!") : (t.tipo==="aq"?"Descanso do aquecimento":"Descanso");
+  const sub = t.prox ? "🔧 Próximo: "+esc(t.prox) : esc(t.msg||t.label);
   el.innerHTML=`<div class="timer ${over?"over":""}" role="timer"><div class="in">
-    <div class="t num">${over?"+"+mmss(-rest):mmss(rest)}</div>
-    <div class="grow small"><div class="lbl" style="color:${over?"var(--green)":"var(--steel-hi)"}">${over?(t.prox?"Pode ir! Próximo exercício":"Pode ir! Próxima série"):"Descanso"}</div><div class="ellip muted">${t.prox?"🔧 Monte: "+esc(t.prox):esc(t.label)}</div>${t.id&&t.total!==t.base?`<button class="pill" style="margin-top:4px" data-act="salvaDesc">💾 Usar ${mmss(t.total)} sempre neste exercício</button>`:""}</div>
-    ${over?"":`<button class="tb" data-act="menos15" aria-label="Menos 15 segundos">−15s</button><button class="tb" data-act="mais15" aria-label="Mais 15 segundos">+15s</button>`}<button class="tb" data-act="pulaTimer">${over?"OK":"Pular descanso"}</button>
+    <div style="text-align:center"><div class="t num">${over?"+"+mmss(-rest):mmss(rest)}</div>${over?`<div class="small" style="color:var(--green);margin-top:-4px">além do descanso</div>`:""}</div>
+    <div class="grow small"><div class="lbl" style="color:${over?"var(--green)":"var(--steel-hi)"}">${titulo}</div><div class="ellip muted">${sub}</div>${t.id&&t.tipo!=="aq"&&t.total!==t.base?`<button class="pill" style="margin-top:4px" data-act="salvaDesc">💾 Usar ${mmss(t.total)} sempre</button>`:""}</div>
+    ${over?"":`<button class="tb" data-act="menos15" aria-label="Menos 15 segundos">−15s</button><button class="tb" data-act="mais15" aria-label="Mais 15 segundos">+15s</button>`}
+    ${t.prox?`<button class="tb" data-act="timerFecha">Fechar</button>`:`<button class="tb" style="${over?"border-color:var(--green);color:var(--green)":""}" data-act="timerSerie">▶ Começar série</button>`}
   </div></div>`;
-  if(over && !t.avisou){ t.avisou=true; save(); bip(); try{navigator.vibrate?.([300,120,300,120,300]);}catch(e){} document.body.classList.add("flash"); setTimeout(()=>document.body.classList.remove("flash"),2200); }
+  if(over && !t.avisou){ t.avisou=true; t.bipAte=Date.now()+20000; save(); try{navigator.vibrate?.([400,150,400,150,400]);}catch(e){} document.body.classList.add("flash"); setTimeout(()=>document.body.classList.remove("flash"),2500); }
+  if(over && t.bipAte && Date.now()<t.bipAte && (!t.ultBip || Date.now()-t.ultBip>1800)){ t.ultBip=Date.now(); bip(); }
+}
+function checaParado(a){
+  if(a.pausa || a.perguntaParado) return;
+  const ult=ultimaAcao(a), maxD=Math.max(120,...exSess(a).map(e=>descDe(e)||0)), lim=Math.max(6*60e3, (2*maxD+180)*1000);
+  if(Date.now()-ult>lim && a.naoPerg!==ult){ a.perguntaParado={desde:ult}; save(); renderTimer(); }
 }
 let actx=null;
 function destravaSom(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); const o=actx.createOscillator(),g=actx.createGain(); g.gain.value=0.0001; o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+0.02); }catch(e){} }
-function bip(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); [0,0.3,0.6,0.9,1.2].forEach(d=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start(actx.currentTime+d);o.stop(actx.currentTime+d+.15);}); }catch(e){} }
-setInterval(()=>{ if(S.timer) renderTimer(); const el=$("#elap"), a=ativa(); if(el&&a) el.textContent=mmss((Date.now()-a.inicio)/1000); },500);
+function bip(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); const t0=actx.currentTime; [0,0.22,0.44,0.66].forEach((d,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type="square";o.frequency.value=i%2?1320:990;g.gain.setValueAtTime(0.0001,t0+d);g.gain.exponentialRampToValueAtTime(0.9,t0+d+0.01);g.gain.setValueAtTime(0.9,t0+d+0.16);g.gain.exponentialRampToValueAtTime(0.0001,t0+d+0.19);o.connect(g);g.connect(actx.destination);o.start(t0+d);o.stop(t0+d+0.2);}); }catch(e){} }
+setInterval(()=>{ if(S.timer) renderTimer(); const el=$("#elap"), a=ativa(); if(el&&a) el.textContent=mmss(liquidoMs(a)/1000); if(a && !S.timer) checaParado(a); },500);
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ renderTimer(); if(ativa()) pedirWake(); } });
 
 /* ===== Animações próprias (SVG): certo × errado ===== */
@@ -1603,15 +1769,15 @@ const SIDE_DEF = {
     eq:(J,h)=>h.poly([J.H.map((x,i)=>x+(i?12:8)),J.S.map((x,i)=>x+(i?14:-2)),J.S.map((x,i)=>x+(i?4:-10)),J.H.map((x,i)=>x+(i?2:0))],"#2f3036")+h.rect(J.H[0]-20,J.H[1]+10,40,236-J.H[1]-10,"#222225")+h.L([112,210],[192,130],"#2a2a2e",6)+h.L(J.T.map((x,i)=>x-(i?18:18)),J.T.map((x,i)=>x+(i?14:14)),"#5b5e66",7)
   },
   extensora:{
-    a:{H:[66,172],tr:190,th:90,sh:352,W:[74,178]},
-    b:{sh:86},
+    a:{H:[66,172],tr:190,th:90,sh:-8,W:[74,178]},
+    b:{sh:84},
     bb:{H:[70,158],th:80},
     hl:["th"], gl:["Th"], bm:["trL"], bg:["H"],
     eq:SEAT(46,180,52,true,40,96), fr:(J,h)=>h.pad(J.A.map((x,i)=>x+(i?0:6)-(i?8:0)),7)+h.L(J.K,[J.K[0],236],"#2a2a2e",4)
   },
   flexora:{
     a:{H:[66,172],tr:190,th:90,sh:84,W:[74,178]},
-    b:{sh:330},
+    b:{sh:-28},
     bb:{H:[70,160],th:78,tr:204},
     hl:["th"], gl:["Th"], bm:["trL"], bg:["H"],
     eq:SEAT(46,180,52,true,40,96), fr:(J,h)=>h.pad([J.Th[0],J.Th[1]-12],7)+h.pad(J.A.map((x,i)=>x+(i?6:-4)),7)
@@ -1760,7 +1926,7 @@ document.addEventListener("click",ev=>{
   const g=ev.target.closest("[data-go]"); if(g){ closeSheet(); return go(g.dataset.go); }
   const el=ev.target.closest("[data-act]"); if(!el) return;
   if(el.classList.contains("sheet-bg") && ev.target.closest("[data-stop]")) return;
-  const d=el.dataset, a=ativa();
+  const d=el.dataset, a=ativa(); if(!actx) destravaSom();
   switch(d.act){
     case "iniciar": if(ativa()) return go("treino"); if(d.t==="E" && !PROTOCOLO.sequencia.includes("E")) return sheetExtra(); window._ck=null; sheetCheckin(d.t); break;
     case "extraModo": iniciarExtra(d.v); break;
@@ -1768,7 +1934,12 @@ document.addEventListener("click",ev=>{
     case "continuar": go("treino"); break;
     case "toggle": S.abertos[d.id]=!(S.abertos[d.id] ?? el.closest(".ex").querySelector(".ex-b")); save(); render(); break;
     case "serie": marcaSerie(d.ex,+d.k); break;
-    case "aqOk": { a.aq=a.aq||{}; const l=a.aq[d.ex]=a.aq[d.ex]||[]; l[+d.k]=!l[+d.k]; save(); render(); break; }
+    case "crono": destravaSom(); sheetCrono(d.ex,+d.k); break;
+    case "crSair": clearInterval(window._crI); window._cr=null; closeSheet(); break;
+    case "crPara": { const c=window._cr; clearInterval(window._crI); window._cr=null; closeSheet(); if(!c||!c.ini) break; const sec=Math.round((Date.now()-c.ini)/1000); if(sec<1) break; marcaSerie(c.id,c.k,{reps:sec,ti:c.ini}); toast(sec+" s salvos"); break; }
+    case "aqOk": { a.aq=a.aq||{}; const l=a.aq[d.ex]=a.aq[d.ex]||[]; const k=+d.k; l[k]=l[k]?false:Date.now();
+      if(l[k]){ const e=exSess(a).find(x=>x.id===d.ex), P=planoAquec(a,e,exSess(a).indexOf(e)); const ult=!P||!P.L||k>=P.L.length-1; logEx(a,d.ex).ini=logEx(a,d.ex).ini||l[k]; startTimer(60,"Aquecimento "+(k+1),d.ex,null,{tipo:"aq",msg:ult?"Agora: Série 1 (vale)":"Agora: Aquecimento "+(k+2)}); }
+      save(); render(); break; }
     case "sob": logEx(a,d.ex).sets[+d.k].sob=d.v; save(); render(); break;
     case "pular": confirmar("Pular exercício?","Por quê? Fica registrado no histórico.",["Aparelho ocupado","Dor ou desconforto","Sem tempo","Outro"].map(m=>`<button class="btn btn-ghost" data-act="pularMotivo" data-ex="${d.ex}" data-v="${m}">${m}</button>`).join("")); break;
     case "pularMotivo": logEx(a,d.ex).pulou=d.v; save(); closeSheet(); if(d.v==="Dor ou desconforto") toast("Dor forte ou estranha: pare e procure avaliação."); render(); break;
@@ -1783,7 +1954,21 @@ document.addEventListener("click",ev=>{
     case "mais15": S.timer.fim+=15000; S.timer.total+=15; save(); renderTimer(); break;
     case "menos15": if(S.timer.total>30){ S.timer.fim-=15000; S.timer.total-=15; } save(); renderTimer(); break;
     case "salvaDesc": { const t=S.timer; (S.descPref=S.descPref||{})[t.id]=t.total; t.base=t.total; save(); renderTimer(); render(); toast("Descanso de "+mmss(t.total)+" salvo para "+EXS[t.id].n); break; }
-    case "pulaTimer": S.timer=null; save(); renderTimer(); break;
+    case "pulaTimer": case "timerSerie": fechaTimer("serie"); break;
+    case "timerFecha": fechaTimer("fechar"); break;
+    case "hIni": sheetInicio(); break;
+    case "atalhoTog": S.atalho=!S.atalho; save(); render(); toast(S.atalho?"Timer do iPhone ligado ⏰":"Timer do iPhone desligado"); break;
+    case "atalhoTeste": abreAtalho(10); break;
+    case "bkAgora": closeSheet(); go("perfil"); setTimeout(()=>exportar(),300); break;
+    case "bkDepois": S.bkAdiado=Date.now(); save(); closeSheet(); break;
+    case "iniSalvar": { const v=$("#hIni").value; if(v){ const [h,m]=v.split(":").map(Number), d=new Date(a.inicio); d.setHours(h,m,0,0); if(d.getTime()>Date.now()) return toast("Essa hora ainda não chegou"); a.inicio=d.getTime(); save(); closeSheet(); render(); toast("Início ajustado para "+v); } break; }
+    case "pausa": window._pz={motivo:"Conversa"}; sheetPausa(); break;
+    case "pzSel": { window._pz.motivo=d.v; const tx=$("#pzTxt")?.value||""; sheetPausa(); $("#pzTxt").value=tx; break; }
+    case "pzIni": a.pausa={ini:Date.now(),motivo:window._pz.motivo,txt:($("#pzTxt")?.value||"").trim()}; S.timer=null; save(); closeSheet(); render(); renderTimer(); break;
+    case "pzFim": if(a.pausa){ (a.pausas=a.pausas||[]).push({...a.pausa,fim:Date.now()}); a.pausa=null; save(); render(); renderTimer(); toast("Pausa de "+mmss(((a.pausas.at(-1).fim-a.pausas.at(-1).ini))/1000)+" descontada"); } break;
+    case "paradoSim": { const pp=a.perguntaParado, ini=pp.desde+150e3; a.perguntaParado=null; if(Date.now()>ini){ (a.pausas=a.pausas||[]).push({ini,fim:Date.now(),motivo:"Esqueceu de pausar",txt:""}); } a.naoPerg=pp.desde; save(); render(); renderTimer(); toast("Tempo parado descontado"); break; }
+    case "paradoNao": a.naoPerg=a.perguntaParado.desde; a.perguntaParado=null; save(); renderTimer(); break;
+    case "exIni": { const r=logEx(a,d.ex); r.ini=Date.now(); a.serieIni=Date.now(); S.timer=null; save(); render(); renderTimer(); toast("Exercício começou ⏱"); break; }
     case "medida": {
       const p=parseFloat(($("#inPeso").value||"").replace(",",".")), c=parseFloat(($("#inCint").value||"").replace(",","."));
       if(isNaN(p)&&isNaN(c)) return toast("Coloque o peso ou a cintura");
@@ -1793,9 +1978,10 @@ document.addEventListener("click",ev=>{
     case "iglink": openSheet(`<div class="stack"><h2>Link do Instagram</h2><p class="muted small" style="margin:0">No Instagram: ⋯ → Copiar link. Cole aqui.</p><label class="field"><span class="lbl">Link do post</span><input id="igIn" inputmode="url" value="${esc(S.ig?.[d.ex]||"")}" placeholder="https://www.instagram.com/reel/..."></label><button class="btn btn-red" data-act="igSalvar" data-ex="${d.ex}">Salvar</button><button class="btn btn-ghost" data-act="fechar">Cancelar</button></div>`); break;
     case "igSalvar": { const v=$("#igIn").value.trim(); if(v && !/^https:\/\/(www\.)?instagram\.com\//.test(v)) return toast("Cole um link do instagram.com"); S.ig=S.ig||{}; if(v) S.ig[d.ex]=v; else delete S.ig[d.ex]; save(); toast("Link salvo"); sheetLib(d.ex); break; }
     case "criador": { const v=($("#criIn").value||"").trim().replace(/^@/,""); S.criador=v||"pedrolotz"; save(); toast("Criador salvo"); break; }
+    case "sessao": sheetSessao(d.id); break;
     case "editSess": { const s=S.sessoes.find(z=>z.id===d.id); if(!s) break;
       const linhas = (s.ex||exOf(s.treino)).filter(e=>s.log[e.id]?.sets?.some(z=>z.feito)).map(e=>`<div class="stack" style="gap:6px"><b>${esc(EXS[e.id].n)}</b>${s.log[e.id].sets.map((z,k)=>z.feito?`<div class="row"><span class="num" style="width:22px;font-family:var(--f-display);font-weight:800;color:var(--steel)">${k+1}</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="decimal" data-ed="${s.id}|${e.id}|${k}|kg" value="${z.kg}" aria-label="Carga"><span class="muted">×</span><input class="grow" style="height:44px;border-radius:10px;border:1px solid var(--line);background:#0c0c0d;text-align:center;font-size:17px;min-width:0" inputmode="numeric" data-ed="${s.id}|${e.id}|${k}|reps" value="${z.reps}" aria-label="Repetições"><button class="chk" data-act="delSerie" data-k="${s.id}|${e.id}|${k}" aria-label="Apagar série">🗑</button></div>`:"").join("")}</div>`).join("");
-      openSheet(`<div class="stack"><div class="row between"><h2>Corrigir treino ${s.treino}</h2><button class="pill" data-act="fechar">Fechar</button></div><div class="small muted">${dataBR(s.inicio)} · as mudanças salvam sozinhas</div>${linhas||'<p class="muted">Nenhuma série registrada.</p>'}</div>`); break; }
+      openSheet(`<div class="stack"><div class="row between"><h2>Corrigir treino ${s.treino}</h2><button class="pill" data-act="fechar">Fechar</button></div><div class="small muted">${DSEM[new Date(s.inicio).getDay()]} ${dataBR(s.inicio)} · as mudanças salvam sozinhas</div><button class="btn btn-ghost" data-act="sessao" data-id="${s.id}">📊 Ver análise deste treino</button>${linhas||'<p class="muted">Nenhuma série registrada.</p>'}</div>`); break; }
     case "delSerie": { const [sid,ex,k]=d.k.split("|"); const s=S.sessoes.find(z=>z.id===sid); if(s){ s.log[ex].sets[+k].feito=false; save(); toast("Série apagada"); closeSheet(); render(); } break; }
     case "verTreino": { const t=d.t, T=PROTOCOLO.treinos[t], exs=exOf(t), a=ativa(), nx=proximo();
       openSheet(`<div class="stack"><div class="row between"><div class="row"><div class="badge red">${t}</div><h2>${T.nome}</h2></div><button class="pill" data-act="fechar">Fechar</button></div>
@@ -1854,10 +2040,15 @@ document.addEventListener("change",ev=>{
   const st=(logEx(a,t.dataset.ex).sets[+t.dataset.k] ||= {});
   const v=parseFloat(t.value.replace(",","."));
   st[t.dataset.f]=isNaN(v)?undefined:v; save();
+  if(t.dataset.f==="kg" && t.dataset.k==="0") render();
 });
 
 if(ativa()) view="treino";
 render();
+setTimeout(()=>{ try{ const dd=864e5, n=Date.now(); if(!ativa() && S.sessoes.some(s=>s.status==="feito") && (!S.ultimoBackup||n-S.ultimoBackup>3*dd) && (!S.bkAdiado||n-S.bkAdiado>dd)){
+  openSheet(`<div class="stack" style="text-align:center"><div style="font-size:56px">💾</div><h2>Hora do backup</h2>
+    <div class="small muted">Último backup: <b style="color:var(--fg)">${S.ultimoBackup?dataBR(S.ultimoBackup)+" ("+Math.floor((n-S.ultimoBackup)/dd)+" dias)":"nunca"}</b>. O iPhone pode apagar os dados se faltar espaço.</div>
+    <button class="btn btn-red" data-act="bkAgora">💾 Fazer backup agora (1 toque)</button><button class="btn btn-ghost" data-act="bkDepois">Amanhã</button></div>`); } }catch(e){} },800);
 if("serviceWorker" in navigator && location.protocol==="https:" && document.querySelector('link[rel="manifest"]')){
   const tinha = !!navigator.serviceWorker.controller; let recarregou=false;
   navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(tinha && !recarregou && !ativa()){ recarregou=true; location.reload(); } });
