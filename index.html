@@ -649,7 +649,7 @@ function sheetCheckin(t, forcar){
         <div class="small num">${sO} → <b>${sR} séries</b> · ≈ ${R.min} min · ${R.ex.length} exercícios</div>
         <div class="small muted">${lin.join(" · ")}${fora.length?" · "+fora.join(" · "):""}</div>${dica}</div>`; })()}
     <div class="small muted">As cargas não mudam. Dor forte, tontura ou falta de ar: pare.</div>
-    <div class="grid2"><button class="btn btn-red" data-act="ckOk">Aceitar</button><button class="btn btn-ghost" data-act="ckNormal">Treino normal</button></div>
+    ${R.tags.length?`<button class="btn btn-red" data-act="ckOk">▶ Começar com estes ajustes</button><button class="btn btn-ghost" style="min-height:44px;font-size:15px" data-act="ckNormal">Ignorar ajustes e fazer o treino completo</button>`:`<button class="btn btn-red" data-act="ckOk">▶ Começar treino</button>`}
   </div>`);
 }
 function confirmaCheckin(ajustar){
@@ -851,7 +851,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "2.8";
+const APP_VERSAO = "2.9";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -1324,7 +1324,7 @@ function renderTimer(){
   el.innerHTML=`<div class="timer ${over?"over":""}" role="timer"><div class="in">
     <div class="t num">${over?"+"+mmss(-rest):mmss(rest)}</div>
     <div class="grow small"><div class="lbl" style="color:${over?"var(--green)":"var(--steel-hi)"}">${over?"Pode ir! Próxima série":"Descanso"}</div><div class="ellip muted">${esc(t.label)}</div></div>
-    ${over?"":`<button class="tb" data-act="menos15">−15</button><button class="tb" data-act="mais15">+15</button>`}<button class="tb" data-act="pulaTimer">${over?"OK":"Pular"}</button>
+    ${over?"":`<button class="tb" data-act="menos15" aria-label="Menos 15 segundos">−15s</button><button class="tb" data-act="mais15" aria-label="Mais 15 segundos">+15s</button>`}<button class="tb" data-act="pulaTimer">${over?"OK":"Pular descanso"}</button>
   </div></div>`;
   if(over && !t.avisou){ t.avisou=true; save(); bip(); try{navigator.vibrate?.([200,100,200]);}catch(e){} }
 }
