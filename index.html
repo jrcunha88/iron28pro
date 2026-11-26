@@ -909,7 +909,7 @@ function trocar(base,novo,mot){
 }
 
 /* ============================ ESTADO ============================ */
-const APP_VERSAO = "3.1";
+const APP_VERSAO = "3.2";
 const KEY = "iron28pro.v1"; /* nunca mudar: as atualizações leem a mesma chave e não apagam o histórico */
 const blank = () => ({ig:{},criador:"pedrolotz",sono:[],sessoes:[],ativa:null,corpo:[],inicioCiclo:null,primeiro:PROTOCOLO.primeiro,timer:null,abertos:{}});
 let S = blank();
@@ -1060,11 +1060,25 @@ function liberaE(){
 }
 function contaSeries(s){ return Object.values(s.log).reduce((n,r)=>n+r.sets.filter(x=>x.feito).length,0); }
 
+function previaTreino(){
+  const lista=Object.keys(PROTOCOLO.treinos), t=lista.includes(S.prevT)?S.prevT:proximo(), T=PROTOCOLO.treinos[t], E=exOf(t);
+  const ser=E.reduce((n,e)=>n+e.series,0), min=estMin({ex:E.map(tup)});
+  const itens=E.map((e,i)=>{ const x=EXS[e.id], un=x.u==="seg"?" s":" reps", par=e.par&&E.filter(o=>o.par===e.par).length>1;
+    return `<button class="li" data-act="lib" data-ex="${e.id}"><div class="thumb" style="width:44px;height:52px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(e.id)}</div><div class="grow"><div class="ellip"><b>${i+1}º · ${esc(x.n)}</b></div><div class="small muted">${e.series} séries × ${e.min}–${e.max}${un} · ${esc(x.m)}${par?' · <span style="color:var(--green)">em dupla</span>':""}</div></div></button>`; }).join("");
+  return `<div class="lbl" style="margin:14px 2px 0">👀 Ver o treino antes (não conta tempo)</div>
+    <div class="seg">${lista.map(x=>`<button class="${x===t?"on":""}" data-act="prevT" data-t="${x}">${x}</button>`).join("")}</div>
+    <div class="card stack" style="gap:6px"><div><b>Treino ${t} · ${esc(T.nome)}</b>${t==="E"?' <span class="muted small">(extra opcional)</span>':""}</div>
+    <div class="small muted">${esc(T.foco||"")} · ${E.length} exercícios · ${ser} séries · ~${min} min</div>
+    <div class="list">${itens}</div>
+    <div class="small muted">Toque num exercício para ver como fazer. O tempo só começa quando você tocar em Iniciar.</div>
+    ${t!==proximo()?`<button class="btn btn-ghost" data-act="iniciar" data-t="${t}">Iniciar ${t} em vez do ${proximo()}</button>`:""}</div>`;
+}
 function vTreino(){
   const a = ativa();
   if(!a) return `<div class="top"><div class="brand">IRON <b>28</b> PRO</div></div>
     ${cardRetomar()}<div class="card stack"><h2>Nenhum treino em andamento</h2><p class="muted" style="margin:0">Próximo da sequência: <b>${proximo()}</b> · ${PROTOCOLO.treinos[proximo()].nome}</p>
-    <button class="btn btn-red" data-act="iniciar" data-t="${proximo()}">Iniciar ${proximo()}</button></div>`;
+    <button class="btn btn-red" data-act="iniciar" data-t="${proximo()}">Iniciar ${proximo()}</button></div>
+    ${previaTreino()}`;
   const T = PROTOCOLO.treinos[a.treino]||PROTO_BASE.treinos[a.treino], exs = exSess(a);
   const prim = exs.findIndex(e => !exConcluido(a,e));
   return `
@@ -1178,19 +1192,23 @@ const GRUPOS = ["Peito","Costas","Ombros","Braços","Pernas","Abdômen"];
 const GRUPO_IC = {Peito:"🏋️",Costas:"🔙",Ombros:"🎯",Braços:"💪",Pernas:"🦵",Abdômen:"🧱"};
 const semAc = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const grupoDe = id => GRUPO_M[EXS[id].m] || "Outros";
-function itemLib(id){ const x=EXS[id]; return `<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(id)}</div><div class="grow"><div class="ellip"><b>${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div></div></button>`; }
+function itemLib(id,tag,num){ const x=EXS[id]; return `<button class="li" data-act="lib" data-ex="${id}"><div class="thumb" style="width:48px;height:56px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;flex:none;overflow:hidden">${animThumb(id)}</div><div class="grow"><div class="ellip"><b>${num?num+"º · ":""}${esc(x.n)}</b></div><div class="small muted">${esc(x.m)} · ${esc(x.e)}</div>${tag?`<div class="small" style="color:var(--green)">${esc(tag)}</div>`:""}</div></button>`; }
 function listaLib(){
   const f=S.libFil||"Todos", ord=S.libOrd||"treino", q=semAc(window._libQ||"").trim();
   let ids=Object.keys(EXS).filter(id=>(f==="Todos"||grupoDe(id)===f) && (!q || semAc(EXS[id].n+" "+EXS[id].m+" "+EXS[id].e).includes(q)));
   if(!ids.length) return `<p class="muted" style="text-align:center">Nada encontrado.</p>`;
-  const sec=(t,l)=>l.length?`<div class="lbl" style="margin:6px 2px 0">${t} <span class="muted">· ${l.length}</span></div><div class="card list">${l.map(itemLib).join("")}</div>`:"";
+  const sec=(t,l)=>l.length?`<div class="lbl" style="margin:6px 2px 0">${t} <span class="muted">· ${l.length}</span></div><div class="card list">${l.map(id=>itemLib(id)).join("")}</div>`:"";
   const az=l=>[...l].sort((a,b)=>EXS[a].n.localeCompare(EXS[b].n,"pt-BR"));
   if(ord==="az") return sec("A → Z",az(ids));
   if(ord==="musc") return GRUPOS.map(g=>sec(GRUPO_IC[g]+" "+g, az(ids.filter(id=>grupoDe(id)===g)))).join("");
   const usados=new Set(); let h="";
-  for(const t of [...PROTOCOLO.sequencia, ...Object.keys(PROTOCOLO.treinos).filter(t=>!PROTOCOLO.sequencia.includes(t))]){
-    const l=exOf(t).map(e=>e.id).filter(id=>ids.includes(id)&&!usados.has(id)); l.forEach(id=>usados.add(id));
-    h+=sec(`Treino ${t} · ${esc(PROTOCOLO.treinos[t].nome)}`, l);
+  const tr=[...PROTOCOLO.sequencia, ...Object.keys(PROTOCOLO.treinos).filter(t=>!PROTOCOLO.sequencia.includes(t))];
+  const onde=id=>tr.filter(t=>exOf(t).some(e=>e.id===id));
+  for(const t of tr){
+    const todos=exOf(t).map(e=>e.id), l=todos.filter(id=>ids.includes(id)); l.forEach(id=>usados.add(id));
+    if(!l.length) continue;
+    const tot=todos.length, ser=exOf(t).reduce((n,e)=>n+e.series,0);
+    h+=`<div class="lbl" style="margin:6px 2px 0">Treino ${t} · ${esc(PROTOCOLO.treinos[t].nome)} <span class="muted">· ${l.length<tot?l.length+" de "+tot:tot} exercícios · ${ser} séries</span></div><div class="card list">${l.map(id=>{const o=onde(id).filter(x=>x!==t); return itemLib(id,o.length?"↻ também no treino "+o.join(" e "):"",todos.indexOf(id)+1);}).join("")}</div>`;
   }
   return h+sec("Outros (para trocar)", az(ids.filter(id=>!usados.has(id))));
 }
@@ -1948,6 +1966,7 @@ document.addEventListener("click",ev=>{
     case "retomar": retomar(d.id); break;
     case "fim": fechaSessao(d.v); break;
     case "lib": sheetLib(d.ex); break;
+    case "prevT": S.prevT=d.t; render(); break;
     case "fechar": closeSheet(); break;
     case "fil": S.libFil=d.v; save(); render(); break;
     case "libOrd": S.libOrd=d.v; save(); render(); break;
